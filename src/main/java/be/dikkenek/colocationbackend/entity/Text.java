@@ -1,6 +1,6 @@
-package com.istasse.hello_world.entity;
+package be.dikkenek.colocationbackend.entity;
 
-import com.istasse.hello_world.dao.TextDAO;
+import be.dikkenek.colocationbackend.dao.TextDAO;
 import jakarta.persistence.*;
 
 @Entity

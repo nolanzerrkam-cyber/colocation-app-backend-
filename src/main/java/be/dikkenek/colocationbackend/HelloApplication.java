@@ -1,4 +1,4 @@
-package com.istasse.hello_world;
+package be.dikkenek.colocationbackend;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;

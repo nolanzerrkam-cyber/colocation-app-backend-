@@ -1,7 +1,7 @@
-package com.istasse.hello_world.dao;
+package be.dikkenek.colocationbackend.dao;
 
 
-import com.istasse.hello_world.entity.Text;
+import be.dikkenek.colocationbackend.entity.Text;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 

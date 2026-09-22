@@ -1,7 +1,7 @@
 package com.istasse.hello_world.test.api;
 
-import com.istasse.hello_world.HelloResource;
-import com.istasse.hello_world.entity.Text;
+import be.dikkenek.colocationbackend.HelloResource;
+import be.dikkenek.colocationbackend.entity.Text;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
