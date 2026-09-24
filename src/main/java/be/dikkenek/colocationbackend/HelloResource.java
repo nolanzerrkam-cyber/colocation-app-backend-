@@ -1,45 +1,38 @@
 package be.dikkenek.colocationbackend;
 
-import be.dikkenek.colocationbackend.dao.TextDAO;
-import be.dikkenek.colocationbackend.entity.Text;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import be.dikkenek.colocationbackend.dao.test.TestDao;
+import be.dikkenek.colocationbackend.dao.test.TestDaoImpl;
+import be.dikkenek.colocationbackend.entity.TestEntity;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.awt.*;
+import java.util.Optional;
 
-@Path("/hello-world")
+@Path("/test")
 public class HelloResource {
-    private static final EntityManagerFactory emf =Persistence.createEntityManagerFactory("unit");
+    private final TestDao testDao = new TestDaoImpl();
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response hello(@PathParam("id") Long id)
-    {
-        TextDAO dao = new TextDAO(emf.createEntityManager());
-        Text txt = Text.findById(dao,id);
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response test(@PathParam("id") int id) {
+        Optional<TestEntity> testModelOptional = testDao.getTestById(id);
 
-        if (txt == null)
-        {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (!testModelOptional.isPresent()) {
+            return Response.status(404).build();
         }
-        return Response.ok(txt.getMsg()).build();
+
+        return Response.status(200).entity(testModelOptional.get()).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response Create(Text txt)
-    {
-        TextDAO dao = new TextDAO(emf.createEntityManager());
-        if(txt.Create(dao))
-        {
-            return Response.status(Response.Status.CREATED).build();
-        }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response test(TestEntity testEntity) {
+        boolean success = testDao.save(testEntity);
+        if (success)
+            return Response.status(201).build();
+        return Response.status(500).build();
     }
 }

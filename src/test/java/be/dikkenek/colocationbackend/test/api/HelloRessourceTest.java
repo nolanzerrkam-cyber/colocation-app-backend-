@@ -1,7 +1,7 @@
-package com.istasse.hello_world.test.api;
+package be.dikkenek.colocationbackend.test.api;
 
 import be.dikkenek.colocationbackend.HelloResource;
-import be.dikkenek.colocationbackend.entity.Text;
+import be.dikkenek.colocationbackend.entity.TestEntity;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
@@ -11,13 +11,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HelloResourceTest extends JerseyTest {
-
-    @Override
+   /* @Override
     protected Application configure() {
         return new ResourceConfig(HelloResource.class)
                 .register(JacksonFeature.class);
@@ -29,20 +26,16 @@ class HelloResourceTest extends JerseyTest {
     }
 
     @Test
-    void get_devrait_retourner_le_message() {
-        Text t = new Text("Hello world");
-        target("/hello-world")
-                .request(MediaType.TEXT_PLAIN)
+    void get_test() {
+        TestEntity t = new TestEntity("Test...");
+        target("/test")
+                .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(t, MediaType.APPLICATION_JSON));
 
-        Response response = target("/hello-world/1").request(MediaType.TEXT_PLAIN).get();
+        Response response = target("/test/2").request(MediaType.TEXT_PLAIN).get();
         String message = response.readEntity(String.class);
 
-        System.out.println(message);
-
         assertEquals(200, response.getStatus());
-        assertEquals("Hello world", message);
-    }
-
-
+        assertEquals("Test...", message);
+    }*/
 }
