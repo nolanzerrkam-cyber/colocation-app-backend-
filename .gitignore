@@ -40,3 +40,6 @@ build/
 
 ### .idea ###
 .idea
+
+### persistence.xml ###
+src/main/resources/META-INF/persistence.xml
