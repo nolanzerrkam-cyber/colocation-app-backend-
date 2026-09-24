@@ -43,3 +43,4 @@ build/
 
 ### persistence.xml ###
 src/main/resources/META-INF/persistence.xml
+src/test/resources/META-INF/persistence.xml
