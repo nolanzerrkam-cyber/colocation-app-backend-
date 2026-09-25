@@ -5,6 +5,8 @@ import be.dikkenek.colocationbackend.entity.TestEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class TestDaoImpl implements Dao<TestEntity, Integer> {
@@ -39,5 +41,10 @@ public class TestDaoImpl implements Dao<TestEntity, Integer> {
     @Override
     public boolean delete(Integer id) {
         return false;
+    }
+
+    @Override
+    public List<TestEntity> getAll() {
+        return Arrays.asList();
     }
 }
