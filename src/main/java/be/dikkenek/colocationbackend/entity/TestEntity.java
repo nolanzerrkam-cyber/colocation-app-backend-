@@ -1,6 +1,9 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.TestDaoImpl;
 import jakarta.persistence.*;
+
+import java.util.Optional;
 
 @Entity
 @Table(name = "TESTTABLE")
@@ -14,11 +17,17 @@ public class TestEntity {
     @Column(name = "TESTATTRIBUTE", nullable = false, length = 100)
     private String testAttribute;
 
-    public TestEntity(String testAttribute) {
-        setTestAttribute(testAttribute);
+    public TestEntity() {
     }
 
-    public TestEntity() {
+    public static TestEntity getById(int id, TestDaoImpl testDao) {
+        Optional<TestEntity> optionalTest = testDao.get(id);
+
+        return optionalTest.orElse(null);
+    }
+
+    public boolean create(TestDaoImpl testDao) {
+        return testDao.create(this);
     }
 
     public int getId() {
