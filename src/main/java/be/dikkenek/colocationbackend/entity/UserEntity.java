@@ -1,8 +1,13 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.UserDao;
+import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -65,5 +70,68 @@ public abstract class UserEntity
             this.firstname = firstname;
             this.lastname = lastname;
             this.phonenumber = phonenumber;
+        }
+
+        //Business Logic
+
+        public LoginResponseDTO createUser(UserDao userDao)
+        {
+            if(userDao.get(this.getEmail()).isPresent())
+            {
+                throw new IllegalArgumentException("Invalid email");
+            }
+
+            if(!userDao.create(this))
+            {
+                throw new RuntimeException("Error in user creation");
+            }
+
+            return new LoginResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+        }
+
+        public static List<LoginResponseDTO> getAll(UserDao userDao)
+        {
+            List<UserEntity> entities = userDao.getAll();
+
+            if(entities.isEmpty())
+            {
+                throw new RuntimeException("No users found");
+            }
+
+            List<LoginResponseDTO> dtos = new ArrayList<>();
+            entities.forEach(e ->
+            {
+                dtos.add(new LoginResponseDTO(e.getEmail(),e.getFirstname(),e.getLastname(),e.getPhonenumber()));
+            });
+
+            return dtos;
+        }
+
+        public LoginResponseDTO login(UserDao userDao)
+        {
+            UserEntity found = userDao.get(this.getEmail()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+            if(!found.getPassword().equals(this.getPassword()))
+            {
+                throw new SecurityException("Invalid credentials");
+            }
+
+            return new LoginResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+        }
+
+        public void delete(UserDao userDao)
+        {
+            if(!userDao.delete(this.getEmail()))
+            {
+                throw new IllegalArgumentException("Invalid id");
+            }
+        }
+
+        public void update(UserDao userDao)
+        {
+            if(!userDao.update(this))
+            {
+                throw new RuntimeException("Update failed");
+            }
         }
 }
