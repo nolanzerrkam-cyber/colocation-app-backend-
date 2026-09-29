@@ -1,5 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.TaskDaoImpl;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -26,6 +27,10 @@ public class TaskEntity {
     private Date deadline;
 
     public TaskEntity() {
+    }
+
+    public boolean create(TaskDaoImpl taskDao) {
+        return taskDao.create(this);
     }
 
     public int getId() {
