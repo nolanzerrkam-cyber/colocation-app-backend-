@@ -5,16 +5,9 @@ import be.dikkenek.colocationbackend.entity.TestEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class TestDaoImpl implements Dao<TestEntity, Integer> {
-    @Override
-    public List<TestEntity> getAll() {
-        return new ArrayList<>();
-    }
-
     @Override
     public Optional<TestEntity> get(Integer id) {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {
@@ -36,15 +29,5 @@ public class TestDaoImpl implements Dao<TestEntity, Integer> {
                 return false;
             }
         }
-    }
-
-    @Override
-    public boolean update(TestEntity entity) {
-        return false;
-    }
-
-    @Override
-    public boolean delete(Integer id) {
-        return false;
     }
 }
