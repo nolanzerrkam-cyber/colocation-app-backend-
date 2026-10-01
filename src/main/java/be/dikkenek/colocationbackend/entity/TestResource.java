@@ -1,13 +1,15 @@
 package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.TestDaoImpl;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/test")
 public class TestResource {
-    private final TestDaoImpl testDao = new TestDaoImpl();
+    @Inject
+    private TestDaoImpl testDao;
 
     @GET
     @Path("/{id}")

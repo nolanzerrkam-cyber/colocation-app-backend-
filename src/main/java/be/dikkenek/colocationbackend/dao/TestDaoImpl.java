@@ -2,11 +2,13 @@ package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.TestEntity;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import java.util.Optional;
 
+@ApplicationScoped
 public class TestDaoImpl implements Dao<TestEntity, Integer> {
     @Override
     public Optional<TestEntity> get(Integer id) {
