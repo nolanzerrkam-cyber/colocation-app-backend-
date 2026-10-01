@@ -1,21 +1,22 @@
-package be.dikkenek.colocationbackend.entity;
+package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.TestDaoImpl;
+import be.dikkenek.colocationbackend.dao.HelloWorldDaoImpl;
+import be.dikkenek.colocationbackend.entity.HelloWorldEntity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/test")
-public class TestResource {
+public class HelloWorldResource {
     @Inject
-    private TestDaoImpl testDao;
+    private HelloWorldDaoImpl testDao;
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response test(@PathParam("id") int id) {
-        TestEntity testEntity = TestEntity.getById(id, testDao);
+        HelloWorldEntity testEntity = HelloWorldEntity.getById(id, testDao);
 
         if (testEntity == null)
             return Response.status(404).build();
@@ -26,7 +27,7 @@ public class TestResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response test(TestEntity testEntity) {
+    public Response test(HelloWorldEntity testEntity) {
         boolean success = testEntity.create(testDao);
         if (success)
             return Response.status(201).build();

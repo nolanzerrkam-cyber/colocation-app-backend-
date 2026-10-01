@@ -1,7 +1,7 @@
 package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
-import be.dikkenek.colocationbackend.entity.TestEntity;
+import be.dikkenek.colocationbackend.entity.HelloWorldEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -9,16 +9,17 @@ import jakarta.persistence.EntityTransaction;
 import java.util.Optional;
 
 @ApplicationScoped
-public class TestDaoImpl implements Dao<TestEntity, Integer> {
+public class HelloWorldDaoImpl implements Dao<HelloWorldEntity, Integer> {
+
     @Override
-    public Optional<TestEntity> get(Integer id) {
+    public Optional<HelloWorldEntity> get(Integer id) {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {
-            return Optional.ofNullable(entityManager.find(TestEntity.class, id));
+            return Optional.ofNullable(entityManager.find(HelloWorldEntity.class, id));
         }
     }
 
     @Override
-    public boolean create(TestEntity testEntity) {
+    public boolean create(HelloWorldEntity testEntity) {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {
             EntityTransaction entityTransaction = entityManager.getTransaction();
             try {
