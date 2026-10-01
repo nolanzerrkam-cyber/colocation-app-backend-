@@ -29,6 +29,14 @@ public class TaskEntity {
     public TaskEntity() {
     }
 
+    public TaskEntity(int id, String name, String description, boolean isDone, Date deadline) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setIsDone(isDone);
+        setDeadline(deadline);
+    }
+
     public boolean create(TaskDaoImpl taskDao) {
         return taskDao.create(this);
     }
@@ -37,7 +45,7 @@ public class TaskEntity {
         return id;
     }
 
-    private void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
