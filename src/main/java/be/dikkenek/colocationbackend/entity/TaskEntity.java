@@ -1,0 +1,89 @@
+package be.dikkenek.colocationbackend.entity;
+
+import be.dikkenek.colocationbackend.dao.TaskDaoImpl;
+import jakarta.persistence.*;
+
+import java.util.Date;
+
+@Entity
+@Table(name = "tasks")
+public class TaskEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "is_done")
+    private boolean isDone;
+
+    @Column(name = "deadline")
+    private Date deadline;
+
+    public TaskEntity() {
+    }
+
+    public TaskEntity(int id, String name, String description, boolean isDone, Date deadline) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setIsDone(isDone);
+        setDeadline(deadline);
+    }
+
+    public boolean create(TaskDaoImpl taskDao) {
+        return taskDao.create(this);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name.isEmpty())
+            throw new IllegalArgumentException("Error: Task name must not be empty.");
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void turnIsDone() {
+        isDone = !isDone;
+    }
+
+    public void setIsDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
+    public Date getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
+    }
+}
