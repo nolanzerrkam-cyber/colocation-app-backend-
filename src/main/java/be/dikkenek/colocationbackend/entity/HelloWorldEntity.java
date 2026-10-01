@@ -1,10 +1,13 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.HelloWorldDaoImpl;
 import jakarta.persistence.*;
+
+import java.util.Optional;
 
 @Entity
 @Table(name = "TESTTABLE")
-public class TestEntity {
+public class HelloWorldEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,15 +17,30 @@ public class TestEntity {
     @Column(name = "TESTATTRIBUTE", nullable = false, length = 100)
     private String testAttribute;
 
-    public TestEntity(String testAttribute) {
+    public HelloWorldEntity() {
+    }
+
+    public HelloWorldEntity(int id, String testAttribute) {
+        setId(id);
         setTestAttribute(testAttribute);
     }
 
-    public TestEntity() {
+    public static HelloWorldEntity getById(int id, HelloWorldDaoImpl testDao) {
+        Optional<HelloWorldEntity> optionalTest = testDao.get(id);
+
+        return optionalTest.orElse(null);
+    }
+
+    public boolean create(HelloWorldDaoImpl testDao) {
+        return testDao.create(this);
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setTestAttribute(String testAttribute) {
