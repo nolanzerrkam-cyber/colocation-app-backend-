@@ -20,6 +20,11 @@ public class HelloWorldEntity {
     public HelloWorldEntity() {
     }
 
+    public HelloWorldEntity(int id, String testAttribute) {
+        setId(id);
+        setTestAttribute(testAttribute);
+    }
+
     public static HelloWorldEntity getById(int id, HelloWorldDaoImpl testDao) {
         Optional<HelloWorldEntity> optionalTest = testDao.get(id);
 
@@ -32,6 +37,10 @@ public class HelloWorldEntity {
 
     public int getId() {
         return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setTestAttribute(String testAttribute) {

@@ -15,7 +15,7 @@ public class HelloWorldResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response test(@PathParam("id") int id) {
+    public Response getHelloWorld(@PathParam("id") int id) {
         HelloWorldEntity testEntity = HelloWorldEntity.getById(id, testDao);
 
         if (testEntity == null)
@@ -27,7 +27,7 @@ public class HelloWorldResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response test(HelloWorldEntity testEntity) {
+    public Response postHelloWorld(HelloWorldEntity testEntity) {
         boolean success = testEntity.create(testDao);
         if (success)
             return Response.status(201).build();
