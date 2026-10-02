@@ -1,15 +1,6 @@
 package be.dikkenek.colocationbackend.test.api;
 
-import be.dikkenek.colocationbackend.HelloResource;
-import be.dikkenek.colocationbackend.entity.TestEntity;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

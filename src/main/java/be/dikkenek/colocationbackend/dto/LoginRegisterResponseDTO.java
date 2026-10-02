@@ -1,6 +1,6 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class LoginResponseDTO
+public class LoginRegisterResponseDTO
 {
     private String email;
     private String firstname;
@@ -24,9 +24,9 @@ public class LoginResponseDTO
         return phonenumber;
     }
 
-    public LoginResponseDTO(){}
+    public LoginRegisterResponseDTO(){}
 
-    public LoginResponseDTO(String email, String firstname, String lastname, String phonenumber)
+    public LoginRegisterResponseDTO(String email, String firstname, String lastname, String phonenumber)
     {
         this.email = email;
         this.firstname = firstname;

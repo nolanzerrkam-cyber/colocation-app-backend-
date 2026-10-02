@@ -1,7 +1,7 @@
 package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
+import be.dikkenek.colocationbackend.dto.LoginRegisterResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -74,7 +74,7 @@ public abstract class UserEntity
 
         //Business Logic
 
-        public LoginResponseDTO createUser(UserDao userDao)
+        public LoginRegisterResponseDTO create(UserDao userDao)
         {
             if(userDao.get(this.getEmail()).isPresent())
             {
@@ -86,10 +86,15 @@ public abstract class UserEntity
                 throw new RuntimeException("Error in user creation");
             }
 
-            return new LoginResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+            return new LoginRegisterResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
         }
 
-        public static List<LoginResponseDTO> getAll(UserDao userDao)
+        public static UserEntity get(UserDao userDao,String email)
+        {
+            return userDao.get(email).orElseThrow(() -> new RuntimeException("No user found"));
+        }
+
+        public static List<LoginRegisterResponseDTO> getAll(UserDao userDao)
         {
             List<UserEntity> entities = userDao.getAll();
 
@@ -98,16 +103,16 @@ public abstract class UserEntity
                 throw new RuntimeException("No users found");
             }
 
-            List<LoginResponseDTO> dtos = new ArrayList<>();
+            List<LoginRegisterResponseDTO> dtos = new ArrayList<>();
             entities.forEach(e ->
             {
-                dtos.add(new LoginResponseDTO(e.getEmail(),e.getFirstname(),e.getLastname(),e.getPhonenumber()));
+                dtos.add(new LoginRegisterResponseDTO(e.getEmail(),e.getFirstname(),e.getLastname(),e.getPhonenumber()));
             });
 
             return dtos;
         }
 
-        public LoginResponseDTO login(UserDao userDao)
+        public LoginRegisterResponseDTO login(UserDao userDao)
         {
             UserEntity found = userDao.get(this.getEmail()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
@@ -116,7 +121,7 @@ public abstract class UserEntity
                 throw new SecurityException("Invalid credentials");
             }
 
-            return new LoginResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+            return new LoginRegisterResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
         }
 
         public void delete(UserDao userDao)
