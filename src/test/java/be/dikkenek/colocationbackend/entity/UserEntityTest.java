@@ -1,189 +1,219 @@
 package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.LoginRegisterResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class UserEntityTest {
+class UserEntityTest
+{
+    private static final String EMAIL = "john.doe@mail.com";
+    private static final String PASSWORD = "secret";
 
-    @Mock
+    private static class TestUser extends UserEntity
+    {
+        TestUser() { super(); }
+
+        TestUser(String email, String password, String firstname, String lastname, String phonenumber)
+        {
+            super(email, password, firstname, lastname, phonenumber);
+        }
+    }
+
     private UserDao userDao;
-
-    private UserEntity user;
+    private TestUser user;
 
     @BeforeEach
-    void setUp() {
-        user = new RoommateEntity("jean@dupont.com", "mdp1234", "jean", "dupont", "1234567890");
+    void setUp()
+    {
+        userDao = mock(UserDao.class);
+        user = new TestUser(EMAIL, PASSWORD, "John", "Doe", "0470123456");
     }
 
     @Test
-    void create_success_shouldReturnResponseDto() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.empty());
+    void constructor_shouldInitializeAllFields()
+    {
+        assertEquals(EMAIL, user.getEmail());
+        assertEquals(PASSWORD, user.getPassword());
+        assertEquals("John", user.getFirstname());
+        assertEquals("Doe", user.getLastname());
+        assertEquals("0470123456", user.getPhonenumber());
+    }
+
+    @Test
+    void defaultConstructor_shouldLeaveFieldsNull()
+    {
+        TestUser empty = new TestUser();
+
+        assertNull(empty.getEmail());
+        assertNull(empty.getPassword());
+        assertNull(empty.getFirstname());
+        assertNull(empty.getLastname());
+        assertNull(empty.getPhonenumber());
+    }
+
+    @Test
+    void setters_shouldUpdateFields()
+    {
+        TestUser empty = new TestUser();
+
+        empty.setEmail("a@b.c");
+        empty.setPassword("pwd");
+        empty.setFirstname("Jane");
+        empty.setLastname("Smith");
+        empty.setPhonenumber("0499999999");
+
+        assertEquals("a@b.c", empty.getEmail());
+        assertEquals("pwd", empty.getPassword());
+        assertEquals("Jane", empty.getFirstname());
+        assertEquals("Smith", empty.getLastname());
+        assertEquals("0499999999", empty.getPhonenumber());
+    }
+
+    @Test
+    void create_shouldReturnSameEntity_whenEmailFreeAndCreationSucceeds()
+    {
+        when(userDao.get(EMAIL)).thenReturn(Optional.empty());
         when(userDao.create(user)).thenReturn(true);
 
-        LoginRegisterResponseDTO dto = user.create(userDao);
+        UserEntity result = user.create(userDao);
 
-        assertNotNull(dto);
-        assertEquals(user.getEmail(), dto.getEmail());
-        assertEquals(user.getFirstname(), dto.getFirstname());
+        assertSame(user, result);
         verify(userDao).create(user);
     }
 
     @Test
-    void create_userAlreadyExists_shouldThrowException() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.of(user));
+    void create_shouldThrowIllegalArgument_whenEmailAlreadyExists()
+    {
+        when(userDao.get(EMAIL)).thenReturn(Optional.of(new TestUser()));
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> user.create(userDao)
-        );
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> user.create(userDao));
 
-        assertEquals("Invalid email", exception.getMessage());
+        assertEquals("Invalid email", ex.getMessage());
         verify(userDao, never()).create(any());
     }
 
     @Test
-    void create_daoFailure_shouldThrowException() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.empty());
+    void create_shouldThrowRuntime_whenDaoCreateFails()
+    {
+        when(userDao.get(EMAIL)).thenReturn(Optional.empty());
         when(userDao.create(user)).thenReturn(false);
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> user.create(userDao)
-        );
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> user.create(userDao));
 
-        assertEquals("Error in user creation", exception.getMessage());
+        assertEquals("Error in user creation", ex.getMessage());
     }
 
     @Test
-    void getStatic_found_shouldReturnEntity() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.of(user));
+    void get_shouldReturnUser_whenFound()
+    {
+        when(userDao.get(EMAIL)).thenReturn(Optional.of(user));
 
-        UserEntity result = UserEntity.get(userDao, user.getEmail());
-
-        assertNotNull(result);
-        assertEquals(user, result);
+        assertSame(user, UserEntity.get(userDao, EMAIL));
     }
 
     @Test
-    void getStatic_notFound_shouldThrowException() {
-        when(userDao.get("unknown@email.com")).thenReturn(Optional.empty());
+    void get_shouldThrowRuntime_whenNotFound()
+    {
+        when(userDao.get(EMAIL)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> UserEntity.get(userDao, "unknown@email.com")
-        );
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> UserEntity.get(userDao, EMAIL));
 
-        assertEquals("No user found", exception.getMessage());
+        assertEquals("No user found", ex.getMessage());
     }
 
     @Test
-    void getAllStatic_success_shouldReturnDtoList() {
-        when(userDao.getAll()).thenReturn(List.of(user));
+    void getAll_shouldReturnList_whenNotEmpty()
+    {
+        List<UserEntity> users = new ArrayList<>(List.of(user, new TestUser()));
+        when(userDao.getAll()).thenReturn(users);
 
-        List<LoginRegisterResponseDTO> dtos = UserEntity.getAll(userDao);
+        List<UserEntity> result = UserEntity.getAll(userDao);
 
-        assertNotNull(dtos);
-        assertEquals(1, dtos.size());
-        assertEquals(user.getEmail(), dtos.get(0).getEmail());
+        assertEquals(2, result.size());
+        assertSame(users, result);
     }
 
     @Test
-    void getAllStatic_emptyList_shouldThrowException() {
-        when(userDao.getAll()).thenReturn(Collections.emptyList());
+    void getAll_shouldThrowRuntime_whenEmpty()
+    {
+        when(userDao.getAll()).thenReturn(new ArrayList<>());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> UserEntity.getAll(userDao)
-        );
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> UserEntity.getAll(userDao));
 
-        assertEquals("No users found", exception.getMessage());
+        assertEquals("No users found", ex.getMessage());
     }
 
     @Test
-    void login_success_shouldReturnResponseDto() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.of(user));
-
-        LoginRegisterResponseDTO dto = user.login(userDao);
-
-        assertNotNull(dto);
-        assertEquals(user.getEmail(), dto.getEmail());
-    }
-
-    @Test
-    void login_userNotFound_shouldThrowException() {
-        when(userDao.get(user.getEmail())).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> user.login(userDao)
-        );
-
-        assertEquals("Invalid credentials", exception.getMessage());
-    }
-
-    @Test
-    void login_wrongPassword_shouldThrowSecurityException() {
-        UserEntity foundUserInDb = new RoommateEntity("jean@dupont.com", "mauvais_mdp", "jean", "dupont", "1234567890");
-        when(userDao.get(user.getEmail())).thenReturn(Optional.of(foundUserInDb));
-
-        SecurityException exception = assertThrows(
-                SecurityException.class,
-                () -> user.login(userDao)
-        );
-
-        assertEquals("Invalid credentials", exception.getMessage());
-    }
-
-    @Test
-    void delete_success_shouldNotThrowException() {
-        when(userDao.delete(user.getEmail())).thenReturn(true);
+    void delete_shouldCallDaoWithEmail_whenSuccessful()
+    {
+        when(userDao.delete(EMAIL)).thenReturn(true);
 
         assertDoesNotThrow(() -> user.delete(userDao));
-        verify(userDao).delete(user.getEmail());
+
+        verify(userDao).delete(EMAIL);
     }
 
     @Test
-    void delete_failure_shouldThrowException() {
-        when(userDao.delete(user.getEmail())).thenReturn(false);
+    void delete_shouldThrowIllegalArgument_whenDaoReturnsFalse()
+    {
+        when(userDao.delete(EMAIL)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> user.delete(userDao)
-        );
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> user.delete(userDao));
 
-        assertEquals("Invalid id", exception.getMessage());
+        assertEquals("Invalid id", ex.getMessage());
     }
 
     @Test
-    void update_success_shouldNotThrowException() {
+    void update_shouldCallDao_whenSuccessful()
+    {
         when(userDao.update(user)).thenReturn(true);
 
         assertDoesNotThrow(() -> user.update(userDao));
+
         verify(userDao).update(user);
     }
 
     @Test
-    void update_failure_shouldThrowException() {
+    void update_shouldThrowRuntime_whenDaoReturnsFalse()
+    {
         when(userDao.update(user)).thenReturn(false);
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> user.update(userDao)
-        );
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> user.update(userDao));
 
-        assertEquals("Update failed", exception.getMessage());
+        assertEquals("Update failed", ex.getMessage());
+    }
+
+    @Test
+    void verifyPassword_shouldReturnTrue_whenPasswordMatches()
+    {
+        assertTrue(user.verifyPassword(PASSWORD));
+    }
+
+    @Test
+    void verifyPassword_shouldReturnFalse_whenPasswordDoesNotMatch()
+    {
+        assertFalse(user.verifyPassword("wrong"));
+    }
+
+    @Test
+    void verifyPassword_shouldReturnFalse_whenGivenPasswordIsNull()
+    {
+        assertFalse(user.verifyPassword(null));
+    }
+
+    @Test
+    void verifyPassword_shouldThrowNullPointer_whenStoredPasswordIsNull()
+    {
+        TestUser noPassword = new TestUser();
+
+        assertThrows(NullPointerException.class, () -> noPassword.verifyPassword(PASSWORD));
     }
 }

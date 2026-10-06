@@ -2,90 +2,210 @@ package be.dikkenek.colocationbackend.endpoint;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginRegisterResponseDTO;
+import be.dikkenek.colocationbackend.dto.LoginRequestDTO;
+import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
+import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class UserApiTest {
+class UserApiTest
+{
+    private static final String EMAIL = "john.doe@mail.com";
+    private static final String PASSWORD = "secret";
 
-    private UserApi userApi;
+    private MockedStatic<Persistence> persistenceMock;
+    private MockedStatic<UserEntity> userEntityStatic;
+    private MockedConstruction<UserDao> userDaoConstruction;
 
-    @Mock
-    private UserEntity userEntityMock;
-
-    @Mock
-    private LoginRegisterResponseDTO responseDtoMock;
-
-    @Mock
-    private EntityManagerFactory emfMock;
-
-    private MockedStatic persistenceMockedStatic;
-    private MockedStatic userEntityMockedStatic;
-    private MockedConstruction userDaoMockedConstruction;
+    private UserApi api;
 
     @BeforeEach
-    void setUp() {
-        userApi = new UserApi();
+    void setUp()
+    {
+        EntityManagerFactory emf = mock(EntityManagerFactory.class);
+        EntityManager em = mock(EntityManager.class);
+        when(emf.createEntityManager()).thenReturn(em);
 
-        persistenceMockedStatic = mockStatic(Persistence.class);
-        persistenceMockedStatic.when(() -> Persistence.createEntityManagerFactory(anyString())).thenReturn(emfMock);
-        userDaoMockedConstruction = mockConstruction(UserDao.class);
+        persistenceMock = mockStatic(Persistence.class);
+        persistenceMock.when(() -> Persistence.createEntityManagerFactory("colocation-backend"))
+                .thenReturn(emf);
+
+        userEntityStatic = mockStatic(UserEntity.class);
+        userDaoConstruction = mockConstruction(UserDao.class);
+
+        api = new UserApi();
     }
 
     @AfterEach
-    void tearDown() {
-        if (persistenceMockedStatic != null) persistenceMockedStatic.close();
-        if (userDaoMockedConstruction != null) userDaoMockedConstruction.close();
-        if (userEntityMockedStatic != null) userEntityMockedStatic.close();
+    void tearDown()
+    {
+        userDaoConstruction.close();
+        userEntityStatic.close();
+        persistenceMock.close();
+    }
+
+    private UserEntity mockUser()
+    {
+        UserEntity user = mock(UserEntity.class);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getFirstname()).thenReturn("John");
+        when(user.getLastname()).thenReturn("Doe");
+        when(user.getPhonenumber()).thenReturn("0470123456");
+        return user;
     }
 
     @Test
-    void delete_shouldReturnOkResponse() {
-        userEntityMockedStatic = mockStatic(UserEntity.class);
-        String email = "jean@dupont.com";
+    void delete_shouldReturnOk_andDeleteUser()
+    {
+        UserEntity user = mock(UserEntity.class);
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL))).thenReturn(user);
 
-        userEntityMockedStatic.when(() -> UserEntity.get(any(UserDao.class), eq(email))).thenReturn(userEntityMock);
-        doNothing().when(userEntityMock).delete(any(UserDao.class));
+        Response response = api.delete(EMAIL);
 
-        Response response = userApi.delete(email);
-
-        assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals("User deleted", response.getEntity());
+        verify(user).delete(any(UserDao.class));
     }
 
     @Test
-    void register_shouldReturnCreatedResponse() {
-        when(userEntityMock.create(any(UserDao.class))).thenReturn(responseDtoMock);
+    void delete_shouldPropagateException_whenUserNotFound()
+    {
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL)))
+                .thenThrow(new RuntimeException("User not found"));
 
-        Response response = userApi.register(userEntityMock);
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> api.delete(EMAIL));
 
-        assertNotNull(response);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        assertEquals(responseDtoMock, response.getEntity());
+        assertEquals("User not found", ex.getMessage());
     }
 
     @Test
-    void login_shouldReturnCreatedResponse() {
-        when(userEntityMock.login(any(UserDao.class))).thenReturn(responseDtoMock);
+    void register_shouldReturnCreated_withUserData()
+    {
+        RegisterRequestDTO dto = mock(RegisterRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+        when(dto.getPassword()).thenReturn(PASSWORD);
+        when(dto.getFirstname()).thenReturn("John");
+        when(dto.getLastname()).thenReturn("Doe");
+        when(dto.getPhonenumber()).thenReturn("0470123456");
 
-        Response response = userApi.login(userEntityMock);
+        UserEntity created = mockUser();
 
-        assertNotNull(response);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        assertEquals(responseDtoMock, response.getEntity());
+        try (MockedConstruction<RoommateEntity> roommateConstruction = mockConstruction(
+                RoommateEntity.class,
+                (mock, context) -> when(mock.create(any(UserDao.class))).thenReturn(created)))
+        {
+            Response response = api.register(dto);
+
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            assertInstanceOf(LoginRegisterResponseDTO.class, response.getEntity());
+
+            LoginRegisterResponseDTO body = (LoginRegisterResponseDTO) response.getEntity();
+            assertEquals(EMAIL, body.getEmail());
+            assertEquals("John", body.getFirstname());
+            assertEquals("Doe", body.getLastname());
+            assertEquals("0470123456", body.getPhonenumber());
+
+            // Le RoommateEntity doit être construit avec les données du DTO
+            assertEquals(1, roommateConstruction.constructed().size());
+            verify(roommateConstruction.constructed().get(0)).create(any(UserDao.class));
+        }
+    }
+
+    @Test
+    void register_shouldPropagateException_whenCreateFails()
+    {
+        RegisterRequestDTO dto = mock(RegisterRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+
+        try (MockedConstruction<RoommateEntity> ignored = mockConstruction(
+                RoommateEntity.class,
+                (mock, context) -> when(mock.create(any(UserDao.class)))
+                        .thenThrow(new IllegalStateException("Email already used"))))
+        {
+            assertThrows(IllegalStateException.class, () -> api.register(dto));
+        }
+    }
+
+    @Test
+    void login_shouldReturnOk_whenCredentialsAreValid()
+    {
+        LoginRequestDTO dto = mock(LoginRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+        when(dto.getPassword()).thenReturn(PASSWORD);
+
+        UserEntity user = mockUser();
+        when(user.verifyPassword(PASSWORD)).thenReturn(true);
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL))).thenReturn(user);
+
+        Response response = api.login(dto);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        LoginRegisterResponseDTO body = (LoginRegisterResponseDTO) response.getEntity();
+        assertEquals(EMAIL, body.getEmail());
+        assertEquals("John", body.getFirstname());
+        assertEquals("Doe", body.getLastname());
+        assertEquals("0470123456", body.getPhonenumber());
+    }
+
+    @Test
+    void login_shouldReturnUnauthorized_whenPasswordIsInvalid()
+    {
+        LoginRequestDTO dto = mock(LoginRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+        when(dto.getPassword()).thenReturn("wrong");
+
+        UserEntity user = mockUser();
+        when(user.verifyPassword("wrong")).thenReturn(false);
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL))).thenReturn(user);
+
+        Response response = api.login(dto);
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertEquals("Invalid credentials", response.getEntity());
+    }
+
+    @Test
+    void login_shouldReturnUnauthorized_whenGetThrowsIllegalArgumentException()
+    {
+        LoginRequestDTO dto = mock(LoginRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+        when(dto.getPassword()).thenReturn(PASSWORD);
+
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL)))
+                .thenThrow(new IllegalArgumentException("Bad email"));
+
+        Response response = api.login(dto);
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertEquals("Bad email", response.getEntity());
+    }
+
+    @Test
+    void login_shouldReturnNotFound_whenUserDoesNotExist()
+    {
+        LoginRequestDTO dto = mock(LoginRequestDTO.class);
+        when(dto.getEmail()).thenReturn(EMAIL);
+        when(dto.getPassword()).thenReturn(PASSWORD);
+
+        userEntityStatic.when(() -> UserEntity.get(any(UserDao.class), eq(EMAIL)))
+                .thenThrow(new RuntimeException("User not found"));
+
+        Response response = api.login(dto);
+
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals("User not found", response.getEntity());
     }
 }

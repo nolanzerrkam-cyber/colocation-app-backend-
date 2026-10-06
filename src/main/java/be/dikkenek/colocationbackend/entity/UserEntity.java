@@ -12,9 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = RoommateEntity.class, name = "Roommate"),
-        @JsonSubTypes.Type(value = LandlordEntity.class, name = "Landlord")})
 public abstract class UserEntity
 {
         //TODO: ajouter la verif que l email soit au format valide
@@ -78,7 +75,7 @@ public abstract class UserEntity
 
         //Business Logic
 
-        public LoginRegisterResponseDTO create(UserDao userDao)
+        public UserEntity create(UserDao userDao)
         {
             if(userDao.get(this.getEmail()).isPresent())
             {
@@ -90,7 +87,7 @@ public abstract class UserEntity
                 throw new RuntimeException("Error in user creation");
             }
 
-            return new LoginRegisterResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+            return this;
         }
 
         public static UserEntity get(UserDao userDao,String email)
@@ -98,7 +95,7 @@ public abstract class UserEntity
             return userDao.get(email).orElseThrow(() -> new RuntimeException("No user found"));
         }
 
-        public static List<LoginRegisterResponseDTO> getAll(UserDao userDao)
+        public static List<UserEntity> getAll(UserDao userDao)
         {
             List<UserEntity> entities = userDao.getAll();
 
@@ -107,25 +104,7 @@ public abstract class UserEntity
                 throw new RuntimeException("No users found");
             }
 
-            List<LoginRegisterResponseDTO> dtos = new ArrayList<>();
-            entities.forEach(e ->
-            {
-                dtos.add(new LoginRegisterResponseDTO(e.getEmail(),e.getFirstname(),e.getLastname(),e.getPhonenumber()));
-            });
-
-            return dtos;
-        }
-
-        public LoginRegisterResponseDTO login(UserDao userDao)
-        {
-            UserEntity found = userDao.get(this.getEmail()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
-            if(!found.getPassword().equals(this.getPassword()))
-            {
-                throw new SecurityException("Invalid credentials");
-            }
-
-            return new LoginRegisterResponseDTO(found.getEmail(),found.getFirstname(),found.getLastname(),found.getPhonenumber());
+            return entities;
         }
 
         public void delete(UserDao userDao)
@@ -142,5 +121,12 @@ public abstract class UserEntity
             {
                 throw new RuntimeException("Update failed");
             }
+        }
+
+        //Business logic
+
+        public boolean verifyPassword(String password)
+        {
+            return this.getPassword().equals(password);
         }
 }
