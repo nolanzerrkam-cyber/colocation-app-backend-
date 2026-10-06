@@ -1,7 +1,9 @@
 package be.dikkenek.colocationbackend.entity;
+import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name ="EXPENSE")
@@ -9,7 +11,7 @@ public class ExpenseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_expense")
+    @Column(name = "id_expense")
     private int id;
 
     @Column(name = "libele", nullable = false, length = 100)
@@ -80,5 +82,10 @@ public class ExpenseEntity {
 
     private void setColoc(ColocEntity coloc) {
         this.coloc = coloc;
+    }
+
+    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
+    {
+        return expenseDao.getAll();
     }
 }
