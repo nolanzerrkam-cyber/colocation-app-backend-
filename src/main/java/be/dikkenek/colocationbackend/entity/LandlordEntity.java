@@ -3,7 +3,7 @@ package be.dikkenek.colocationbackend.entity;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import jakarta.persistence.Entity;
 
-@Entity
+@Entity(name = "Landlord")
 public class LandlordEntity extends UserEntity
 {
 

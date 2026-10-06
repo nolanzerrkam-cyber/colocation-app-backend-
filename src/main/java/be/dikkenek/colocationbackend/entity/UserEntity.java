@@ -2,15 +2,19 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginRegisterResponseDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "User")
+@Table(name = "Users")
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(value = RoommateEntity.class, name = "Roommate"),
+        @JsonSubTypes.Type(value = LandlordEntity.class, name = "Landlord")})
 public abstract class UserEntity
 {
         //TODO: ajouter la verif que l email soit au format valide
@@ -121,7 +125,7 @@ public abstract class UserEntity
                 throw new SecurityException("Invalid credentials");
             }
 
-            return new LoginRegisterResponseDTO(this.getEmail(),this.getFirstname(),this.getLastname(),this.getPhonenumber());
+            return new LoginRegisterResponseDTO(found.getEmail(),found.getFirstname(),found.getLastname(),found.getPhonenumber());
         }
 
         public void delete(UserDao userDao)

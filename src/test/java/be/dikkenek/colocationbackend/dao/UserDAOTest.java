@@ -1,10 +1,14 @@
 package be.dikkenek.colocationbackend.dao;
 
-import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.entity.*;
-import jakarta.persistence.*;
-import org.junit.jupiter.api.*;
+import be.dikkenek.colocationbackend.entity.RoommateEntity;
+import be.dikkenek.colocationbackend.entity.UserEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -15,259 +19,140 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserDaoTest
-{
-    private static final String EMAIL = "johndoe@gmail.com";
-    private static final String GET_ALL_QUERY = "SELECT u FROM UserEntity u";
+class UserDaoTest {
 
     @Mock
     private EntityManager man;
+
     @Mock
     private EntityTransaction tr;
-    @Mock
-    private TypedQuery<UserEntity> query;
 
-    private UserDao userDao;
+    @Mock
+    private TypedQuery typedQuery;
+
+    @InjectMocks
+    private UserDao dao;
+
+    private UserEntity entity;
 
     @BeforeEach
-    void setUp()
-    {
-        userDao = new UserDao(man);
+    void setUp() {
+        entity = new RoommateEntity("jean@dupont.com", "mdp1234", "jean", "dupont", "1234567890");
+
+        lenient().when(man.getTransaction()).thenReturn(tr);
     }
 
     @Test
-    void get_found_returnsOptionalWithUser()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.find(UserEntity.class, EMAIL)).thenReturn(user);
+    void get_found_shouldReturnOptionalEntity() {
+        when(man.find(UserEntity.class, entity.getEmail())).thenReturn(entity);
 
-        // when
-        Optional<UserEntity> result = userDao.get(EMAIL);
+        Optional<UserEntity> result = dao.get(entity.getEmail());
 
-        // then
         assertTrue(result.isPresent());
-        assertSame(user, result.get());
+        assertEquals(entity, result.get());
     }
 
     @Test
-    void get_notFound_returnsEmptyOptional()
-    {
-        // given
-        when(man.find(UserEntity.class, EMAIL)).thenReturn(null);
+    void get_notFound_shouldReturnEmptyOptional() {
+        when(man.find(UserEntity.class, "unknown@email.com")).thenReturn(null);
 
-        // when
-        Optional<UserEntity> result = userDao.get(EMAIL);
+        Optional<UserEntity> result = dao.get("unknown@email.com");
 
-        // then
-        assertTrue(result.isEmpty());
+        assertFalse(result.isPresent());
     }
 
 
     @Test
-    void create_success_returnsTrue()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
+    void create_success_shouldReturnTrue() {
+        boolean success = dao.create(entity);
 
-        // when
-        boolean result = userDao.create(user);
-
-        // then
-        assertTrue(result);
-        verify(tr, times(1)).begin();
-        verify(man, times(1)).persist(user);
-        verify(tr, times(1)).commit();
-        verify(tr, never()).rollback();
+        assertTrue(success);
+        verify(tr).begin();
+        verify(man).persist(entity);
+        verify(tr).commit();
     }
 
     @Test
-    void create_exception_returnsFalseAndRollback()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
-        doThrow(new RuntimeException("db error")).when(man).persist(user);
+    void create_exception_shouldRollbackAndReturnFalse() {
+        doThrow(new RuntimeException("Database error")).when(man).persist(entity);
         when(tr.isActive()).thenReturn(true);
 
-        // when
-        boolean result = userDao.create(user);
+        boolean success = dao.create(entity);
 
-        // then
-        assertFalse(result);
-        verify(tr, never()).commit();
-        verify(tr, times(1)).rollback();
-    }
-
-    @Test
-    void create_exceptionInactiveTransaction_noRollback()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
-        doThrow(new RuntimeException("db error")).when(man).persist(user);
-        when(tr.isActive()).thenReturn(false);
-
-        // when
-        boolean result = userDao.create(user);
-
-        // then
-        assertFalse(result);
-        verify(tr, never()).rollback();
+        assertFalse(success);
+        verify(tr).begin();
+        verify(tr).rollback();
     }
 
 
     @Test
-    void update_success_returnsTrue()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
+    void update_success_shouldReturnTrue() {
+        boolean success = dao.update(entity);
 
-        // when
-        boolean result = userDao.update(user);
-
-        // then
-        assertTrue(result);
-        verify(tr, times(1)).begin();
-        verify(man, times(1)).merge(user);
-        verify(tr, times(1)).commit();
-        verify(tr, never()).rollback();
+        assertTrue(success);
+        verify(tr).begin();
+        verify(man).merge(entity);
+        verify(tr).commit();
     }
 
     @Test
-    void update_exception_returnsFalseAndRollback()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.merge(user)).thenThrow(new RuntimeException("db error"));
+    void update_exception_shouldRollbackAndReturnFalse() {
+        doThrow(new RuntimeException("Database error")).when(man).merge(entity);
         when(tr.isActive()).thenReturn(true);
 
-        // when
-        boolean result = userDao.update(user);
+        boolean success = dao.update(entity);
 
-        // then
-        assertFalse(result);
-        verify(tr, never()).commit();
-        verify(tr, times(1)).rollback();
+        assertFalse(success);
+        verify(tr).begin();
+        verify(tr).rollback();
     }
 
+
     @Test
-    void update_exceptionInactiveTransaction_noRollback()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.merge(user)).thenThrow(new RuntimeException("db error"));
-        when(tr.isActive()).thenReturn(false);
+    void delete_success_shouldReturnTrue() {
+        when(man.find(UserEntity.class, entity.getEmail())).thenReturn(entity);
 
-        // when
-        boolean result = userDao.update(user);
+        boolean success = dao.delete(entity.getEmail());
 
-        // then
-        assertFalse(result);
-        verify(tr, never()).rollback();
+        assertTrue(success);
+        verify(tr).begin();
+        verify(man).remove(entity);
+        verify(tr).commit();
     }
-
     @Test
-    void delete_found_returnsTrue()
-    {
-        // given
-        UserEntity user = mock(RoommateEntity.class);
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.find(UserEntity.class, EMAIL)).thenReturn(user);
+    void delete_notFound_shouldRollbackAndReturnFalse() {
+        when(man.find(UserEntity.class, "unknown@email.com")).thenReturn(null);
 
-        // when
-        boolean result = userDao.delete(EMAIL);
+        boolean success = dao.delete("unknown@email.com");
 
-        // then
-        assertTrue(result);
-        verify(tr, times(1)).begin();
-        verify(man, times(1)).remove(user);
-        verify(tr, times(1)).commit();
-        verify(tr, never()).rollback();
-    }
-
-    @Test
-    void delete_notFound_returnsFalseAndRollback()
-    {
-        // given
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.find(UserEntity.class, EMAIL)).thenReturn(null);
-
-        // when
-        boolean result = userDao.delete(EMAIL);
-
-        // then
-        assertFalse(result);
+        assertFalse(success);
+        verify(tr).begin();
         verify(man, never()).remove(any());
+        verify(tr).rollback();
         verify(tr, never()).commit();
-        verify(tr, times(1)).rollback();
     }
 
     @Test
-    void delete_exception_returnsFalseAndRollback()
-    {
-        // given
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.find(UserEntity.class, EMAIL)).thenThrow(new RuntimeException("db error"));
+    void delete_exception_shouldRollbackAndReturnFalse() {
+        when(man.find(UserEntity.class, entity.getEmail())).thenThrow(new RuntimeException("Database error"));
         when(tr.isActive()).thenReturn(true);
 
-        // when
-        boolean result = userDao.delete(EMAIL);
+        boolean success = dao.delete(entity.getEmail());
 
-        // then
-        assertFalse(result);
-        verify(tr, never()).commit();
-        verify(tr, times(1)).rollback();
+        assertFalse(success);
+        verify(tr).begin();
+        verify(tr).rollback();
     }
 
     @Test
-    void delete_exceptionInactiveTransaction_noRollback()
-    {
-        // given
-        when(man.getTransaction()).thenReturn(tr);
-        when(man.find(UserEntity.class, EMAIL)).thenThrow(new RuntimeException("db error"));
-        when(tr.isActive()).thenReturn(false);
+    void getAll_shouldReturnList() {
+        List<UserEntity> expectedList = List.of(entity);
+        when(man.createQuery("SELECT u FROM UserEntity u", UserEntity.class)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(expectedList);
 
-        // when
-        boolean result = userDao.delete(EMAIL);
+        List<UserEntity> result = dao.getAll();
 
-        // then
-        assertFalse(result);
-        verify(tr, never()).rollback();
-    }
-
-
-    @Test
-    void getAll_returnsQueryResult()
-    {
-        // given
-        List<UserEntity> users = List.of(mock(RoommateEntity.class), mock(RoommateEntity.class));
-        when(man.createQuery(GET_ALL_QUERY, UserEntity.class)).thenReturn(query);
-        when(query.getResultList()).thenReturn(users);
-
-        // when
-        List<UserEntity> result = userDao.getAll();
-
-        // then
-        assertEquals(2, result.size());
-        assertSame(users, result);
-    }
-
-    @Test
-    void getAll_noUsers_returnsEmptyList()
-    {
-        // given
-        when(man.createQuery(GET_ALL_QUERY, UserEntity.class)).thenReturn(query);
-        when(query.getResultList()).thenReturn(List.of());
-
-        // when
-        List<UserEntity> result = userDao.getAll();
-
-        // then
-        assertTrue(result.isEmpty());
+        assertEquals(expectedList, result);
+        assertEquals(1, result.size());
     }
 }

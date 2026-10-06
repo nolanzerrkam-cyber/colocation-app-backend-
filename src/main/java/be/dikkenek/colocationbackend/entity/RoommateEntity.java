@@ -1,5 +1,8 @@
 package be.dikkenek.colocationbackend.entity;
 
+import jakarta.persistence.Entity;
+
+@Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity
 {
     public RoommateEntity() {
