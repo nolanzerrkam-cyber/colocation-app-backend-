@@ -1,8 +1,5 @@
 package be.dikkenek.colocationbackend.dto;
 
-import java.util.Date;
-
-
 public class GetExpenseDto {
 
     private String libele;
