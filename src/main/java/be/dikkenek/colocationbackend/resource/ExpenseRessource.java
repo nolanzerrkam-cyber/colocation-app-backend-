@@ -21,7 +21,7 @@ public class ExpenseRessource
     {
         if (dto == null)
         {
-            return Response.status(Response.Status.NOT_FOUND)
+            return Response.status(Response.Status.BAD_REQUEST)
                            .build();
         }
 

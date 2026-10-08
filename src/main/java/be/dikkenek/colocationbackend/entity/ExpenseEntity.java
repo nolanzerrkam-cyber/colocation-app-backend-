@@ -87,10 +87,11 @@ public class ExpenseEntity
         return dao.create(this);
     }
 
-    public ExpenseEntity(String libele, BigDecimal priceExpense, Date expenseDate, String email) {
-        this.libele = libele;
-        this.priceExpense = priceExpense;
-        this.expenseDate = expenseDate;
-        this.email = email;
+    public ExpenseEntity(String libele, BigDecimal priceExpense, Date expenseDate, String email)
+    {
+        setLibele(libele);
+        setPriceExpense(priceExpense);
+        setExpenseDate(expenseDate);
+        setEmail(email);
     }
 }
