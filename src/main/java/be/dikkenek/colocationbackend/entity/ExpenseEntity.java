@@ -1,8 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 

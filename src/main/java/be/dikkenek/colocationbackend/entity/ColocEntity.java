@@ -11,4 +11,12 @@ public class ColocEntity {
     private String email;
 
     public ColocEntity() {}
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
