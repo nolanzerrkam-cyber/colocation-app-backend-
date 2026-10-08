@@ -3,6 +3,7 @@ import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,11 +18,11 @@ public class ExpenseEntity {
     @Column(name = "libele", nullable = false, length = 100)
     private String libele;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, columnDefinition = "NUMBER(10,2)")
     private float price;
 
     @Column(name = "date_expense", nullable = false)
-    private LocalDate date_expense;
+    private Date date_expense;
 
     @ManyToOne
     // gère la relation en BD
@@ -68,13 +69,11 @@ public class ExpenseEntity {
         this.price = price;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date_expense;
     }
 
-    private void setDate() {
-        this.date_expense = LocalDate.now();
-    }
+    private void setDate() {this.date_expense = new Date();}
 
     public ColocEntity getColoc() {
         return coloc;
@@ -85,6 +84,7 @@ public class ExpenseEntity {
     }
 
     public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
+    //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
         return expenseDao.getAll();
     }
