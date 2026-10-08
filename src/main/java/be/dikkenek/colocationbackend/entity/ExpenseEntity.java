@@ -1,5 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.Dao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,10 +15,10 @@ public class ExpenseEntity
     @Column(name = "id_expense")
     private int idExpense;
 
-    @Column(name = "libele")
+    @Column(name = "libele", length = 100) // Same reason as price
     private String libele;
 
-    @Column(name = "price")
+    @Column(name = "price", precision = 10, scale = 2) // I have to do that, otherwise hibernate changes the length directly
     private BigDecimal priceExpense;
     // BigDecimal is made to represent decimals (which can be the case for the prices of the expenses)
     // BigDeciaml does not have the float problem (0,1 + 0,2 = 0,3000000001)
@@ -76,12 +77,17 @@ public class ExpenseEntity
         this.email = email;
     }
 
-    public ExpenseEntity(){
+    public ExpenseEntity()
+    {
 
     }
 
-    public ExpenseEntity(int idExpense, String libele, BigDecimal priceExpense, Date expenseDate, String email) {
-        this.idExpense = idExpense;
+    public boolean create(Dao<ExpenseEntity, Integer> dao)
+    {
+        return dao.create(this);
+    }
+
+    public ExpenseEntity(String libele, BigDecimal priceExpense, Date expenseDate, String email) {
         this.libele = libele;
         this.priceExpense = priceExpense;
         this.expenseDate = expenseDate;
