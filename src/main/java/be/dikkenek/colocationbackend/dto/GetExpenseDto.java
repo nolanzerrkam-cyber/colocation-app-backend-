@@ -22,8 +22,8 @@ public String getLabel() {
         return label;
     }
 
-    public void setLibele(String libele) {
-        this.libele = libele;
+public void setLabel(String label) {
+        this.label = label;
     }
 
     public float getPrice() {
