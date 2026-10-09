@@ -13,8 +13,8 @@ public class ExpenseEntity {
     @Column(name = "id_expense")
     private int id;
 
-    @Column(name = "libele", nullable = false, length = 100)
-    private String libele;
+    @Column(name = "label", nullable = false, length = 100)
+    private String label;
 
     @Column(name = "price", nullable = false, columnDefinition = "NUMBER(10,2)")
     private float price;
