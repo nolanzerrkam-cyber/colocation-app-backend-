@@ -10,12 +10,12 @@ private string label;
 
 private String roommateEmail;
 
-    public GetExpenseDto(String libele, float price, String date_expense, String coloc)
+ public GetExpenseDto(String label, float price, String date_expense, String roommateEmail)
     {
-        setLibele(libele);
+        setLabel(label);
         setPrice(price);
         setDate_expense(date_expense);
-        setColoc(coloc);
+        setRoommateEmail(roommateEmail);
     }
 
     public String getLibele() {
