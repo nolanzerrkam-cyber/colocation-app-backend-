@@ -45,15 +45,15 @@ public ExpenseEntity(String label, float price, ColocEntity coloc) {
         this.id = id;
     }
 
-    public String getLibele() {
-        return libele;
+public String getLabel() {
+        return label;
     }
 
-    private void setLibele(String libele) {
-        if (libele == null || libele.isEmpty()) {
-            throw new IllegalArgumentException("libele cannot be null or empty");
+    private void setLabel(String label) {
+        if (label == null || label.isEmpty()) {
+            throw new IllegalArgumentException("label cannot be null or empty");
         }
-        this.libele = libele;
+        this.label = label;
     }
 
     public float getPrice() {
