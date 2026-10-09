@@ -30,8 +30,8 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-    public ExpenseEntity(String libele, float price, ColocEntity coloc) {
-        setLibele(libele);
+public ExpenseEntity(String label, float price, ColocEntity coloc) {
+        setLabel(label);
         setPrice(price);
         setDate();
         setColoc(coloc);
