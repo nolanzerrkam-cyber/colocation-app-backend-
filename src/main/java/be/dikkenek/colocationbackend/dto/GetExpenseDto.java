@@ -18,8 +18,8 @@ private String roommateEmail;
         setRoommateEmail(roommateEmail);
     }
 
-    public String getLibele() {
-        return libele;
+public String getLabel() {
+        return label;
     }
 
     public void setLibele(String libele) {
