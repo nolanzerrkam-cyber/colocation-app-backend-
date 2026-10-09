@@ -8,7 +8,7 @@ private string label;
 
     private String date_expense;
 
-    private String coloc;
+private String roommateEmail;
 
     public GetExpenseDto(String libele, float price, String date_expense, String coloc)
     {
