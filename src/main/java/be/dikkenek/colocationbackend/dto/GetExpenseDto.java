@@ -2,15 +2,15 @@ package be.dikkenek.colocationbackend.dto;
 
 public class GetExpenseDto {
 
-private string label;
+    private String label;
 
     private float price;
 
     private String date_expense;
 
-private String roommateEmail;
+    private String roommateEmail;
 
- public GetExpenseDto(String label, float price, String date_expense, String roommateEmail)
+    public GetExpenseDto(String label, float price, String date_expense, String roommateEmail)
     {
         setLabel(label);
         setPrice(price);
@@ -18,11 +18,11 @@ private String roommateEmail;
         setRoommateEmail(roommateEmail);
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
-public void setLabel(String label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
@@ -42,12 +42,12 @@ public void setLabel(String label) {
         this.date_expense = date_expense;
     }
 
-    public String getColoc() {
-        return coloc;
+    public String getRoommateEmail() {
+        return roommateEmail;
     }
 
-    public void setColoc(String coloc) {
-        this.coloc = coloc;
+    public void setRoommateEmail(String roommateEmail) {
+        this.roommateEmail = roommateEmail;
     }
 
 }
