@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "Users")
@@ -26,7 +27,12 @@ public abstract class UserEntity
             return email;
         }
 
-        public void setEmail(String email) {
+        public void setEmail(String email)
+        {
+            if(!verifyEmailFormat(email))
+            {
+                throw new IllegalArgumentException("Invalid email");
+            }
             this.email = email;
         }
 
@@ -34,7 +40,13 @@ public abstract class UserEntity
             return password;
         }
 
-        public void setPassword(String password) {
+        public void setPassword(String password)
+        {
+            if (password == null || password.length() < 8)
+            {
+                throw new IllegalArgumentException("Password must be at least 8 characters");
+            }
+
             this.password = password;
         }
 
@@ -42,7 +54,13 @@ public abstract class UserEntity
             return firstname;
         }
 
-        public void setFirstname(String firstname) {
+        public void setFirstname(String firstname)
+        {
+            if(firstname == null )
+            {
+                throw new IllegalArgumentException("Firstname cannot be null");
+            }
+
             this.firstname = firstname;
         }
 
@@ -50,7 +68,12 @@ public abstract class UserEntity
             return lastname;
         }
 
-        public void setLastname(String lastname) {
+        public void setLastname(String lastname)
+        {
+            if(lastname == null )
+            {
+                throw new IllegalArgumentException("Lastname cannot be null");
+            }
             this.lastname = lastname;
         }
 
@@ -58,7 +81,12 @@ public abstract class UserEntity
             return phonenumber;
         }
 
-        public void setPhonenumber(String phonenumber) {
+        public void setPhonenumber(String phonenumber)
+        {
+            if(phonenumber == null )
+            {
+                throw new IllegalArgumentException("Phonenumber cannot be null");
+            }
             this.phonenumber = phonenumber;
         }
 
@@ -92,35 +120,22 @@ public abstract class UserEntity
 
         public static UserEntity get(UserDao userDao,String email)
         {
-            return userDao.get(email).orElseThrow(() -> new RuntimeException("No user found"));
+            return userDao.get(email).orElse(null);
         }
 
         public static List<UserEntity> getAll(UserDao userDao)
         {
-            List<UserEntity> entities = userDao.getAll();
-
-            if(entities.isEmpty())
-            {
-                throw new RuntimeException("No users found");
-            }
-
-            return entities;
+            return userDao.getAll();
         }
 
-        public void delete(UserDao userDao)
+        public boolean delete(UserDao userDao)
         {
-            if(!userDao.delete(this.getEmail()))
-            {
-                throw new IllegalArgumentException("Invalid id");
-            }
+            return userDao.delete(this.getEmail());
         }
 
-        public void update(UserDao userDao)
+        public boolean update(UserDao userDao)
         {
-            if(!userDao.update(this))
-            {
-                throw new RuntimeException("Update failed");
-            }
+            return userDao.update(this);
         }
 
         //Business logic
@@ -128,5 +143,19 @@ public abstract class UserEntity
         public boolean verifyPassword(String password)
         {
             return this.getPassword().equals(password);
+        }
+
+        private boolean verifyEmailFormat(String email)
+        {
+            Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$");
+
+            if (email == null)
+            {
+                return false;
+            }
+
+            String trimmed = email.trim();
+
+            return trimmed.length() <= 254 && emailPattern.matcher(trimmed).matches();
         }
 }

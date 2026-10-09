@@ -1,95 +1,113 @@
 package be.dikkenek.colocationbackend.dao;
 
+import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.UserEntity;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceContext;
+import jakarta.ws.rs.ApplicationPath;
 
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class UserDao implements Dao<UserEntity, String>
 {
-    private final EntityManager  man;
-
-    public UserDao(EntityManager man)
-    {
-        this.man = man;
-    }
-
     @Override
-    public Optional<UserEntity> get(String id) {
-        return Optional.ofNullable(man.find(UserEntity.class, id));
+    public Optional<UserEntity> get(String id)
+    {
+        try(EntityManager man = DatabaseConfig.createEntityManager()){
+            return Optional.ofNullable(man.find(UserEntity.class, id));
+        }
+
     }
 
     @Override
     public boolean create(UserEntity entity) {
-        EntityTransaction tr = man.getTransaction();
-        try
+        try(EntityManager man = DatabaseConfig.createEntityManager())
         {
-            tr.begin();
-            man.persist(entity);
-            tr.commit();
-            return true;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            if (tr.isActive())
+            EntityTransaction tr = man.getTransaction();
+            try
             {
-                tr.rollback();
+                tr.begin();
+                man.persist(entity);
+                tr.commit();
+                return true;
             }
-            return false;
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                if (tr.isActive())
+                {
+                    tr.rollback();
+                }
+                return false;
+            }
         }
+
     }
 
     @Override
     public boolean update(UserEntity entity) {
-        EntityTransaction tr = man.getTransaction();
-        try {
-            tr.begin();
-            man.merge(entity);
-            tr.commit();
-            return true;
-        }
-        catch (Exception e)
+        try(EntityManager man = DatabaseConfig.createEntityManager())
         {
-            e.printStackTrace();
-            if (tr.isActive()) {
-                tr.rollback();
+            EntityTransaction tr = man.getTransaction();
+            try {
+                tr.begin();
+                man.merge(entity);
+                tr.commit();
+                return true;
             }
-            return false;
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                if (tr.isActive()) {
+                    tr.rollback();
+                }
+                return false;
+            }
         }
+
     }
 
     @Override
     public boolean delete(String id) {
-        EntityTransaction tr = man.getTransaction();
-        try {
-            tr.begin();
-            UserEntity entity = man.find(UserEntity.class, id);
-            if (entity != null) {
-                man.remove(entity);
-                tr.commit();
-                return true;
-            }
-            tr.rollback();
-            return false;
-        }
-        catch (Exception e)
+        try(EntityManager man = DatabaseConfig.createEntityManager())
         {
-            e.printStackTrace();
-            if (tr.isActive())
-            {
+            EntityTransaction tr = man.getTransaction();
+            try {
+                tr.begin();
+                UserEntity entity = man.find(UserEntity.class, id);
+                if (entity != null) {
+                    man.remove(entity);
+                    tr.commit();
+                    return true;
+                }
                 tr.rollback();
+                return false;
             }
-            return false;
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                if (tr.isActive())
+                {
+                    tr.rollback();
+                }
+                return false;
+            }
         }
     }
 
     @Override
     public List<UserEntity> getAll()
     {
-        return man.createQuery("SELECT u FROM UserEntity u", UserEntity.class).getResultList();
+        try(EntityManager man = DatabaseConfig.createEntityManager())
+        {
+            return man.createQuery("SELECT u FROM UserEntity u", UserEntity.class).getResultList();
+        }
+
     }
 
 }

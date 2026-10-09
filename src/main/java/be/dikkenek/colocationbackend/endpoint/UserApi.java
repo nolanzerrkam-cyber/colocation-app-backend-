@@ -6,6 +6,7 @@ import be.dikkenek.colocationbackend.dto.LoginRequestDTO;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.ws.rs.*;
@@ -15,20 +16,25 @@ import jakarta.ws.rs.core.Response;
 @Path("/user")
 public class UserApi
 {
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("colocation-backend");
+    @Inject
+    private UserDao userDao;
 
     @DELETE
     @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("email") String email) {
-            UserDao userDao = new UserDao(emf.createEntityManager());
 
             UserEntity user = UserEntity.get(userDao,email);
-            user.delete(userDao);
+            if(user.delete(userDao))
+            {
+                return Response.status(Response.Status.OK)
+                        .entity("User deleted")
+                        .build();
+            }
 
-            return Response.status(Response.Status.OK)
-                    .entity("User deleted")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("User not deleted")
+                .build();
     }
 
     @POST
@@ -37,16 +43,25 @@ public class UserApi
     @Produces(MediaType.APPLICATION_JSON)
     public Response register(RegisterRequestDTO dto)
     {
-        UserDao userDao = new UserDao(emf.createEntityManager());
-        UserEntity entity = new RoommateEntity(dto.getEmail(),dto.getPassword(),dto.getFirstname(),
-                dto.getLastname(), dto.getPhonenumber());
-        UserEntity created = entity.create(userDao);
-        LoginRegisterResponseDTO respDto = new LoginRegisterResponseDTO(created.getEmail(),created.getFirstname(),
-                created.getLastname(), created.getPhonenumber());
+        try
+        {
+            UserEntity entity = new RoommateEntity(dto.getEmail(),dto.getPassword(),dto.getFirstname(),
+                    dto.getLastname(), dto.getPhonenumber());
+            UserEntity created = entity.create(userDao);
+            LoginRegisterResponseDTO respDto = new LoginRegisterResponseDTO(created.getEmail(),created.getFirstname(),
+                    created.getLastname(), created.getPhonenumber());
 
-        return Response.status(Response.Status.CREATED)
-                .entity(respDto)
-                .build();
+            return Response.status(Response.Status.CREATED)
+                    .entity(respDto)
+                    .build();
+        }
+        catch(IllegalArgumentException e)
+        {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
     }
 
     @POST
@@ -57,8 +72,7 @@ public class UserApi
     {
         try
         {
-            UserDao dao = new UserDao(emf.createEntityManager());
-            UserEntity entity = UserEntity.get(dao,dto.getEmail());
+            UserEntity entity = UserEntity.get(userDao,dto.getEmail());
 
             if(!entity.verifyPassword(dto.getPassword()))
             {
