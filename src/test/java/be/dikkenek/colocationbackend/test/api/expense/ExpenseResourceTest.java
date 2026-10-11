@@ -25,7 +25,7 @@ public class ExpenseResourceTest {
     private ExpenseDAO expenseDAO;
 
     @InjectMocks
-    // there im creation a object, to test later the false dao
+    // there im creating an object, to test later the false dao
     private ExpenseRessource expenseResource;
 
     private ExpenseInsertDTO validDto() {
@@ -40,7 +40,7 @@ public class ExpenseResourceTest {
     @Test
     void testPostExpense_Success()
     {
-        // when the DAO is created, it has to return true (to do a illusion of insertion into oracle)
+        // when the DAO is created, it has to return true (to do an illusion of insertion into oracle)
         Mockito.when(expenseDAO.create(Mockito.any(ExpenseEntity.class))).thenReturn(true);
 
         // Im calling the postExpense to build the ExpenseEntity , it will do the @Inject from the ressource of expenseDAO (calling the false DAO) and than return true (normally)
@@ -53,7 +53,8 @@ public class ExpenseResourceTest {
     }
 
     @Test
-    void testPostExpense_DaoFails() {
+    void testPostExpense_DaoFails()
+    {
         Mockito.when(expenseDAO.create(Mockito.any(ExpenseEntity.class))).thenReturn(false);
 
         Response response = expenseResource.postExpense(validDto());
@@ -77,6 +78,18 @@ public class ExpenseResourceTest {
         Response response = expenseResource.postExpense(dto);
 
         assertEquals(400, response.getStatus());
+        Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
+    }
+
+    @Test
+    void testPostExpense_CheckInvalidEmail()
+    {
+        ExpenseInsertDTO dto = validDto();
+        dto.setEmail("");
+        Response resp = expenseResource.postExpense(dto);
+
+        assertEquals(400, resp.getStatus());
+
         Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
     }
 }
