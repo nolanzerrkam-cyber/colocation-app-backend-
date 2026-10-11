@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +33,7 @@ public class ExpenseResourceTest {
         dto.setPrice(new BigDecimal("24.50"));
         dto.setLibele("Courses");
         dto.setEmail("test@test.com");
-        dto.setDateExpense(new Date());
+        dto.setDateExpense(LocalDateTime.now());
         return dto;
     }
 

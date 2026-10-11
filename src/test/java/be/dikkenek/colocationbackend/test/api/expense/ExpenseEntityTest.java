@@ -1,9 +1,12 @@
 package be.dikkenek.colocationbackend.test.api.expense;
 
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +52,7 @@ public class ExpenseEntityTest {
     @Test
     void test_constructor_rejects_negative_price() {
         assertThrows(IllegalArgumentException.class,// And here im testing if the constructor does accept or not a negative price
-                () -> new ExpenseEntity("Courses", new BigDecimal("-1"), new Date(), "test@test.com"));
+                () -> new ExpenseEntity("Courses", new BigDecimal("-1"), LocalDateTime.now(), "test@test.com"));
 
     }
 
@@ -57,7 +60,7 @@ public class ExpenseEntityTest {
     void test_constructor_valid()
     {
         // Test the constructor
-        Date date = new Date();
+        LocalDateTime date = LocalDateTime.now();
         ExpenseEntity testExpense = new ExpenseEntity("Courses", new BigDecimal(67.00), date, "test@test.com");
 
         assertEquals("Courses", testExpense.getLibele());
@@ -73,7 +76,7 @@ public class ExpenseEntityTest {
     {
         ExpenseEntity exp = new ExpenseEntity();
 
-        Date date = new Date();
+        LocalDateTime date = LocalDateTime.now();
         exp.setExpenseDate(date);
         assertEquals(date, exp.getExpenseDate());
 

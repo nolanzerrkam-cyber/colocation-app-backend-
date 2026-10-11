@@ -4,7 +4,6 @@ import be.dikkenek.colocationbackend.dao.Dao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.time.*;
 
 @Entity
@@ -25,7 +24,7 @@ public class ExpenseEntity
     // BigDeciaml does not have the float problem (0,1 + 0,2 = 0,3000000001)
 
     @Column(name = "date_expense")
-    private Date expenseDate;
+    private LocalDateTime expenseDate;
 
     @Column(name = "email")
     private String email;
@@ -68,11 +67,11 @@ public class ExpenseEntity
         this.priceExpense = priceExpense;
     }
 
-    public Date getExpenseDate() {
+    public LocalDateTime getExpenseDate() {
         return expenseDate;
     }
 
-    public void setExpenseDate(Date expenseDate)
+    public void setExpenseDate(LocalDateTime expenseDate)
     {
         if(expenseDate == null)
         {
@@ -128,7 +127,7 @@ public class ExpenseEntity
         return dao.create(this);
     }
 
-    public ExpenseEntity(String libele, BigDecimal priceExpense, Date expenseDate, String email)
+    public ExpenseEntity(String libele, BigDecimal priceExpense, LocalDateTime expenseDate, String email)
     {
         setLibele(libele);
         setPriceExpense(priceExpense);
