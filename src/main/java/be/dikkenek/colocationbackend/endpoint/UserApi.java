@@ -1,7 +1,7 @@
 package be.dikkenek.colocationbackend.endpoint;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.LoginRegisterResponseDTO;
+import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
 import be.dikkenek.colocationbackend.dto.LoginRequestDTO;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
@@ -44,7 +44,7 @@ public class UserApi {
             return Response.status(Response.Status.BAD_REQUEST)
                     .build();
 
-        LoginRegisterResponseDTO loginResponseDto = new LoginRegisterResponseDTO(userEntity.getEmail(), userEntity.getFirstname(),
+        LoginResponseDTO loginResponseDto = new LoginResponseDTO(userEntity.getEmail(), userEntity.getFirstname(),
                 userEntity.getLastname(), userEntity.getPhonenumber());
 
         return Response.status(Response.Status.OK)
