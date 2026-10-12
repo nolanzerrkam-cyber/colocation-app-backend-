@@ -7,35 +7,14 @@ import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/user")
-public class UserApi
-{
+public class UserApi {
     @Inject
     private UserDao userDao;
-
-    @DELETE
-    @Path("/{email}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("email") String email) {
-
-            UserEntity user = UserEntity.get(userDao,email);
-            if(user.delete(userDao))
-            {
-                return Response.status(Response.Status.OK)
-                        .entity("User deleted")
-                        .build();
-            }
-
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("User not deleted")
-                .build();
-    }
 
     @POST
     @Path("/register")
@@ -73,4 +52,15 @@ public class UserApi
                 .build();
     }
 
+    @DELETE
+    @Path("/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(@PathParam("email") String email) {
+
+        UserEntity user = UserEntity.get(userDao, email);
+        if (user.delete(userDao))
+            return Response.status(Response.Status.OK).build();
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
 }
