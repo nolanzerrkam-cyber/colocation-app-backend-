@@ -2,80 +2,68 @@ package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.UserEntity;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceContext;
-import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class UserDao implements Dao<UserEntity, String>
-{
+public class UserDao implements Dao<UserEntity, String> {
     @Override
-    public Optional<UserEntity> get(String id)
-    {
-        try(EntityManager man = DatabaseConfig.createEntityManager()){
+    public Optional<UserEntity> get(String id) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
             return Optional.ofNullable(man.find(UserEntity.class, id));
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
         }
-
     }
 
     @Override
-    public boolean create(UserEntity entity) {
-        try(EntityManager man = DatabaseConfig.createEntityManager())
-        {
+    public boolean create(UserEntity entity) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
             EntityTransaction tr = man.getTransaction();
-            try
-            {
+            try {
                 tr.begin();
                 man.persist(entity);
                 tr.commit();
                 return true;
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
+            } catch (Exception e) {
                 if (tr.isActive())
-                {
                     tr.rollback();
-                }
-                return false;
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
             }
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
         }
-
     }
 
     @Override
-    public boolean update(UserEntity entity) {
-        try(EntityManager man = DatabaseConfig.createEntityManager())
-        {
+    public boolean update(UserEntity entity) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
             EntityTransaction tr = man.getTransaction();
             try {
                 tr.begin();
                 man.merge(entity);
                 tr.commit();
                 return true;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                if (tr.isActive()) {
+            } catch (Exception e) {
+                if (tr.isActive())
                     tr.rollback();
-                }
-                return false;
-            }
-        }
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
 
+            }
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+        }
     }
 
     @Override
-    public boolean delete(String id) {
-        try(EntityManager man = DatabaseConfig.createEntityManager())
-        {
+    public boolean delete(String id) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
             EntityTransaction tr = man.getTransaction();
             try {
                 tr.begin();
@@ -87,27 +75,22 @@ public class UserDao implements Dao<UserEntity, String>
                 }
                 tr.rollback();
                 return false;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
+            } catch (Exception e) {
                 if (tr.isActive())
-                {
                     tr.rollback();
-                }
-                return false;
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
             }
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
         }
     }
 
     @Override
-    public List<UserEntity> getAll()
-    {
-        try(EntityManager man = DatabaseConfig.createEntityManager())
-        {
+    public List<UserEntity> getAll() throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
             return man.createQuery("SELECT u FROM UserEntity u", UserEntity.class).getResultList();
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
         }
-
     }
-
 }
