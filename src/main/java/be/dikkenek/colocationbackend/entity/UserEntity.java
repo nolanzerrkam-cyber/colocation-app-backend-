@@ -94,11 +94,11 @@ public abstract class UserEntity
 
         public UserEntity(String email, String password, String firstname, String lastname, String phonenumber)
         {
-            this.email = email;
-            this.password = password;
-            this.firstname = firstname;
-            this.lastname = lastname;
-            this.phonenumber = phonenumber;
+            setEmail(email);
+            setPassword(password);
+            setFirstname(firstname);
+            setLastname(lastname);
+            setPhonenumber(phonenumber);
         }
 
         //Business Logic

@@ -28,6 +28,26 @@ public class RegisterRequestDTO
         return phonenumber;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
     public RegisterRequestDTO(){}
 
     public RegisterRequestDTO(String email, String password, String firstname, String lastname, String phonenumber) {

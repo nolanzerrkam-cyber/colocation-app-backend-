@@ -13,6 +13,8 @@ public class LoginRequestDTO
         return password;
     }
 
+    public LoginRequestDTO() {}
+
     public LoginRequestDTO(String email, String password)
     {
         this.email = email;
