@@ -68,36 +68,19 @@ public class UserApi
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginRequestDTO dto)
-    {
-        try
-        {
-            UserEntity entity = UserEntity.get(userDao,dto.getEmail());
+    public Response login(LoginRequestDTO loginRequestDto) {
+        UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
 
-            if(!entity.verifyPassword(dto.getPassword()))
-            {
-                throw new IllegalArgumentException("Invalid credentials");
-            }
+        if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .build();
 
-            LoginRegisterResponseDTO respDto = new LoginRegisterResponseDTO(entity.getEmail(), entity.getFirstname(),
-                    entity.getLastname(), entity.getPhonenumber());
+        LoginRegisterResponseDTO loginResponseDto = new LoginRegisterResponseDTO(userEntity.getEmail(), userEntity.getFirstname(),
+                userEntity.getLastname(), userEntity.getPhonenumber());
 
-            return Response.status(Response.Status.OK)
-                    .entity(respDto)
-                    .build();
-        }
-        catch(IllegalArgumentException e)
-        {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e.getMessage())
-                    .build();
-        }
-        catch (RuntimeException e)
-        {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        return Response.status(Response.Status.OK)
+                .entity(loginResponseDto)
+                .build();
     }
 
 }
