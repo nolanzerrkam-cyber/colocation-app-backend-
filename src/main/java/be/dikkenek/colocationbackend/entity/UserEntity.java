@@ -103,19 +103,9 @@ public abstract class UserEntity
 
         //Business Logic
 
-        public UserEntity create(UserDao userDao)
+        public boolean create(UserDao userDao)
         {
-            if(userDao.get(this.getEmail()).isPresent())
-            {
-                throw new IllegalArgumentException("Invalid email");
-            }
-
-            if(!userDao.create(this))
-            {
-                throw new RuntimeException("Error in user creation");
-            }
-
-            return this;
+            return userDao.create(this);
         }
 
         public static UserEntity get(UserDao userDao,String email)

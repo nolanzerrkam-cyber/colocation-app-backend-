@@ -41,27 +41,17 @@ public class UserApi
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDTO dto)
-    {
-        try
-        {
-            UserEntity entity = new RoommateEntity(dto.getEmail(),dto.getPassword(),dto.getFirstname(),
-                    dto.getLastname(), dto.getPhonenumber());
-            UserEntity created = entity.create(userDao);
-            LoginRegisterResponseDTO respDto = new LoginRegisterResponseDTO(created.getEmail(),created.getFirstname(),
-                    created.getLastname(), created.getPhonenumber());
+    public Response register(RegisterRequestDTO dto) {
+        UserEntity entity = new RoommateEntity(dto.getEmail(), dto.getPassword(), dto.getFirstname(),
+                dto.getLastname(), dto.getPhonenumber());
 
-            return Response.status(Response.Status.CREATED)
-                    .entity(respDto)
-                    .build();
-        }
-        catch(IllegalArgumentException e)
-        {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        boolean isCreated = entity.create(userDao);
 
+        if (!isCreated)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
+        return Response.status(Response.Status.CREATED)
+                .build();
     }
 
     @POST
