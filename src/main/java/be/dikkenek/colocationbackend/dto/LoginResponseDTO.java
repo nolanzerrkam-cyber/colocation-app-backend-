@@ -1,14 +1,13 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class LoginResponseDTO
-{
+public class LoginResponseDTO {
     private String email;
     private String firstname;
     private String lastname;
     private String phonenumber;
+    private Role role;
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
@@ -24,13 +23,23 @@ public class LoginResponseDTO
         return phonenumber;
     }
 
-    public LoginResponseDTO(){}
+    public Role getRole() {
+        return role;
+    }
 
-    public LoginResponseDTO(String email, String firstname, String lastname, String phonenumber)
-    {
+    public LoginResponseDTO() {
+    }
+
+    public LoginResponseDTO(String email, String firstname, String lastname, String phonenumber, Role role) {
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.phonenumber = phonenumber;
+        this.role = role;
+    }
+
+    public enum Role {
+        LANDLORD,
+        ROOMMATE
     }
 }

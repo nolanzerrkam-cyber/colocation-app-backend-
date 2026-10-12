@@ -4,6 +4,7 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
 import be.dikkenek.colocationbackend.dto.LoginRequestDTO;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
+import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import jakarta.inject.Inject;
@@ -44,8 +45,10 @@ public class UserApi {
             return Response.status(Response.Status.BAD_REQUEST)
                     .build();
 
+        LoginResponseDTO.Role role = userEntity instanceof LandlordEntity ? LoginResponseDTO.Role.LANDLORD : LoginResponseDTO.Role.ROOMMATE;
+
         LoginResponseDTO loginResponseDto = new LoginResponseDTO(userEntity.getEmail(), userEntity.getFirstname(),
-                userEntity.getLastname(), userEntity.getPhonenumber());
+                userEntity.getLastname(), userEntity.getPhonenumber(), role);
 
         return Response.status(Response.Status.OK)
                 .entity(loginResponseDto)
