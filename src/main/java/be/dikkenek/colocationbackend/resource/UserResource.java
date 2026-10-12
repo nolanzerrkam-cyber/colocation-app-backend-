@@ -1,4 +1,4 @@
-package be.dikkenek.colocationbackend.endpoint;
+package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/user")
-public class UserApi {
+public class UserResource {
     @Inject
     private UserDao userDao;
 
