@@ -1,6 +1,6 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class LoginRequestDTO
+public class LoginRequestDto
 {
     private String email;
     private String password;
@@ -13,10 +13,10 @@ public class LoginRequestDTO
         return password;
     }
 
-    public LoginRequestDTO() {
+    public LoginRequestDto() {
     }
 
-    public LoginRequestDTO(String email, String password)
+    public LoginRequestDto(String email, String password)
     {
         this.email = email;
         this.password = password;

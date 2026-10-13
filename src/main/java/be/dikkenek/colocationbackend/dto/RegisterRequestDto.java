@@ -1,6 +1,6 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class RegisterRequestDTO
+public class RegisterRequestDto
 {
     private String email;
     private String password;
@@ -48,9 +48,9 @@ public class RegisterRequestDTO
         this.phonenumber = phonenumber;
     }
 
-    public RegisterRequestDTO(){}
+    public RegisterRequestDto(){}
 
-    public RegisterRequestDTO(String email, String password, String firstname, String lastname, String phonenumber) {
+    public RegisterRequestDto(String email, String password, String firstname, String lastname, String phonenumber) {
         this.email = email;
         this.password = password;
         this.firstname = firstname;

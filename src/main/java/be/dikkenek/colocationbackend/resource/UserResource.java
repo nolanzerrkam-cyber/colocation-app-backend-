@@ -1,9 +1,9 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.LoginResponseDTO;
-import be.dikkenek.colocationbackend.dto.LoginRequestDTO;
-import be.dikkenek.colocationbackend.dto.RegisterRequestDTO;
+import be.dikkenek.colocationbackend.dto.LoginResponseDto;
+import be.dikkenek.colocationbackend.dto.LoginRequestDto;
+import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
 import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -22,7 +22,7 @@ public class UserResource {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDTO dto) {
+    public Response register(RegisterRequestDto dto) {
         try {
             UserEntity entity = new RoommateEntity(dto.getEmail(), dto.getPassword(), dto.getFirstname(),
                     dto.getLastname(), dto.getPhonenumber());
@@ -43,7 +43,7 @@ public class UserResource {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginRequestDTO loginRequestDto) {
+    public Response login(LoginRequestDto loginRequestDto) {
         try {
             UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
 
@@ -51,9 +51,9 @@ public class UserResource {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .build();
 
-            LoginResponseDTO.Role role = userEntity instanceof LandlordEntity ? LoginResponseDTO.Role.LANDLORD : LoginResponseDTO.Role.ROOMMATE;
+            LoginResponseDto.Role role = userEntity instanceof LandlordEntity ? LoginResponseDto.Role.LANDLORD : LoginResponseDto.Role.ROOMMATE;
 
-            LoginResponseDTO loginResponseDto = new LoginResponseDTO(userEntity.getEmail(), userEntity.getFirstname(),
+            LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(),
                     userEntity.getLastname(), userEntity.getPhonenumber(), role);
 
             return Response.status(Response.Status.OK)
