@@ -1,8 +1,7 @@
-package be.dikkenek.colocationbackend.test.api.task;
+package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.TaskDaoImpl;
+import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
-import be.dikkenek.colocationbackend.resource.TaskResource;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import java.util.Date;
 @ExtendWith(MockitoExtension.class)
 public class TaskResourceTest {
     @Mock
-    private TaskDaoImpl taskDao = new TaskDaoImpl();
+    private TaskDao taskDao = new TaskDao();
     @InjectMocks
     private TaskResource taskResource;
 

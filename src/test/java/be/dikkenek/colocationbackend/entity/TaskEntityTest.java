@@ -1,6 +1,5 @@
-package be.dikkenek.colocationbackend.test.api.task;
+package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.entity.TaskEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
