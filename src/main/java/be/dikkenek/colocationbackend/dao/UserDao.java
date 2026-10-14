@@ -18,7 +18,8 @@ public class UserDao implements Dao<UserEntity, String> {
         try (EntityManager man = DatabaseConfig.createEntityManager()) {
             return Optional.ofNullable(man.find(UserEntity.class, id));
         } catch (Exception e) {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve user");
         }
     }
 
@@ -34,10 +35,12 @@ public class UserDao implements Dao<UserEntity, String> {
             } catch (Exception e) {
                 if (tr.isActive())
                     tr.rollback();
-                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create user");
             }
         } catch (Exception e) {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create user");
         }
     }
 
@@ -53,11 +56,13 @@ public class UserDao implements Dao<UserEntity, String> {
             } catch (Exception e) {
                 if (tr.isActive())
                     tr.rollback();
-                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
 
             }
         } catch (Exception e) {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
         }
     }
 
@@ -78,10 +83,12 @@ public class UserDao implements Dao<UserEntity, String> {
             } catch (Exception e) {
                 if (tr.isActive())
                     tr.rollback();
-                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to delete user");
             }
         } catch (Exception e) {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to delete user");
         }
     }
 
@@ -90,7 +97,8 @@ public class UserDao implements Dao<UserEntity, String> {
         try (EntityManager man = DatabaseConfig.createEntityManager()) {
             return man.createQuery("SELECT u FROM UserEntity u", UserEntity.class).getResultList();
         } catch (Exception e) {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve users list");
         }
     }
 }

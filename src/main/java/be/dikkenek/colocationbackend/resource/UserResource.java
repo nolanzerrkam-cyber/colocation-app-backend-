@@ -30,7 +30,9 @@ public class UserResource {
             boolean isCreated = entity.create(userDao);
 
             if (!isCreated)
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Failed to create user")
+                        .build();
 
             return Response.status(Response.Status.CREATED)
                     .build();
@@ -49,6 +51,7 @@ public class UserResource {
 
             if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))
                 return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid credentials")
                         .build();
 
             LoginResponseDto.Role role = userEntity instanceof LandlordEntity ? LoginResponseDto.Role.LANDLORD : LoginResponseDto.Role.ROOMMATE;
@@ -70,10 +73,12 @@ public class UserResource {
     public Response delete(@PathParam("email") String email) {
         try {
             UserEntity user = UserEntity.get(userDao, email);
-            if (user.delete(userDao))
+            if (user != null && user.delete(userDao))
                 return Response.status(Response.Status.OK).build();
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to delete user")
+                    .build();
         } catch (BackendException backendException) {
             return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
         }
