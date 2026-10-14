@@ -1,8 +1,7 @@
-package be.dikkenek.colocationbackend.helloworld;
+package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.HelloWorldDao;
 import be.dikkenek.colocationbackend.entity.HelloWorldEntity;
-import be.dikkenek.colocationbackend.resource.HelloWorldResource;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
