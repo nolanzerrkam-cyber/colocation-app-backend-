@@ -25,16 +25,16 @@ public class ExpenseEntity {
     @ManyToOne
     // gère la relation en BD
     @JoinColumn(name = "Email", nullable = false)
-    private ColocEntity coloc;
+    private RoommateEntity roomate;
 
     public ExpenseEntity() {
     }
 
-public ExpenseEntity(String label, float price, ColocEntity coloc) {
+public ExpenseEntity(String label, float price, RoommateEntity roomate) {
         setLabel(label);
         setPrice(price);
         setDate();
-        setColoc(coloc);
+        setRoomate(roomate);
     }
 
     public int getId() {
@@ -73,12 +73,12 @@ public String getLabel() {
 
     private void setDate() {this.date_expense = new Date();}
 
-    public ColocEntity getColoc() {
-        return coloc;
+    public RoommateEntity getRoomate() {
+        return roomate;
     }
 
-    private void setColoc(ColocEntity coloc) {
-        this.coloc = coloc;
+    private void setRoomate(RoommateEntity roomate) {
+        this.roomate = roomate;
     }
 
     public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
