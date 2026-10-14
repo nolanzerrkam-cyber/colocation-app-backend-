@@ -13,10 +13,19 @@ import java.util.regex.Pattern;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class UserEntity {
     @Id
+    @Column(name = "Email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "firstname", nullable = false)
     private String firstname;
+
+    @Column(name = "lastname", nullable = false)
     private String lastname;
+
+    @Column(name = "phonenumber", nullable = false)
     private String phonenumber;
 
     public String getEmail() {
