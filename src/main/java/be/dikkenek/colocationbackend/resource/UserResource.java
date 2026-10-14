@@ -34,7 +34,8 @@ public class UserResource {
                         .entity("Failed to create user")
                         .build();
 
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED)
+                    .build();
         } catch (BackendException backendException) {
             return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
         } catch (Exception e) {
