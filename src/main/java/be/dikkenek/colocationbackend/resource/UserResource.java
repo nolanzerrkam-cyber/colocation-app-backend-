@@ -38,10 +38,6 @@ public class UserResource {
                     .build();
         } catch (BackendException backendException) {
             return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Database error during registration")
-                    .build();
         }
     }
 
@@ -68,10 +64,6 @@ public class UserResource {
                     .build();
         } catch (BackendException backendException) {
             return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Database error during login")
-                    .build();
         }
     }
 
@@ -89,10 +81,6 @@ public class UserResource {
                     .build();
         } catch (BackendException backendException) {
             return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Database error during deletion")
-                    .build();
         }
     }
 }
