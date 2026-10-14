@@ -7,7 +7,7 @@
     <persistence-unit name="colocation-backend" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- Liste optionnelle de vos entités si le scan automatique échoue -->
+        <!-- Entities list -->
         <class>be.dikkenek.colocationbackend.entity.ExpenseEntity</class>
         <class>be.dikkenek.colocationbackend.entity.HelloWorldEntity</class>
         <class>be.dikkenek.colocationbackend.entity.LandlordEntity</class>
