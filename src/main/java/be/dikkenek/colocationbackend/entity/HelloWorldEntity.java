@@ -1,6 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.HelloWorldDaoImpl;
+import be.dikkenek.colocationbackend.dao.HelloWorldDao;
 import jakarta.persistence.*;
 
 import java.util.Optional;
@@ -25,14 +25,14 @@ public class HelloWorldEntity {
         setTestAttribute(testAttribute);
     }
 
-    public static HelloWorldEntity getById(int id, HelloWorldDaoImpl testDao) {
-        Optional<HelloWorldEntity> optionalTest = testDao.get(id);
+    public static HelloWorldEntity getById(int id, HelloWorldDao helloWorldDao) {
+        Optional<HelloWorldEntity> optionalTest = helloWorldDao.get(id);
 
         return optionalTest.orElse(null);
     }
 
-    public boolean create(HelloWorldDaoImpl testDao) {
-        return testDao.create(this);
+    public boolean create(HelloWorldDao helloWorldDao) {
+        return helloWorldDao.create(this);
     }
 
     public int getId() {
