@@ -7,7 +7,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
-public class TaskDaoImpl implements Dao<TaskEntity, Integer> {
+public class TaskDao implements Dao<TaskEntity, Integer> {
 
     @PersistenceContext
     private EntityManager em;

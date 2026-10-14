@@ -1,6 +1,6 @@
 package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.TaskDaoImpl;
+import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/task")
 public class TaskResource {
     @Inject
-    private TaskDaoImpl taskDao;
+    private TaskDao taskDao;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
