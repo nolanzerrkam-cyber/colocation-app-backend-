@@ -9,7 +9,7 @@ import jakarta.persistence.EntityTransaction;
 import java.util.Optional;
 
 @ApplicationScoped
-public class HelloWorldDaoImpl implements Dao<HelloWorldEntity, Integer> {
+public class HelloWorldDao implements Dao<HelloWorldEntity, Integer> {
 
     @Override
     public Optional<HelloWorldEntity> get(Integer id) {
