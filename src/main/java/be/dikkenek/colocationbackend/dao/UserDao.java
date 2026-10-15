@@ -67,19 +67,35 @@ public class UserDao implements Dao<UserEntity, String> {
     }
 
     @Override
-    public boolean delete(String id) throws BackendException {
+    public boolean delete(UserEntity user) throws BackendException {
         try (EntityManager man = DatabaseConfig.createEntityManager()) {
             EntityTransaction tr = man.getTransaction();
             try {
                 tr.begin();
-                UserEntity entity = man.find(UserEntity.class, id);
-                if (entity != null) {
-                    man.remove(entity);
+                String email = user.getEmail();
+
+                // First delete from the child table (Roommate or Landlord)
+                man.createQuery("DELETE FROM Roommate r WHERE r.email = :email")
+                        .setParameter("email", email)
+                        .executeUpdate();
+
+                man.createQuery("DELETE FROM Landlord l WHERE l.email = :email")
+                        .setParameter("email", email)
+                        .executeUpdate();
+
+                // Delete from the parent entity (uses the entity name, not the database name)
+                int deletedCount = man.createQuery("DELETE FROM UserEntity u WHERE u.email = :email")
+                        .setParameter("email", email)
+                        .executeUpdate();
+
+                if (deletedCount > 0) {
                     tr.commit();
                     return true;
+                } else {
+                    tr.rollback();
+                    return false;
                 }
-                tr.rollback();
-                return false;
+
             } catch (Exception e) {
                 if (tr.isActive())
                     tr.rollback();
