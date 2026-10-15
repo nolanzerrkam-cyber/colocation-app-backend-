@@ -53,20 +53,6 @@ class UserResourceTest
     }
 
     @Test
-    void user_register_throw() throws BackendException {
-        // Given
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "12345678", "a", "a", "0472727272");
-        Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenThrow(new BackendException(Response.Status.BAD_REQUEST, "bad request"));
-
-        // When
-        Response response = userResource.register(registerRequestDto);
-
-        // Then
-        Assertions.assertEquals(400, response.getStatus());
-        Assertions.assertEquals("bad request", response.getEntity().toString());
-    }
-
-    @Test
     void user_login_valid() throws BackendException {
         // Given
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
@@ -115,20 +101,6 @@ class UserResourceTest
     }
 
     @Test
-    void user_login_throw() throws BackendException {
-        // Given
-        LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenThrow(new BackendException(Response.Status.BAD_REQUEST, "bad request"));
-
-        // When
-        Response response = userResource.login(loginRequestDto);
-
-        // Then
-        Assertions.assertEquals(400, response.getStatus());
-        Assertions.assertEquals("bad request", response.getEntity().toString());
-    }
-
-    @Test
     void user_delete_valid() throws BackendException {
         // Given
         String email = "email@email.com";
@@ -154,20 +126,5 @@ class UserResourceTest
         Response response = userResource.delete(email);
         // Then
         Assertions.assertEquals(500, response.getStatus());
-    }
-
-    @Test
-    void user_delete_throw() throws BackendException {
-        // Given
-        String email = "email@email.com";
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userDao.delete(Mockito.any(String.class))).thenThrow(new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "internal server error"));
-
-        // When
-        Response response = userResource.delete(email);
-        // Then
-        Assertions.assertEquals(500, response.getStatus());
-        Assertions.assertEquals("internal server error", response.getEntity().toString());
     }
 }

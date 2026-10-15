@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.HelloWorldDao;
 import be.dikkenek.colocationbackend.entity.HelloWorldEntity;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,7 +16,7 @@ public class HelloWorldResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getHelloWorld(@PathParam("id") int id) {
+    public Response getHelloWorld(@PathParam("id") int id) throws BackendException {
         HelloWorldEntity helloWorldEntity = HelloWorldEntity.getById(id, helloWorldDao);
 
         if (helloWorldEntity == null)
@@ -27,7 +28,7 @@ public class HelloWorldResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postHelloWorld(HelloWorldEntity helloWorldEntity) {
+    public Response postHelloWorld(HelloWorldEntity helloWorldEntity) throws BackendException {
         boolean success = helloWorldEntity.create(helloWorldDao);
         if (success)
             return Response.status(201).build();

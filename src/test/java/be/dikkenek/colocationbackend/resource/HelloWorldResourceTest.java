@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.HelloWorldDao;
 import be.dikkenek.colocationbackend.entity.HelloWorldEntity;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ public class HelloWorldResourceTest {
     private HelloWorldResource helloWorldResource;
 
     @Test
-    void test_get_helloworld_found() {
+    void test_get_helloworld_found() throws BackendException {
         // Given
         HelloWorldEntity inputHelloWorld = new HelloWorldEntity(-1, "Test attribute...");
         Mockito.when(helloWorldDao.get(Mockito.any(Integer.class))).thenReturn(Optional.of(inputHelloWorld));
@@ -38,7 +39,7 @@ public class HelloWorldResourceTest {
     }
 
     @Test
-    void test_get_helloworld_not_found() {
+    void test_get_helloworld_not_found() throws BackendException {
         // Given
         Mockito.when(helloWorldDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
 
