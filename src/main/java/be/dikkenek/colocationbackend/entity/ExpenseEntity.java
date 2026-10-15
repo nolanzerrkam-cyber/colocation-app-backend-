@@ -3,10 +3,10 @@ import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
+import jakarta.ws.rs.core.Response;
+
 import java.util.Date;
 import java.util.List;
-
-import java.math.BigDecimal;
 import java.time.*;
 
 @Entity
@@ -35,22 +35,23 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-public ExpenseEntity(String label, float price, RoommateEntity roomate) {
-        setLabel(label);
-        setPrice(price);
-        setDate();
-        setRoomate(roomate);
-    }
+    public ExpenseEntity(String label, float price, RoommateEntity roomate) {
+            setLabel(label);
+            setPrice(price);
+            setDate();
+            setRoomate(roomate);
+        }
 
     public int getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(int id)
+    {
         this.id = id;
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
@@ -86,6 +87,10 @@ public String getLabel() {
         this.roomate = roomate;
     }
 
+    public static void checkEmail(String email) throws BackendException {
+        if (email == null || email.trim().isEmpty())
+            throw new BackendException(Response.Status.BAD_REQUEST, "The email is not valid !");
+    }
     public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
     //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
