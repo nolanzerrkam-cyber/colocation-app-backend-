@@ -37,22 +37,23 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-public ExpenseEntity(String label, float price, RoommateEntity roomate) {
-        setLabel(label);
-        setPrice(price);
-        setDate();
-        setRoomate(roomate);
-    }
+    public ExpenseEntity(String label, float price, RoommateEntity roomate) {
+            setLabel(label);
+            setPrice(price);
+            setDate();
+            setRoomate(roomate);
+        }
 
     public int getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(int id)
+    {
         this.id = id;
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
