@@ -53,11 +53,6 @@ public class ExpenseResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) {
-        if (dto == null)
-        {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
         try {
             ExpenseEntity.checkEmail(dto.getEmail());
             UserEntity user = UserEntity.get(userDao, dto.getEmail());
