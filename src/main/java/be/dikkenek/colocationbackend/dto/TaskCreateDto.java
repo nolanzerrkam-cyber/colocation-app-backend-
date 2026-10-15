@@ -16,25 +16,36 @@ public class TaskCreateDto {
     }
 
     public TaskCreateDto(String name, String description, boolean isDone, Date deadline) {
-        this.name = name;
-        this.description = description;
-        this.isDone = isDone;
-        this.deadline = deadline;
-    }
+    setName(name);
+    setDescription(description);
+    setDone(isDone);
+    setDeadline(deadline);
+}
 
-    public String getName() {
-        return name;
-    }
+public String getName() {
+    return name;
+}
+public void setName(String name) {
+    this.name = name;
+}
 
-    public String getDescription() {
-        return description;
-    }
+public String getDescription() {
+    return description;
+}
+public void setDescription(String description) {
+    this.description = description;
+}
 
-    public boolean isDone() {
-        return isDone;
-    }
+public boolean isDone() {
+    return isDone;
+}
+public void setDone(boolean isDone) {
+    this.isDone = isDone;
+}
 
-    public Date getDeadline() {
-        return deadline;
-    }
+public Date getDeadline() {
+    return deadline;
+}
+public void setDeadline(Date deadline) {
+    this.deadline = deadline;
 }
