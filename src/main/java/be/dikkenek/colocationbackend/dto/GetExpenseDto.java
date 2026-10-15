@@ -8,14 +8,17 @@ public class GetExpenseDto {
 
     private String date_expense;
 
-    private String roommateEmail;
+    private String firstname;
 
-    public GetExpenseDto(String label, float price, String date_expense, String roommateEmail)
+    private String lastname;
+
+    public GetExpenseDto(String label, float price, String date_expense, String firstname, String lastname)
     {
         setLabel(label);
         setPrice(price);
         setDate_expense(date_expense);
-        setRoommateEmail(roommateEmail);
+        setFirstname(firstname);
+        setLastname(lastname);
     }
 
     public String getLabel() {
@@ -42,12 +45,20 @@ public class GetExpenseDto {
         this.date_expense = date_expense;
     }
 
-    public String getRoommateEmail() {
-        return roommateEmail;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setRoommateEmail(String roommateEmail) {
-        this.roommateEmail = roommateEmail;
+    public void setFirstname (String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname (String lastname) {
+        this.lastname = lastname;
     }
 
 }
