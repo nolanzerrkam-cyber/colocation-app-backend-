@@ -1,7 +1,9 @@
 package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.TaskDao;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
 
@@ -29,15 +31,14 @@ public class TaskEntity {
     public TaskEntity() {
     }
 
-    public TaskEntity(int id, String name, String description, boolean isDone, Date deadline) {
-        setId(id);
+    public TaskEntity(String name, String description, boolean isDone, Date deadline) throws BackendException {
         setName(name);
         setDescription(description);
         setIsDone(isDone);
         setDeadline(deadline);
     }
 
-    public boolean create(TaskDao taskDao) {
+    public boolean create(TaskDao taskDao) throws BackendException {
         return taskDao.create(this);
     }
 
@@ -49,14 +50,13 @@ public class TaskEntity {
         this.id = id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws BackendException {
         if (name.isEmpty())
-            throw new IllegalArgumentException("Error: Task name must not be empty.");
+            throw new BackendException(Response.Status.BAD_REQUEST, "Error: Task name must not be empty.");
         this.name = name;
     }
 
@@ -84,7 +84,9 @@ public class TaskEntity {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Date deadline) throws BackendException {
+        if (deadline == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Error: Date cannot be null.");
         this.deadline = deadline;
     }
 }
