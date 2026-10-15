@@ -1,8 +1,13 @@
 package be.dikkenek.colocationbackend.entity;
+import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import java.math.BigDecimal;
+import java.time.*;
 
 @Entity
 @Table(name ="EXPENSE")
@@ -85,5 +90,9 @@ public String getLabel() {
     //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
         return expenseDao.getAll();
+    }
+    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
+    {
+        return dao.create(this);
     }
 }
