@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Path("/expense")
@@ -44,45 +43,39 @@ public class ExpenseResource
         return Response.status(200).entity(expenseDtos).build();
     }
 
-
+    // FIX : I passed directly to the dto for the object user : I fixed it : now I pass though the static
+    // method to respect the object rules.
+    // DELETED : the Optional type, because now its useless
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-
-    public Response postExpense(ExpenseInsertDto dto) throws BackendException
-    {
-        if (dto == null || dto.getEmail() == null ||dto.getEmail().trim().isEmpty())
+    public Response postExpense(ExpenseInsertDto dto) {
+        if (dto == null)
         {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        // Optional is used to handle two types of values : a simple value, and a null value. I have to use it, beacause userDao.get(email)
-        // could say that the email dosen't exist(meaning nothing get returned !), and with Optional,
-        // I can receive a null value safely, without an exception being risen.
-        Optional<UserEntity> user = userDao.get(dto.getEmail());
-        // to check if we don't have a user or if the user is an instance of roomateEntity (meaning its a type roomateEntity.)
-        if(!user.isPresent() || !(user.get() instanceof RoommateEntity))
-        {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        try {
+            UserEntity user = UserEntity.get(userDao, dto.getEmail());
+            if (!(user instanceof RoommateEntity))
+            {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
 
-        ExpenseEntity exp;
-        try
-        {
-            exp = new ExpenseEntity(dto.getLibele(), dto.getPrice(), (RoommateEntity) user.get());
-        }
-        catch (IllegalArgumentException ie)
-        {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .build();
-        }
+            ExpenseEntity expense = new ExpenseEntity(dto.getLibele(), dto.getPrice(), (RoommateEntity) user);
 
-        if(exp.create(expenseDao))
-        {
-            return Response.status(Response.Status.CREATED)
-                    .build();
+            if (expense.create(expenseDao))
+            {
+                return Response.status(Response.Status.CREATED).build();
+            }
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-                .build();
+        catch (IllegalArgumentException e)
+        {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        catch (BackendException backendException)
+        {
+            return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
+        }
     }
 }
