@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+    <persistence-unit name="colocation-backend" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Entities list -->
+        <class>be.dikkenek.colocationbackend.entity.ExpenseEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.HelloWorldEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.LandlordEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.RoommateEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.TaskEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.UserEntity</class>
+
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.OracleDialect"/>
+
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.generate_statistics" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
