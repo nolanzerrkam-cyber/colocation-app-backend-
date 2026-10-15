@@ -2,11 +2,14 @@ package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -21,6 +24,29 @@ public class ExpenseDao implements Dao<ExpenseEntity, Integer> {
             Root<ExpenseEntity> root = criteriaQuery.from(ExpenseEntity.class);
             criteriaQuery.select(root);
             return entityManager.createQuery(criteriaQuery).getResultList();
+        }
+    }
+
+    @Override
+    public boolean create(ExpenseEntity expense) throws BackendException {
+        try (EntityManager em = DatabaseConfig.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                em.persist(expense);
+                et.commit();
+                return true;
+            } catch (Exception e) {
+                if (et.isActive())
+                    et.rollback();
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create expense");
+            }
+        } catch (BackendException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create expense");
         }
     }
 }

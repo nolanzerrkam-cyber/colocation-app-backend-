@@ -1,5 +1,7 @@
 package be.dikkenek.colocationbackend.entity;
+import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -89,9 +91,8 @@ public String getLabel() {
     {
         return expenseDao.getAll();
     }
-    public boolean create(Dao<ExpenseEntity, Integer> dao)
+    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
     {
-
         return dao.create(this);
     }
 }

@@ -1,25 +1,19 @@
 package be.dikkenek.colocationbackend.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
-public class ExpenseInsertDTO
+public class ExpenseInsertDto
 {
-    private BigDecimal price;
+    private float price;
     private String libele;
     private String email;
+    private Date dateExpense;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime dateExpense;
-
-    public BigDecimal getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -39,14 +33,14 @@ public class ExpenseInsertDTO
         this.email = email;
     }
 
-    public LocalDateTime getDateExpense() {
+    public Date getDateExpense() {
         return dateExpense;
     }
 
-    public void setDateExpense(LocalDateTime dateExpense) {
+    public void setDateExpense(Date dateExpense) {
         this.dateExpense = dateExpense;
     }
 
-    public ExpenseInsertDTO() {
+    public ExpenseInsertDto() {
     }
 }
