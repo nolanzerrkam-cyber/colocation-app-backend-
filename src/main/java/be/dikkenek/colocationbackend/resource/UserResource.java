@@ -64,8 +64,17 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("email") String email) throws BackendException {
         UserEntity user = UserEntity.get(userDao, email);
-        if (user != null && user.delete(userDao))
+
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("User not found")
+                    .build();
+        }
+
+        boolean isDeleted = user.delete(userDao);
+        if (isDeleted) {
             return Response.status(Response.Status.OK).build();
+        }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("Failed to delete user")
