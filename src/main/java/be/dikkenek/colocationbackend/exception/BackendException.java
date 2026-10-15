@@ -8,6 +8,7 @@ public class BackendException extends Exception {
 
     public BackendException(Response.Status status, String errorMessage) {
         super(errorMessage);
+        this.errorMessage = errorMessage;
         this.status = status;
     }
 

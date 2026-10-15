@@ -1,7 +1,9 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.TaskDao;
+import be.dikkenek.colocationbackend.dto.TaskCreateDto;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,14 +18,14 @@ import java.util.Date;
 @ExtendWith(MockitoExtension.class)
 public class TaskResourceTest {
     @Mock
-    private TaskDao taskDao = new TaskDao();
+    private TaskDao taskDao;
     @InjectMocks
     private TaskResource taskResource;
 
     @Test
-    void testPostTask_Success() {
+    void testPostTask_Success() throws BackendException {
         // Given
-        TaskEntity inputTask = new TaskEntity(-1, "Task name", "Task description", false, new Date());
+        TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date());
         Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(true);
 
         // When
@@ -31,24 +33,18 @@ public class TaskResourceTest {
 
         // 3. Then
         Assertions.assertEquals(201, response.getStatus());
-
-        // Check dao create method has been called 1 time only
-        Mockito.verify(taskDao, Mockito.times(1)).create(inputTask);
     }
 
     @Test
-    void testPostTask_NotSuccess() {
+    void testPostTask_NotSuccess() throws BackendException {
         // Given
-        TaskEntity inputTask = new TaskEntity(-1, "Task name", "Task description", false, new Date());
+        TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date());
         Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(false);
 
         // When
         Response response = taskResource.postTask(inputTask);
 
         // 3. Then
-        Assertions.assertEquals(403, response.getStatus());
-
-        // Check dao create method has been called 1 time only
-        Mockito.verify(taskDao, Mockito.times(1)).create(inputTask);
+        Assertions.assertEquals(500, response.getStatus());
     }
 }

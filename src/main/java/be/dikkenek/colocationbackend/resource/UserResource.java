@@ -22,65 +22,53 @@ public class UserResource {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDto dto) {
-        try {
-            UserEntity entity = new RoommateEntity(dto.getEmail(), dto.getPassword(), dto.getFirstname(),
-                    dto.getLastname(), dto.getPhonenumber());
+    public Response register(RegisterRequestDto dto) throws BackendException {
+        UserEntity entity = new RoommateEntity(dto.getEmail(), dto.getPassword(), dto.getFirstname(),
+                dto.getLastname(), dto.getPhonenumber());
 
-            boolean isCreated = entity.create(userDao);
+        boolean isCreated = entity.create(userDao);
 
-            if (!isCreated)
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Failed to create user")
-                        .build();
-
-            return Response.status(Response.Status.CREATED)
+        if (!isCreated)
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to create user")
                     .build();
-        } catch (BackendException backendException) {
-            return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        }
+
+        return Response.status(Response.Status.CREATED)
+                .build();
     }
 
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginRequestDto loginRequestDto) {
-        try {
-            UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
+    public Response login(LoginRequestDto loginRequestDto) throws BackendException {
+        UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
 
-            if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Invalid credentials")
-                        .build();
-
-            LoginResponseDto.Role role = userEntity instanceof LandlordEntity ? LoginResponseDto.Role.LANDLORD : LoginResponseDto.Role.ROOMMATE;
-
-            LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(),
-                    userEntity.getLastname(), userEntity.getPhonenumber(), role);
-
-            return Response.status(Response.Status.OK)
-                    .entity(loginResponseDto)
+        if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid credentials")
                     .build();
-        } catch (BackendException backendException) {
-            return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        }
+
+        LoginResponseDto.Role role = userEntity instanceof LandlordEntity ? LoginResponseDto.Role.LANDLORD : LoginResponseDto.Role.ROOMMATE;
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(),
+                userEntity.getLastname(), userEntity.getPhonenumber(), role);
+
+        return Response.status(Response.Status.OK)
+                .entity(loginResponseDto)
+                .build();
     }
 
     @DELETE
     @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("email") String email) {
-        try {
-            UserEntity user = UserEntity.get(userDao, email);
-            if (user != null && user.delete(userDao))
-                return Response.status(Response.Status.OK).build();
+    public Response delete(@PathParam("email") String email) throws BackendException {
+        UserEntity user = UserEntity.get(userDao, email);
+        if (user != null && user.delete(userDao))
+            return Response.status(Response.Status.OK).build();
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to delete user")
-                    .build();
-        } catch (BackendException backendException) {
-            return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
-        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Failed to delete user")
+                .build();
     }
 }

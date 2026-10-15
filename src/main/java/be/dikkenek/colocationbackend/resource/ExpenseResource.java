@@ -37,6 +37,8 @@ public class ExpenseResource
                 entity.getLabel(),
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,
+                entity.getRoomate() != null ? entity.getRoomate().getFirstname() : null,
+                entity.getRoomate() != null ? entity.getRoomate().getLastname() : null,
                 entity.getRoomate() != null ? entity.getRoomate().getEmail() : null
         )).collect(Collectors.toList());
 
