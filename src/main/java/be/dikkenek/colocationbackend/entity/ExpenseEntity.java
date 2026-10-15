@@ -7,8 +7,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
 import java.util.List;
-
-import java.math.BigDecimal;
 import java.time.*;
 
 @Entity

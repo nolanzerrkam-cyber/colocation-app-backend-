@@ -5,7 +5,7 @@ import java.util.Date;
 public class ExpenseInsertDto
 {
     private float price;
-    private String libele;
+    private String label;
     private String email;
     private Date dateExpense;
 
@@ -17,12 +17,12 @@ public class ExpenseInsertDto
         this.price = price;
     }
 
-    public String getLibele() {
-        return libele;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLibele(String libele) {
-        this.libele = libele;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getEmail() {

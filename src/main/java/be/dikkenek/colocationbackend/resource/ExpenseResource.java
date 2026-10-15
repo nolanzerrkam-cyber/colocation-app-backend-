@@ -61,7 +61,7 @@ public class ExpenseResource
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
-            ExpenseEntity expense = new ExpenseEntity(dto.getLibele(), dto.getPrice(), (RoommateEntity) user);
+            ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
 
             if (expense.create(expenseDao))
             {

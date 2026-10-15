@@ -16,7 +16,7 @@ public class ExpenseEntityTest {
         assertEquals(24.50f, expense.getPrice());
 
         // Im testing if the price is equals to zero or negative if it throws an error.
-        // NEW : I modified the unit test. Since the entity is now valid, I check too if the libele is not null or equals to ""
+        // NEW : I modified the unit test. Since the entity is now valid, I check too if the label is not null or equals to ""
         assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity("Courses", 0f, null));
         assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity("Courses", -5f, null));
         assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity(null, 1f, null));

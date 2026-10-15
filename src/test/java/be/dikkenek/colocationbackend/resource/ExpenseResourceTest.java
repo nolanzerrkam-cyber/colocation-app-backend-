@@ -38,7 +38,7 @@ public class ExpenseResourceTest {
     private ExpenseInsertDto validDto() {
         ExpenseInsertDto dto = new ExpenseInsertDto();
         dto.setPrice(24.50f);
-        dto.setLibele("Courses");
+        dto.setLabel("Courses");
         dto.setEmail("test@test.com");
         dto.setDateExpense(new Date());
         return dto;
