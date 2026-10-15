@@ -39,7 +39,8 @@ public class ExpenseResource
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,
                 entity.getRoomate() != null ? entity.getRoomate().getFirstname() : null,
-                entity.getRoomate() != null ? entity.getRoomate().getLastname() : null
+                entity.getRoomate() != null ? entity.getRoomate().getLastname() : null,
+                entity.getRoomate() != null ? entity.getRoomate().getEmail() : null
         )).collect(Collectors.toList());
 
         return Response.status(200).entity(expenseDtos).build();

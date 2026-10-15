@@ -12,13 +12,16 @@ public class GetExpenseDto {
 
     private String lastname;
 
-    public GetExpenseDto(String label, float price, String date_expense, String firstname, String lastname)
+    private String email;
+
+    public GetExpenseDto(String label, float price, String date_expense, String firstname, String lastname, String email)
     {
         setLabel(label);
         setPrice(price);
         setDate_expense(date_expense);
         setFirstname(firstname);
         setLastname(lastname);
+        setEmail(email);
     }
 
     public String getLabel() {
@@ -59,6 +62,14 @@ public class GetExpenseDto {
 
     public void setLastname (String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail (String email) {
+        this.email = email;
     }
 
 }
