@@ -26,7 +26,6 @@ public class TaskResourceTest {
     void testPostTask_Success() throws BackendException {
         // Given
         TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date());
-        TaskEntity outputEntity = new TaskEntity(inputTask.getName(), inputTask.getDescription(), inputTask.isDone(), inputTask.getDeadline());
         Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(true);
 
         // When
@@ -40,7 +39,6 @@ public class TaskResourceTest {
     void testPostTask_NotSuccess() throws BackendException {
         // Given
         TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date());
-        TaskEntity outputEntity = new TaskEntity("Task name", "Task description", false, new Date());
         Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(false);
 
         // When
