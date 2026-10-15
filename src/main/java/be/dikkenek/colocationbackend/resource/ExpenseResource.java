@@ -45,7 +45,9 @@ public class ExpenseResource
 
     // FIX : I passed directly to the dto for the object user : I fixed it : now I pass though the static
     // method to respect the object rules.
-    // DELETED : the Optional type, because now its useless
+    // FIX 2 : I removed the conditions and added a static method to check if the mail is null.
+    // On the ExpenseEntity.
+    // DELETED : the Optional type, because now its useless.
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) {
@@ -55,6 +57,7 @@ public class ExpenseResource
         }
 
         try {
+            ExpenseEntity.checkEmail(dto.getEmail());
             UserEntity user = UserEntity.get(userDao, dto.getEmail());
             if (!(user instanceof RoommateEntity))
             {
