@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
+
 @ApplicationScoped
 public class UserDao implements Dao<UserEntity, String> {
     @Override
@@ -72,29 +73,24 @@ public class UserDao implements Dao<UserEntity, String> {
             EntityTransaction tr = man.getTransaction();
             try {
                 tr.begin();
-                String email = user.getEmail();
 
-                // First delete from the child table (Roommate or Landlord)
-                man.createQuery("DELETE FROM Roommate r WHERE r.email = :email")
-                        .setParameter("email", email)
-                        .executeUpdate();
-
-                man.createQuery("DELETE FROM Landlord l WHERE l.email = :email")
-                        .setParameter("email", email)
-                        .executeUpdate();
-
-                // Delete from the parent entity (uses the entity name, not the database name)
-                int deletedCount = man.createQuery("DELETE FROM UserEntity u WHERE u.email = :email")
-                        .setParameter("email", email)
-                        .executeUpdate();
-
-                if (deletedCount > 0) {
-                    tr.commit();
-                    return true;
-                } else {
+                if (user == null || user.getEmail() == null) {
                     tr.rollback();
                     return false;
                 }
+
+                // tell to hybernate the entity is managed
+                UserEntity managedUser = man.merge(user);
+
+                if (managedUser == null) {
+                    tr.rollback();
+                    return false;
+                }
+                // delete the entity from the db
+                man.remove(managedUser);
+
+                tr.commit();
+                return true;
 
             } catch (Exception e) {
                 if (tr.isActive())

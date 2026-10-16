@@ -77,7 +77,7 @@ public class UserResource {
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Failed to delete user")
+                .entity("Failed to delete user 3")
                 .build();
     }
 }
