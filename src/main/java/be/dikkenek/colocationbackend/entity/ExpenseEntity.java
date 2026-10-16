@@ -95,4 +95,8 @@ public String getLabel() {
     {
         return dao.create(this);
     }
+    public boolean delete(ExpenseDao dao, ExpenseEntity expense) throws BackendException
+    {
+        return dao.delete(expense);
+    }
 }
