@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
+import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -24,6 +25,43 @@ public class ExpenseDao implements Dao<ExpenseEntity, Integer> {
             Root<ExpenseEntity> root = criteriaQuery.from(ExpenseEntity.class);
             criteriaQuery.select(root);
             return entityManager.createQuery(criteriaQuery).getResultList();
+        }
+    }
+    @Override
+    public boolean delete(ExpenseEntity expense) throws BackendException
+    {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
+            EntityTransaction tr = man.getTransaction();
+            try {
+                tr.begin();
+
+                if (expense == null) {
+                    tr.rollback();
+                    return false;
+                }
+
+                // tell to hybernate the entity is managed
+                ExpenseEntity managedExpense = man.merge(expense);
+
+                if (managedExpense == null) {
+                    tr.rollback();
+                    return false;
+                }
+                // delete the entity from the db
+                man.remove(managedExpense);
+
+                tr.commit();
+                return true;
+
+            } catch (Exception e) {
+                if (tr.isActive())
+                    tr.rollback();
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to delete expense");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to delete expense ");
         }
     }
 
