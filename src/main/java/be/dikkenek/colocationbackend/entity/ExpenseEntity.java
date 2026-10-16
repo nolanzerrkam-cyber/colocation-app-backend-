@@ -8,6 +8,7 @@ import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.Optional;
 
 @Entity
 @Table(name ="EXPENSE")
@@ -86,17 +87,21 @@ public String getLabel() {
         this.roomate = roomate;
     }
 
-    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
+    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
     //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
         return expenseDao.getAll();
+    }
+
+    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException{
+        return dao.get(id).orElse(null);
     }
     public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
     {
         return dao.create(this);
     }
-    public boolean delete(ExpenseDao dao, ExpenseEntity expense) throws BackendException
+    public boolean delete(ExpenseDao dao) throws BackendException
     {
-        return dao.delete(expense);
+        return dao.delete(this);
     }
 }
