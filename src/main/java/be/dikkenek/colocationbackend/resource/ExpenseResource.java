@@ -28,8 +28,7 @@ public class ExpenseResource
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExpenses()
-    {
+    public Response getAllExpenses() throws BackendException {
         List<ExpenseEntity> expenses = ExpenseEntity.findAll(expenseDao);
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -45,11 +44,31 @@ public class ExpenseResource
 
         return Response.status(200).entity(expenseDtos).build();
     }
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteExpense(@PathParam("id") int id) throws BackendException {
+        ExpenseEntity expense = ExpenseEntity.get(expenseDao, id);
 
+        if (expense == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("expense not found")
+                    .build();
+        }
+
+        boolean isDeleted = expense.delete(expenseDao);
+        if (isDeleted) {
+            return Response.status(Response.Status.OK).build();
+        }
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Failed to delete expense 3")
+                .build();
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-
     public Response postExpense(ExpenseInsertDto dto) throws BackendException
     {
         if (dto == null || dto.getEmail() == null ||dto.getEmail().trim().isEmpty())
