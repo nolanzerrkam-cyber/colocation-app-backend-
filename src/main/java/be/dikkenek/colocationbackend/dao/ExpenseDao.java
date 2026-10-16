@@ -13,18 +13,33 @@ import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class ExpenseDao implements Dao<ExpenseEntity, Integer> {
     
     @Override
-    public List<ExpenseEntity> getAll() {
+    public List<ExpenseEntity> getAll() throws BackendException {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<ExpenseEntity> criteriaQuery = criteriaBuilder.createQuery(ExpenseEntity.class);
             Root<ExpenseEntity> root = criteriaQuery.from(ExpenseEntity.class);
             criteriaQuery.select(root);
             return entityManager.createQuery(criteriaQuery).getResultList();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve all Expense");
+        }
+    }
+
+    @Override
+    public Optional<ExpenseEntity> get(Integer id) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
+            return Optional.ofNullable(man.find(ExpenseEntity.class, id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve Expense");
         }
     }
     @Override
