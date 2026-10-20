@@ -23,7 +23,7 @@ public interface Dao<T, S> {
         return false;
     }
 
-    default boolean delete(S id) throws BackendException {
+    default boolean delete(T entity) throws BackendException {
         return false;
     }
 }
