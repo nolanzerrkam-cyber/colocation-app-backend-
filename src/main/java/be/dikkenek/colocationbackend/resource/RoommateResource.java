@@ -23,7 +23,7 @@ public class RoommateResource
     {
         List<RoommateEntity> roommates = RoommateEntity.getAll(dao);
 
-        return Response.status(Response.Status.FOUND)
+        return Response.status(Response.Status.OK)
                 .entity(roommates)
                 .build();
     }
