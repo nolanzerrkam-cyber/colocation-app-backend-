@@ -15,7 +15,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class ExpenseDao implements Dao<ExpenseEntity, Integer> {
-    
+
     @Override
     public List<ExpenseEntity> getAll() {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {

@@ -1,7 +1,7 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class GetExpenseDto {
-
+public class GetExpenseDto
+{
     private String label;
 
     private float price;
