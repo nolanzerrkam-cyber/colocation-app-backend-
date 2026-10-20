@@ -73,6 +73,7 @@ public class ExpenseResource
     {
         UserEntity.checkEmail(dto.getEmail());
         UserEntity user = UserEntity.get(userDao, dto.getEmail());
+
         if (!(user instanceof RoommateEntity))
         {
             return Response.status(Response.Status.BAD_REQUEST).build();

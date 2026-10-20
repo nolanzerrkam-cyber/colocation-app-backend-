@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class ExpenseResourceTest {
@@ -105,7 +106,10 @@ public class ExpenseResourceTest {
 
         Response response = expenseResource.postExpense(dto);
 
-        assertEquals(400, response.getStatus());
+        //assertEquals(400, response.getStatus());
+        assertThrows(BackendException.class, () -> {
+            expenseResource.postExpense(dto);
+        });
         Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
     }
 
@@ -117,7 +121,10 @@ public class ExpenseResourceTest {
 
         Response resp = expenseResource.postExpense(dto);
 
-        assertEquals(400, resp.getStatus());
+        //assertEquals(400, resp.getStatus());
+        assertThrows(BackendException.class, () -> {
+            expenseResource.postExpense(dto);
+        });
         Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
     }
 }
