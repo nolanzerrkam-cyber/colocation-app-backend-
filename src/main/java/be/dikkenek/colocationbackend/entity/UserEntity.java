@@ -103,7 +103,7 @@ public abstract class UserEntity {
     }
 
     public boolean delete(UserDao userDao) throws BackendException {
-        return userDao.delete(this.getEmail());
+        return userDao.delete(this);
     }
 
     public boolean update(UserDao userDao) throws BackendException {
