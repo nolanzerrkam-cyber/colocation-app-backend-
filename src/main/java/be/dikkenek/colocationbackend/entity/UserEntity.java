@@ -79,6 +79,11 @@ public abstract class UserEntity {
         this.phonenumber = phonenumber;
     }
 
+    public static void checkEmail(String email) throws BackendException {
+        if (email == null || email.trim().isEmpty())
+            throw new BackendException(Response.Status.BAD_REQUEST, "The email is not valid !");
+    }
+
     public UserEntity() {
     }
 

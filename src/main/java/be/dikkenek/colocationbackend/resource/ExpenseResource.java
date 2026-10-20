@@ -69,30 +69,21 @@ public class ExpenseResource
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response postExpense(ExpenseInsertDto dto) {
-        try {
-            ExpenseEntity.checkEmail(dto.getEmail());
-            UserEntity user = UserEntity.get(userDao, dto.getEmail());
-            if (!(user instanceof RoommateEntity))
-            {
-                return Response.status(Response.Status.BAD_REQUEST).build();
-            }
-
-            ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
-
-            if (expense.create(expenseDao))
-            {
-                return Response.status(Response.Status.CREATED).build();
-            }
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
-        }
-        catch (IllegalArgumentException e)
+    public Response postExpense(ExpenseInsertDto dto) throws BackendException
+    {
+        UserEntity.checkEmail(dto.getEmail());
+        UserEntity user = UserEntity.get(userDao, dto.getEmail());
+        if (!(user instanceof RoommateEntity))
         {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        catch (BackendException backendException)
+
+        ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
+
+        if (expense.create(expenseDao))
         {
-            return Response.status(backendException.getStatus()).entity(backendException.getMessage()).build();
+            return Response.status(Response.Status.CREATED).build();
         }
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
     }
 }

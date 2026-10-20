@@ -88,11 +88,6 @@ public class ExpenseEntity {
         this.roomate = roomate;
     }
 
-    public static void checkEmail(String email) throws BackendException {
-        if (email == null || email.trim().isEmpty())
-            throw new BackendException(Response.Status.BAD_REQUEST, "The email is not valid !");
-    }
-
     public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
     //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
