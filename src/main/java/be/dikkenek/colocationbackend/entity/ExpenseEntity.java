@@ -36,7 +36,7 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-    public ExpenseEntity(String label, float price, RoommateEntity roomate) {
+    public ExpenseEntity(String label, float price, RoommateEntity roomate) throws BackendException{
             setLabel(label);
             setPrice(price);
             setDate();
@@ -56,9 +56,9 @@ public class ExpenseEntity {
         return label;
     }
 
-    private void setLabel(String label) {
+    private void setLabel(String label) throws BackendException{
         if (label == null || label.isEmpty()) {
-            throw new IllegalArgumentException("label cannot be null or empty");
+            throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
         }
         this.label = label;
     }
@@ -67,9 +67,9 @@ public class ExpenseEntity {
         return price;
     }
 
-    private void setPrice(float price) {
+    private void setPrice(float price) throws BackendException {
         if (price <= 0) {
-            throw new IllegalArgumentException("price cannot be negative");
+            throw new BackendException(Response.Status.BAD_REQUEST, "price cannot be negative");
         }
         this.price = price;
     }

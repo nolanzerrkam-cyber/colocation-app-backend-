@@ -104,7 +104,6 @@ public class ExpenseResourceTest {
         ExpenseInsertDto dto = validDto();
         dto.setPrice(-5f);
 
-
         //assertEquals(400, response.getStatus());
         assertThrows(BackendException.class, () -> {
             expenseResource.postExpense(dto);
@@ -117,7 +116,6 @@ public class ExpenseResourceTest {
     {
         ExpenseInsertDto dto = validDto();
         dto.setEmail(null);
-        
 
         //assertEquals(400, resp.getStatus());
         assertThrows(BackendException.class, () -> {

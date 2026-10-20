@@ -1,5 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.exception.BackendException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -9,18 +10,17 @@ public class ExpenseEntityTest {
 
     @Test
     // NEW : I changed the name of test_price_valid to test_constructor_rejects_invalid_values.
-    void test_constructor_rejects_invalid_values()
-    {
+    void test_constructor_rejects_invalid_values() throws BackendException {
         ExpenseEntity expense = new ExpenseEntity("Courses", 24.50f, null);
 
         assertEquals(24.50f, expense.getPrice());
 
-        // Im testing if the price is equals to zero or negative if it throws an error.
+        // I'm testing if the price is equals to zero or negative if it throws an error.
         // NEW : I modified the unit test. Since the entity is now valid, I check too if the label is not null or equals to ""
-        assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity("Courses", 0f, null));
-        assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity("Courses", -5f, null));
-        assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity(null, 1f, null));
-        assertThrows(IllegalArgumentException.class, () -> new ExpenseEntity("", 10f, null));
+        assertThrows(BackendException.class, () -> new ExpenseEntity("Courses", 0f, null));
+        assertThrows(BackendException.class, () -> new ExpenseEntity("Courses", -5f, null));
+        assertThrows(BackendException.class, () -> new ExpenseEntity(null, 1f, null));
+        assertThrows(BackendException.class, () -> new ExpenseEntity("", 10f, null));
     }
 
     // DELETED : test_email_valid, since we are aleardy doing it in the UserEntityTest
@@ -28,8 +28,7 @@ public class ExpenseEntityTest {
     // DELETED : test_constructor_rejects_negative_price : because test_constructor_validation is aleardy covering this case.
 
     @Test
-    void test_getters_return_constructor_values()
-    {
+    void test_getters_return_constructor_values() throws BackendException {
         // Test the constructor
         RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
         ExpenseEntity testExpense = new ExpenseEntity("Courses", 67.67f, roommate);
