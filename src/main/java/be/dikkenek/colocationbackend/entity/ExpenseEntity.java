@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 import java.time.*;
+import java.util.Optional;
 
 @Entity
 @Table(name ="EXPENSE")
@@ -91,13 +92,22 @@ public class ExpenseEntity {
         if (email == null || email.trim().isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "The email is not valid !");
     }
-    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao)
+
+    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
     //fonction qui va appeler le DAO pour recuperer toute les depenses
     {
         return expenseDao.getAll();
     }
+
+    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException{
+        return dao.get(id).orElse(null);
+    }
     public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
     {
         return dao.create(this);
+    }
+    public boolean delete(ExpenseDao dao) throws BackendException
+    {
+        return dao.delete(this);
     }
 }

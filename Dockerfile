@@ -10,6 +10,6 @@ RUN mvn package -DskipTests
 
 FROM tomcat:11.0-jre25
 
-COPY --from=build /app/target/*.war /user/local/tomcat/webapps/backend.war
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080

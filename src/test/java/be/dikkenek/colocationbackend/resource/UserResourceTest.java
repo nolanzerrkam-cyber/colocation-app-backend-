@@ -104,9 +104,9 @@ class UserResourceTest
     void user_delete_valid() throws BackendException {
         // Given
         String email = "email@email.com";
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userDao.delete(Mockito.any(String.class))).thenReturn(true);
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789");
+        Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
+        Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
         Response response = userResource.delete(email);
@@ -118,13 +118,13 @@ class UserResourceTest
     void user_delete_not_valid() throws BackendException {
         // Given
         String email = "email@email.com";
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userDao.delete(Mockito.any(String.class))).thenReturn(false);
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789");
+        Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
+        Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When
         Response response = userResource.delete(email);
         // Then
-        Assertions.assertEquals(500, response.getStatus());
+        Assertions.assertEquals(500, response.getStatus()); // ou 404 selon ce que tu renvoies
     }
 }

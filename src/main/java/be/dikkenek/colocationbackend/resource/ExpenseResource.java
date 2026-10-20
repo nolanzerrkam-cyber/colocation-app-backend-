@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Path("/expense")
@@ -27,14 +28,12 @@ public class ExpenseResource
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExpenses()
-    {
+    public Response getAllExpenses() throws BackendException {
         List<ExpenseEntity> expenses = ExpenseEntity.findAll(expenseDao);
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         List<GetExpenseDto> expenseDtos = expenses.stream().map(entity -> new GetExpenseDto(
-                //entity.getId(),
                 entity.getLabel(),
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,
@@ -45,12 +44,29 @@ public class ExpenseResource
 
         return Response.status(200).entity(expenseDtos).build();
     }
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteExpense(@PathParam("id") int id) throws BackendException {
+        ExpenseEntity expense = ExpenseEntity.get(expenseDao, id);
 
-    // FIX : I passed directly to the dto for the object user : I fixed it : now I pass though the static
-    // method to respect the object rules.
-    // FIX 2 : I removed the conditions and added a static method to check if the mail is null.
-    // On the ExpenseEntity.
-    // DELETED : the Optional type, because now its useless.
+        if (expense == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("expense not found")
+                    .build();
+        }
+
+        boolean isDeleted = expense.delete(expenseDao);
+        if (isDeleted) {
+            return Response.status(Response.Status.OK).build();
+        }
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Failed to delete expense 3")
+                .build();
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) {

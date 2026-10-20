@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
+
 @ApplicationScoped
 public class UserDao implements Dao<UserEntity, String> {
     @Override
@@ -67,19 +68,30 @@ public class UserDao implements Dao<UserEntity, String> {
     }
 
     @Override
-    public boolean delete(String id) throws BackendException {
+    public boolean delete(UserEntity user) throws BackendException {
         try (EntityManager man = DatabaseConfig.createEntityManager()) {
             EntityTransaction tr = man.getTransaction();
             try {
                 tr.begin();
-                UserEntity entity = man.find(UserEntity.class, id);
-                if (entity != null) {
-                    man.remove(entity);
-                    tr.commit();
-                    return true;
+
+                if (user == null || user.getEmail() == null) {
+                    tr.rollback();
+                    return false;
                 }
-                tr.rollback();
-                return false;
+
+                // tell to hybernate the entity is managed
+                UserEntity managedUser = man.merge(user);
+
+                if (managedUser == null) {
+                    tr.rollback();
+                    return false;
+                }
+                // delete the entity from the db
+                man.remove(managedUser);
+
+                tr.commit();
+                return true;
+
             } catch (Exception e) {
                 if (tr.isActive())
                     tr.rollback();
