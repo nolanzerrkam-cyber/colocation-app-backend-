@@ -3,11 +3,14 @@ import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.Objects;
 import java.util.Optional;
 
 @Entity
@@ -36,11 +39,14 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-public ExpenseEntity(String label, float price, RoommateEntity roomate) {
+    public ExpenseEntity(String label, float price, RoommateEntity roomate) {
         setLabel(label);
         setPrice(price);
         setDate();
         setRoomate(roomate);
+        if (roomate != null && !roomate.getExpenses().contains(this)) {
+            roomate.getExpenses().add(this);
+        }
     }
 
     public int getId() {
@@ -83,7 +89,7 @@ public String getLabel() {
         return roomate;
     }
 
-    private void setRoomate(RoommateEntity roomate) {
+    public void setRoomate(RoommateEntity roomate) {
         this.roomate = roomate;
     }
 
@@ -103,5 +109,24 @@ public String getLabel() {
     public boolean delete(ExpenseDao dao) throws BackendException
     {
         return dao.delete(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ExpenseEntity)
+            return o.toString().equals(toString());
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.toString());
+    }
+
+    @Override
+    public String toString()
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return String.format("Expense [id=%d, label=%s, price=%f, date=%s, %s]",getId(),getLabel(),getPrice(),formatter.format(date_expense),getRoomate().toString());
     }
 }

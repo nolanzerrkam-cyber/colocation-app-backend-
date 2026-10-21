@@ -14,14 +14,11 @@ public class GetExpenseDto {
 
     private String email;
 
-    public GetExpenseDto(String label, float price, String date_expense, String firstname, String lastname, String email)
+    public GetExpenseDto(String label, float price, String date_expense)
     {
         setLabel(label);
         setPrice(price);
         setDate_expense(date_expense);
-        setFirstname(firstname);
-        setLastname(lastname);
-        setEmail(email);
     }
 
     public String getLabel() {
