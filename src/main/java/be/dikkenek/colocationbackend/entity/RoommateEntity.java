@@ -3,6 +3,7 @@ package be.dikkenek.colocationbackend.entity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.ws.rs.core.Response;
 
@@ -11,7 +12,9 @@ import java.util.List;
 
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    // FetchType.EAGER will load tasks list as soon as RoommateEntity is created
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
     public RoommateEntity() {
@@ -31,8 +34,10 @@ public class RoommateEntity extends UserEntity {
         if (taskEntity == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
 
-        if (!tasks.contains(taskEntity))
-            tasks.add(taskEntity);
+        if(taskEntity.getRoommate() != this)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
+
+        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
     public void removeTask(TaskEntity taskEntity) {
