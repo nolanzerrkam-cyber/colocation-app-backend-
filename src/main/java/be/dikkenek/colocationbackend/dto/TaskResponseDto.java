@@ -52,8 +52,8 @@ public class TaskResponseDto {
         return isDone;
     }
 
-    public void setIsDone(boolean is_done) {
-        is_done = this.isDone;
+    public void setIsDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
     public String getDeadline() {
