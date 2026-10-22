@@ -113,4 +113,8 @@ public abstract class UserEntity {
     public boolean verifyPassword(String password) {
         return this.getPassword().equals(password);
     }
+
+    public String getFullName() {
+        return firstname + " " + lastname;
+    }
 }
