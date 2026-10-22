@@ -3,17 +3,12 @@ package be.dikkenek.colocationbackend.dto;
 public class RegisterRequestDto
 {
     private String email;
-    private String password;
     private String firstname;
     private String lastname;
     private String phonenumber;
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getFirstname() {
@@ -32,9 +27,6 @@ public class RegisterRequestDto
         this.email = email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public void setFirstname(String firstname) {
         this.firstname = firstname;
@@ -50,9 +42,8 @@ public class RegisterRequestDto
 
     public RegisterRequestDto(){}
 
-    public RegisterRequestDto(String email, String password, String firstname, String lastname, String phonenumber) {
+    public RegisterRequestDto(String email, String firstname, String lastname, String phonenumber) {
         this.email = email;
-        this.password = password;
         this.firstname = firstname;
         this.lastname = lastname;
         this.phonenumber = phonenumber;

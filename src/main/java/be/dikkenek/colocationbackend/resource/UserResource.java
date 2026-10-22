@@ -23,7 +23,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response register(RegisterRequestDto dto) throws BackendException {
-        UserEntity entity = new RoommateEntity(dto.getEmail(), dto.getPassword(), dto.getFirstname(),
+        UserEntity entity = new RoommateEntity(dto.getEmail(), "changeme",dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber());
 
         boolean isCreated = entity.create(userDao);
