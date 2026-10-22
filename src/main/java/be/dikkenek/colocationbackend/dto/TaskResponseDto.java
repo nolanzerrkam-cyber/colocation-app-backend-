@@ -15,12 +15,12 @@ public class TaskResponseDto {
     }
 
     public TaskResponseDto(int id, String name, String description, boolean isDone, String deadline, String roommateFullName) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.isDone = isDone;
-        this.deadline = deadline;
-        this.roommateFullName = roommateFullName;
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setIsDone(isDone);
+        setDeadline(deadline);
+        setRoommateFullName(roommateFullName);
     }
 
     public int getId() {
