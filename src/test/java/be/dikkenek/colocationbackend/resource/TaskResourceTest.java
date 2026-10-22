@@ -5,6 +5,7 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.TaskCreateDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
+import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -31,8 +32,9 @@ public class TaskResourceTest {
     void testPostTask_Success() throws BackendException {
         // Given
         TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date(), "email@email.com");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(new RoommateEntity()));
-        Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(true);
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
         Response response = taskResource.postTask(inputTask);
@@ -45,8 +47,9 @@ public class TaskResourceTest {
     void testPostTask_NotSuccess() throws BackendException {
         // Given
         TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date(), "email@email.com");
-        Mockito.when(taskDao.create(Mockito.any(TaskEntity.class))).thenReturn(false);
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(new RoommateEntity()));
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When
         Response response = taskResource.postTask(inputTask);
