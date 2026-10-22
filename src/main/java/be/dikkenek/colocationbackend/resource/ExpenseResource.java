@@ -34,6 +34,7 @@ public class ExpenseResource
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         List<GetExpenseDto> expenseDtos = expenses.stream().map(entity -> new GetExpenseDto(
+                entity.getId(),
                 entity.getLabel(),
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,
@@ -71,7 +72,6 @@ public class ExpenseResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) throws BackendException
     {
-        UserEntity.checkEmail(dto.getEmail());
         UserEntity user = UserEntity.get(userDao, dto.getEmail());
 
         if (!(user instanceof RoommateEntity))

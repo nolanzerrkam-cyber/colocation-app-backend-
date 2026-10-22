@@ -79,11 +79,6 @@ public abstract class UserEntity {
         this.phonenumber = phonenumber;
     }
 
-    public static void checkEmail(String email) throws BackendException {
-        if (email == null || email.trim().isEmpty())
-            throw new BackendException(Response.Status.BAD_REQUEST, "The email is not valid !");
-    }
-
     public UserEntity() {
     }
 
@@ -99,7 +94,12 @@ public abstract class UserEntity {
         return userDao.create(this);
     }
 
-    public static UserEntity get(UserDao userDao, String email) throws BackendException {
+    public static UserEntity get(UserDao userDao, String email) throws BackendException
+    {
+        if(email == null || email.trim().isEmpty())
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "An email should never be null.");
+        }
         return userDao.get(email).orElse(null);
     }
 

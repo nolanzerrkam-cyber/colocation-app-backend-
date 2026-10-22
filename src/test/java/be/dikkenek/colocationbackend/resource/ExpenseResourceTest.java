@@ -117,10 +117,10 @@ public class ExpenseResourceTest {
         ExpenseInsertDto dto = validDto();
         dto.setEmail(null);
 
-        //assertEquals(400, resp.getStatus());
         assertThrows(BackendException.class, () -> {
             expenseResource.postExpense(dto);
         });
+
         Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
     }
 }
