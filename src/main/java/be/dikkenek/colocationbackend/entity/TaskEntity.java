@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tasks")
@@ -25,17 +27,26 @@ public class TaskEntity {
     @Column(name = "is_done")
     private boolean isDone;
 
-    @Column(name = "deadline")
+    @Column(name = "deadline", nullable = false)
     private Date deadline;
+
+    @ManyToOne
+    @JoinColumn(name = "email", nullable = false)
+    private RoommateEntity roommate;
 
     public TaskEntity() {
     }
 
-    public TaskEntity(String name, String description, boolean isDone, Date deadline) throws BackendException {
+    public TaskEntity(String name, String description, boolean isDone, Date deadline, RoommateEntity roommate) throws BackendException {
         setName(name);
         setDescription(description);
         setIsDone(isDone);
         setDeadline(deadline);
+        setRoommate(roommate);
+    }
+
+    public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
+        return taskDao.getAll();
     }
 
     public boolean create(TaskDao taskDao) throws BackendException {
@@ -88,5 +99,38 @@ public class TaskEntity {
         if (deadline == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: Date cannot be null.");
         this.deadline = deadline;
+    }
+
+    public RoommateEntity getRoommate() {
+        return roommate;
+    }
+
+    public void setRoommate(RoommateEntity roommate) throws BackendException {
+        if(roommate == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
+        this.roommate = roommate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof TaskEntity)
+            return o.toString().equals(toString());
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, isDone, deadline);
+    }
+
+    @Override
+    public String toString() {
+        return "TaskEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", isDone=" + isDone +
+                ", deadline=" + deadline +
+                '}';
     }
 }
