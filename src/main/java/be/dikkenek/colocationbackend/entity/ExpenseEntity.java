@@ -3,10 +3,10 @@ import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
+import jakarta.ws.rs.core.Response;
+
 import java.util.Date;
 import java.util.List;
-
-import java.math.BigDecimal;
 import java.time.*;
 import java.util.Optional;
 
@@ -36,28 +36,29 @@ public class ExpenseEntity {
     public ExpenseEntity() {
     }
 
-public ExpenseEntity(String label, float price, RoommateEntity roomate) {
-        setLabel(label);
-        setPrice(price);
-        setDate();
-        setRoomate(roomate);
-    }
+    public ExpenseEntity(String label, float price, RoommateEntity roomate) throws BackendException{
+            setLabel(label);
+            setPrice(price);
+            setDate();
+            setRoomate(roomate);
+        }
 
     public int getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(int id)
+    {
         this.id = id;
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
-    private void setLabel(String label) {
+    private void setLabel(String label) throws BackendException{
         if (label == null || label.isEmpty()) {
-            throw new IllegalArgumentException("label cannot be null or empty");
+            throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
         }
         this.label = label;
     }
@@ -66,9 +67,9 @@ public String getLabel() {
         return price;
     }
 
-    private void setPrice(float price) {
+    private void setPrice(float price) throws BackendException {
         if (price <= 0) {
-            throw new IllegalArgumentException("price cannot be negative");
+            throw new BackendException(Response.Status.BAD_REQUEST, "price cannot be negative");
         }
         this.price = price;
     }
