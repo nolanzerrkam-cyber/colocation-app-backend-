@@ -76,15 +76,15 @@ public class ExpenseResource
 
         if (!(user instanceof RoommateEntity))
         {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Only roommates can add expenses !").build();
         }
 
         ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
 
         if (expense.create(expenseDao))
         {
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).entity("The expense has been created !").build();
         }
-        return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Sorry, we couldn't create your expense.").build();
     }
 }
