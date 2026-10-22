@@ -45,9 +45,12 @@ public class TaskResource {
         if(!(userEntity instanceof RoommateEntity))
             return Response.status(400).entity("Error when retrieving userEntity").build();
 
-        TaskEntity taskEntity = new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), (RoommateEntity) userEntity);
+        RoommateEntity roommateEntity = (RoommateEntity) userEntity;
+        TaskEntity taskEntity = new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
 
-        boolean success = taskEntity.create(taskDao);
+        roommateEntity.addTask(taskEntity);
+
+        boolean success = roommateEntity.update(userDao);
         if (success)
             return Response.status(201).build();
 
