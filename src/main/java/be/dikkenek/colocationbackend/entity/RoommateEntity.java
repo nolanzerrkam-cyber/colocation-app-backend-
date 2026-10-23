@@ -7,6 +7,11 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+classe roomate (colocataire) qui permet de créer un colocataire :
+attribut : - email, password, firstname, lastname, phonenumber (heriter de la classe user)
+           - expenses (liste de depense)
+*/
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity
 {
@@ -33,7 +38,9 @@ public class RoommateEntity extends UserEntity
         this.expenses = expenses;
     }
 
-    public void addExpense (ExpenseEntity expense) {
+    public void addExpense (ExpenseEntity expense)
+    {
+        //methode qui ajoute une depense dans la liste
         if (expense != null && !expenses.contains(expense)) {
             expenses.add(expense);
             if (expense.getRoomate() != this) {
@@ -42,17 +49,33 @@ public class RoommateEntity extends UserEntity
         }
     }
 
-    public void removeExpense (ExpenseEntity expense) {
-            expenses.remove(expense);
+    public void removeExpense (ExpenseEntity expense)
+    {
+        // methode qui supprime une depense de la liste
+        expenses.remove(expense);
     }
+
     @Override
     public String toString()
     {
         return String.format("User [email=%s, password=%s, firstname=%s, lastname=%s, phonenumber=%s]", getEmail(),getPassword() ,getFirstname(), getLastname(),getPhonenumber());
     }
 
-    // faire fonctione qui calcule les depense d'un user
+    public float getPriceRoomate()
+    {
+        // fonction qui calcule le montant total des depense d'un coloc
+        return expenses.stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
+    }
 
-    // faire DTO qui calcule tout les depense de tout les user
+    public static float getTotalExpense(List<RoommateEntity> roommates)
+    {
+        // fonction qui calcule l'ensemble des depense de la colocation
+        float totalGlobal = roommates.stream()
+                .flatMap(roommate -> roommate.getExpenses().stream())
+                .map(ExpenseEntity::getPrice)
+                .reduce(0.0f, Float::sum);
+        return totalGlobal;
+    }
+    // faire le DTO
 
 }
