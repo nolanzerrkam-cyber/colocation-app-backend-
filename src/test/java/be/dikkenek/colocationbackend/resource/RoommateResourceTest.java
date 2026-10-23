@@ -1,7 +1,8 @@
 package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.RoommateDao;
+import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
+import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +20,7 @@ import java.util.List;
 class RoommateResourceTest
 {
     @Mock
-    private RoommateDao roommateDao;
+    private UserDao userDao;
     @InjectMocks
     private RoommateResource roommateResource;
 
@@ -29,7 +30,7 @@ class RoommateResourceTest
         RoommateEntity roommate1 = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234");
         RoommateEntity roommate2 = new RoommateEntity("email2@email.com", "password", "b", "b", "0472727272");
         List<RoommateEntity> roommates = Arrays.asList(roommate1, roommate2);
-        Mockito.when(roommateDao.getAll()).thenReturn(roommates);
+        Mockito.when(RoommateEntity.getAll(userDao)).thenReturn(roommates);
 
         // When
         Response response = roommateResource.getAll();
@@ -44,7 +45,7 @@ class RoommateResourceTest
     @Test
     void roommate_getAll_empty() throws BackendException {
         // Given
-        Mockito.when(roommateDao.getAll()).thenReturn(Arrays.asList());
+        Mockito.when(RoommateEntity.getAll(userDao)).thenReturn(Arrays.asList());
 
         // When
         Response response = roommateResource.getAll();
@@ -58,7 +59,7 @@ class RoommateResourceTest
     @Test
     void roommate_getAll_dao_error() throws BackendException {
         // Given
-        Mockito.when(roommateDao.getAll()).thenThrow(new BackendException(Response.Status.INTERNAL_SERVER_ERROR,"Erreur DB"));
+        Mockito.when(RoommateEntity.getAll(userDao)).thenThrow(new BackendException(Response.Status.INTERNAL_SERVER_ERROR,"Erreur DB"));
 
         // When / Then
         Assertions.assertThrows(BackendException.class, () -> roommateResource.getAll());
