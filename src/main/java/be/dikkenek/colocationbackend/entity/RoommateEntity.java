@@ -87,4 +87,9 @@ public class RoommateEntity extends UserEntity
                 .map(RoommateEntity.class::cast).collect(Collectors.toList());
     }
 
+    public static RoommateEntity get(UserDao dao, String email) throws BackendException{
+        return (RoommateEntity) dao.get(email).orElse(null);
+    }
+
+
 }

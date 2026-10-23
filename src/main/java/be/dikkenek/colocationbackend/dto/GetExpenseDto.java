@@ -16,10 +16,6 @@ public class GetExpenseDto {
 
     private String email;
 
-    private float totalPrice;
-
-
-
     public GetExpenseDto(int id,String label, float price, String date_expense, String firstname, String lastname, String email)
     {
         setId(id);
@@ -85,13 +81,5 @@ public class GetExpenseDto {
 
     public void setEmail (String email) {
         this.email = email;
-    }
-
-    public float getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(float totalPrice) {
-        this.totalPrice = totalPrice;
     }
 }
