@@ -43,6 +43,7 @@ public class TaskEntity {
         setIsDone(isDone);
         setDeadline(deadline);
         setRoommate(roommate);
+        roommate.addTask(this);
     }
 
     public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
