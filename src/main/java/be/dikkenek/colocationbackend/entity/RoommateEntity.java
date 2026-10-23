@@ -1,11 +1,14 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.ExpenseDao;
+import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
 classe roomate (colocataire) qui permet de créer un colocataire :
@@ -76,6 +79,11 @@ public class RoommateEntity extends UserEntity
                 .reduce(0.0f, Float::sum);
         return totalGlobal;
     }
-    // faire le DTO
+
+    public static List<RoommateEntity> findAll(UserDao userDao) throws BackendException {
+        return userDao.getAll().stream()
+                .filter(user -> user instanceof RoommateEntity)
+                .map(RoommateEntity.class::cast).collect(Collectors.toList());
+    }
 
 }
