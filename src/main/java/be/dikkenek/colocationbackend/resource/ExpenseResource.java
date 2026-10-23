@@ -13,7 +13,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.message.filtering.SelectableEntityProcessor;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -51,7 +50,16 @@ public class ExpenseResource
         )).collect(Collectors.toList());
         ListExpenseResponseDto responseDto = new ListExpenseResponseDto(totalPrice,expenseDtos);
 
-        return Response.status(200).entity((responseDto)).build();
+        return Response.status(200).entity(responseDto).build();
+    }
+    @GET
+    @Path("/total")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPricePerRoommate(@QueryParam("email") String email) throws BackendException {
+        RoommateEntity roommate = RoommateEntity.get(userDao, email);
+        float priceRoommate = roommate.getPriceRoomate();
+
+        return Response.status(200).entity(priceRoommate).build();
     }
     @DELETE
     @Path("/{id}")
