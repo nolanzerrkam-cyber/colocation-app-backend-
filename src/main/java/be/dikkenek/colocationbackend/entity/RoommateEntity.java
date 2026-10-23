@@ -5,6 +5,7 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ attribut : - email, password, firstname, lastname, phonenumber (heriter de la cl
 public class RoommateEntity extends UserEntity
 {
 
-    @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
     public RoommateEntity() {
