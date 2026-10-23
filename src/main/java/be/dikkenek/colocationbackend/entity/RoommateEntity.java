@@ -48,33 +48,6 @@ public class RoommateEntity extends UserEntity {
         setExpenses(new ArrayList<>());
     }
 
-    public void addTask(TaskEntity taskEntity) throws BackendException {
-        if (taskEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
-
-        if(taskEntity.getRoommate() != this)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
-
-        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
-    }
-
-    public void removeTask(TaskEntity taskEntity) {
-        tasks.remove(taskEntity);
-    }
-    public void addTask(TaskEntity taskEntity) throws BackendException {
-        if (taskEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
-
-        if(taskEntity.getRoommate() != this)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
-
-        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
-    }
-
-    public void removeTask(TaskEntity taskEntity) {
-        tasks.remove(taskEntity);
-    }
-
     public List<ExpenseEntity> getExpenses(){
         return expenses;
     }
