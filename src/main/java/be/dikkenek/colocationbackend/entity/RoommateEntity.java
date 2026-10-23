@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity {
@@ -34,7 +35,7 @@ public class RoommateEntity extends UserEntity {
         if (taskEntity == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
 
-        if(taskEntity.getRoommate() != this)
+        if (taskEntity.getRoommate() != this)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
 
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
@@ -42,5 +43,28 @@ public class RoommateEntity extends UserEntity {
 
     public void removeTask(TaskEntity taskEntity) {
         tasks.remove(taskEntity);
+    }
+
+    public List<TaskEntity> getTasks() {
+        return tasks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RoommateEntity)) return false;
+        RoommateEntity that = (RoommateEntity) o;
+        return Objects.equals(tasks, that.tasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(tasks);
+    }
+
+    @Override
+    public String toString() {
+        return "RoommateEntity{" +
+                "tasks=" + tasks +
+                '}';
     }
 }
