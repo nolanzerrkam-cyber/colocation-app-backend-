@@ -42,13 +42,11 @@ public class TaskResource {
     public Response postTask(TaskCreateDto taskDto) throws BackendException {
         UserEntity userEntity = UserEntity.get(userDao, taskDto.getRoommateEmail());
 
-        if(!(userEntity instanceof RoommateEntity))
+        if (!(userEntity instanceof RoommateEntity))
             return Response.status(400).entity("Error when retrieving userEntity").build();
 
         RoommateEntity roommateEntity = (RoommateEntity) userEntity;
         TaskEntity taskEntity = new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
-
-        roommateEntity.addTask(taskEntity);
 
         boolean success = roommateEntity.update(userDao);
         if (success)
