@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class ExpenseDao implements Dao<ExpenseEntity, Integer> {
-    
+
     @Override
     public List<ExpenseEntity> getAll() throws BackendException {
         try (EntityManager entityManager = DatabaseConfig.createEntityManager()) {

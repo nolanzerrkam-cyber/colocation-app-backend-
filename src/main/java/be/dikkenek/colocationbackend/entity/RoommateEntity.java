@@ -10,6 +10,12 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.ws.rs.core.Response;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 classe roomate (colocataire) qui permet de créer un colocataire :
@@ -17,20 +23,56 @@ attribut : - email, password, firstname, lastname, phonenumber (heriter de la cl
            - expenses (liste de depense)
 */
 @Entity(name = "Roommate")
-public class RoommateEntity extends UserEntity
-{
+public class RoommateEntity extends UserEntity {
+
+    // FetchType.EAGER will load tasks list as soon as RoommateEntity is created
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<TaskEntity> tasks;
 
     @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
     public RoommateEntity() {
+
         setExpenses(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
-        setExpenses(new ArrayList<>());
+        this.tasks = new ArrayList<>();
+    }
 
+    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, List<TaskEntity> tasks) throws BackendException {
+        this(email, password, firstname, lastname, phonenumber);
+        this.tasks = tasks;
+        setExpenses(new ArrayList<>());
+    }
+
+    public void addTask(TaskEntity taskEntity) throws BackendException {
+        if (taskEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
+
+        if(taskEntity.getRoommate() != this)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
+
+        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
+    }
+
+    public void removeTask(TaskEntity taskEntity) {
+        tasks.remove(taskEntity);
+    }
+    public void addTask(TaskEntity taskEntity) throws BackendException {
+        if (taskEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
+
+        if(taskEntity.getRoommate() != this)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
+
+        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
+    }
+
+    public void removeTask(TaskEntity taskEntity) {
+        tasks.remove(taskEntity);
     }
 
     public List<ExpenseEntity> getExpenses(){

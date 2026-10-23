@@ -11,15 +11,17 @@ public class TaskCreateDto {
     @JsonProperty("isDone")
     private boolean isDone;
     private Date deadline;
+    private String roommateEmail;
 
     public TaskCreateDto() {
     }
 
-    public TaskCreateDto(String name, String description, boolean isDone, Date deadline) {
+    public TaskCreateDto(String name, String description, boolean isDone, Date deadline, String roommateEmail) {
         setName(name);
         setDescription(description);
         setDone(isDone);
         setDeadline(deadline);
+        setRoommateEmail(roommateEmail);
     }
 
     public String getName() {
@@ -52,5 +54,13 @@ public class TaskCreateDto {
 
     public void setDeadline(Date deadline) {
         this.deadline = deadline;
+    }
+
+    public String getRoommateEmail() {
+        return roommateEmail;
+    }
+
+    public void setRoommateEmail(String roommateEmail) {
+        this.roommateEmail = roommateEmail;
     }
 }

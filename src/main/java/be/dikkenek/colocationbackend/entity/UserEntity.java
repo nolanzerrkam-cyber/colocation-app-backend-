@@ -94,7 +94,12 @@ public abstract class UserEntity {
         return userDao.create(this);
     }
 
-    public static UserEntity get(UserDao userDao, String email) throws BackendException {
+    public static UserEntity get(UserDao userDao, String email) throws BackendException
+    {
+        if(email == null || email.trim().isEmpty())
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "An email should never be null.");
+        }
         return userDao.get(email).orElse(null);
     }
 
@@ -112,5 +117,9 @@ public abstract class UserEntity {
 
     public boolean verifyPassword(String password) {
         return this.getPassword().equals(password);
+    }
+
+    public String getFullName() {
+        return firstname + " " + lastname;
     }
 }

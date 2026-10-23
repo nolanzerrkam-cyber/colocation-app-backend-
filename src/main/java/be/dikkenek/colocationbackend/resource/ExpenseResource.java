@@ -88,39 +88,19 @@ public class ExpenseResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) throws BackendException
     {
-        if (dto == null || dto.getEmail() == null ||dto.getEmail().trim().isEmpty())
+        UserEntity user = UserEntity.get(userDao, dto.getEmail());
+
+        if (!(user instanceof RoommateEntity))
         {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Only roommates can add expenses !").build();
         }
 
-        // Optional is used to handle two types of values : a simple value, and a null value. I have to use it, beacause userDao.get(email)
-        // could say that the email dosen't exist(meaning nothing get returned !), and with Optional,
-        // I can receive a null value safely, without an exception being risen.
-        Optional<UserEntity> user = userDao.get(dto.getEmail());
-        // to check if we don't have a user or if the user is an instance of roomateEntity (meaning its a type roomateEntity.)
-        if(!user.isPresent() || !(user.get() instanceof RoommateEntity))
-        {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
 
-        ExpenseEntity exp;
-        try
+        if (expense.create(expenseDao))
         {
-            exp = new ExpenseEntity(dto.getLibele(), dto.getPrice(), (RoommateEntity) user.get());
+            return Response.status(Response.Status.CREATED).entity("The expense has been created !").build();
         }
-        catch (IllegalArgumentException ie)
-        {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .build();
-        }
-
-        if(exp.create(expenseDao))
-        {
-            return Response.status(Response.Status.CREATED)
-                    .build();
-        }
-        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-                .build();
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Sorry, we couldn't create your expense.").build();
     }
 }
