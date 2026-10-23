@@ -50,6 +50,10 @@ public class TaskEntity {
         return taskDao.getAll();
     }
 
+    public static TaskEntity get(TaskDao taskDao, int id) throws BackendException {
+        return taskDao.get(id).orElse(null);
+    }
+
     public boolean create(TaskDao taskDao) throws BackendException {
         return taskDao.create(this);
     }
@@ -107,7 +111,7 @@ public class TaskEntity {
     }
 
     public void setRoommate(RoommateEntity roommate) throws BackendException {
-        if(roommate == null)
+        if (roommate == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
         this.roommate = roommate;
     }
