@@ -45,6 +45,10 @@ public class RoommateEntity extends UserEntity {
         tasks.remove(taskEntity);
     }
 
+    public List<TaskEntity> getTasks() {
+        return tasks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
