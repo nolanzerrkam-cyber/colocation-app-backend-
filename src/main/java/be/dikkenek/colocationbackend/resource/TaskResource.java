@@ -58,7 +58,7 @@ public class TaskResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") int id) throws BackendException {
+    public Response deleteTask(@PathParam("id") int id) throws BackendException {
         TaskEntity taskEntity = TaskEntity.get(taskDao, id);
 
         if (taskEntity == null)

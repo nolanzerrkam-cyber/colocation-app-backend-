@@ -39,7 +39,7 @@ public class TaskResourceTest {
         // When
         Response response = taskResource.postTask(inputTask);
 
-        // 3. Then
+        // Then
         Assertions.assertEquals(201, response.getStatus());
     }
 
@@ -54,7 +54,7 @@ public class TaskResourceTest {
         // When
         Response response = taskResource.postTask(inputTask);
 
-        // 3. Then
+        // Then
         Assertions.assertEquals(500, response.getStatus());
     }
 
@@ -67,7 +67,20 @@ public class TaskResourceTest {
         // When
         Response response = taskResource.postTask(inputTask);
 
-        // 3. Then
+        // Then
         Assertions.assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    void test_deleteTask_not_found() throws BackendException {
+        // Given
+        int id = 0;
+        Mockito.when(taskDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
+
+        // When
+        Response response = taskResource.deleteTask(id);
+
+        // Then
+        Assertions.assertEquals(404, response.getStatus());
     }
 }
