@@ -18,6 +18,7 @@ public class GetExpenseDto {
 
     public GetExpenseDto(int id,String label, float price, String date_expense, String firstname, String lastname, String email)
     {
+        setId(id);
         setLabel(label);
         setPrice(price);
         setDate_expense(date_expense);
