@@ -103,10 +103,6 @@ public abstract class UserEntity {
         return userDao.get(email).orElse(null);
     }
 
-    public static List<UserEntity> getAll(UserDao userDao) throws BackendException {
-        return userDao.getAll();
-    }
-
     public boolean delete(UserDao userDao) throws BackendException {
         return userDao.delete(this);
     }

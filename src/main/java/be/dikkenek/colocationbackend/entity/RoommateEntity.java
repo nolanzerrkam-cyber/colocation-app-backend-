@@ -1,5 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -10,6 +11,9 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity {
@@ -66,5 +70,17 @@ public class RoommateEntity extends UserEntity {
         return "RoommateEntity{" +
                 "tasks=" + tasks +
                 '}';
+    }
+
+    //Méthodes
+
+    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException
+    {
+        List<UserEntity> entities = dao.getAll();
+
+        return entities.stream()
+                .filter(RoommateEntity.class::isInstance)
+                .map(RoommateEntity.class::cast)
+                .collect(Collectors.toList());
     }
 }
