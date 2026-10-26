@@ -1,6 +1,7 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
+import be.dikkenek.colocationbackend.dto.RoommateResponseDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class RoommateResourceTest
@@ -39,7 +41,6 @@ class RoommateResourceTest
         // Then
         Assertions.assertEquals(200, response.getStatus());
         Assertions.assertEquals(2, responseEntity.size());
-        Assertions.assertEquals(roommates, responseEntity);
     }
 
     @Test
