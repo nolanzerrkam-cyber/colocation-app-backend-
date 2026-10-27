@@ -6,13 +6,13 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Objects;
+
+import jakarta.ws.rs.core.Response;
 
 /*
 classe roomate (colocataire) qui permet de créer un colocataire :
@@ -30,32 +30,29 @@ public class RoommateEntity extends UserEntity {
     private List<ExpenseEntity> expenses;
 
     public RoommateEntity() {
-
         setExpenses(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
-        this.tasks = new ArrayList<>();
+        setTasks(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, List<TaskEntity> tasks) throws BackendException {
         this(email, password, firstname, lastname, phonenumber);
-        this.tasks = tasks;
+        setTasks(tasks);
         setExpenses(new ArrayList<>());
     }
 
-    public List<ExpenseEntity> getExpenses(){
+    public List<ExpenseEntity> getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(List<ExpenseEntity> expenses)
-    {
+    public void setExpenses(List<ExpenseEntity> expenses) {
         this.expenses = expenses;
     }
 
-    public void addExpense (ExpenseEntity expense)
-    {
+    public void addExpense(ExpenseEntity expense) {
         //methode qui ajoute une depense dans la liste
         if (expense != null && !expenses.contains(expense)) {
             expenses.add(expense);
@@ -65,26 +62,17 @@ public class RoommateEntity extends UserEntity {
         }
     }
 
-    public void removeExpense (ExpenseEntity expense)
-    {
+    public void removeExpense(ExpenseEntity expense) {
         // methode qui supprime une depense de la liste
         expenses.remove(expense);
     }
 
-    @Override
-    public String toString()
-    {
-        return String.format("User [email=%s, password=%s, firstname=%s, lastname=%s, phonenumber=%s]", getEmail(),getPassword() ,getFirstname(), getLastname(),getPhonenumber());
-    }
-
-    public float getPriceRoomate()
-    {
+    public float getPriceRoomate() {
         // fonction qui calcule le montant total des depense d'un coloc
         return expenses.stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
     }
 
-    public static float getTotalExpense(List<RoommateEntity> roommates)
-    {
+    public static float getTotalExpense(List<RoommateEntity> roommates) {
         // fonction qui calcule l'ensemble des depense de la colocation
         float totalGlobal = roommates.stream()
                 .flatMap(roommate -> roommate.getExpenses().stream())
@@ -99,15 +87,24 @@ public class RoommateEntity extends UserEntity {
                 .map(RoommateEntity.class::cast).collect(Collectors.toList());
     }
 
-    public static RoommateEntity get(UserDao dao, String email) throws BackendException{
+    public static RoommateEntity get(UserDao dao, String email) throws BackendException {
         return (RoommateEntity) dao.get(email).orElse(null);
+    }
+
+    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException {
+        List<UserEntity> entities = dao.getAll();
+
+        return entities.stream()
+                .filter(RoommateEntity.class::isInstance)
+                .map(RoommateEntity.class::cast)
+                .collect(Collectors.toList());
     }
 
     public void addTask(TaskEntity taskEntity) throws BackendException {
         if (taskEntity == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
 
-        if(taskEntity.getRoommate() != this)
+        if (taskEntity.getRoommate() != this)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
 
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
@@ -117,16 +114,31 @@ public class RoommateEntity extends UserEntity {
         tasks.remove(taskEntity);
     }
 
+    public List<TaskEntity> getTasks() {
+        return tasks;
+    }
 
-    //Méthodes
+    public void setTasks(List<TaskEntity> tasks) {
+        this.tasks = tasks;
+    }
 
-    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException
-    {
-        List<UserEntity> entities = dao.getAll();
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RoommateEntity)) return false;
+        RoommateEntity that = (RoommateEntity) o;
+        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses);
+    }
 
-        return entities.stream()
-                .filter(RoommateEntity.class::isInstance)
-                .map(RoommateEntity.class::cast)
-                .collect(Collectors.toList());
+    @Override
+    public int hashCode() {
+        return Objects.hash(tasks, expenses);
+    }
+
+    @Override
+    public String toString() {
+        return "RoommateEntity{" +
+                "tasks=" + tasks +
+                ", expenses=" + expenses +
+                '}';
     }
 }

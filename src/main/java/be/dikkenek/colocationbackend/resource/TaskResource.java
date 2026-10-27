@@ -54,4 +54,23 @@ public class TaskResource {
 
         return Response.status(500).entity("Error when creating task").build();
     }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteTask(@PathParam("id") int id) throws BackendException {
+        TaskEntity taskEntity = TaskEntity.get(taskDao, id);
+
+        if (taskEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
+
+        RoommateEntity roommateEntity = taskEntity.getRoommate();
+        roommateEntity.removeTask(taskEntity);
+
+        boolean isUpdated = roommateEntity.update(userDao);
+        if (isUpdated)
+            return Response.status(Response.Status.OK).build();
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error when deleting task").build();
+    }
 }
