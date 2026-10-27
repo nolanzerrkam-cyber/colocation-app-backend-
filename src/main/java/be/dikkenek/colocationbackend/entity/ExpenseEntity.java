@@ -108,10 +108,6 @@ public String getLabel() {
     {
         return dao.create(this);
     }
-    public boolean delete(ExpenseDao dao) throws BackendException
-    {
-        return dao.delete(this);
-    }
 
     @Override
     public boolean equals(Object o) {

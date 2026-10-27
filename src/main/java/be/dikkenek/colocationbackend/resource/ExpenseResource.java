@@ -74,8 +74,11 @@ public class ExpenseResource
                     .build();
         }
 
-        boolean isDeleted = expense.delete(expenseDao);
-        if (isDeleted) {
+        RoommateEntity roommate = expense.getRoomate();
+        roommate.removeExpense(expense);
+
+        boolean isUpdated = roommate.update(userDao);
+        if (isUpdated) {
             return Response.status(Response.Status.OK).build();
         }
 
