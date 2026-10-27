@@ -19,7 +19,6 @@ classe roomate (colocataire) qui permet de créer un colocataire :
 attribut : - email, password, firstname, lastname, phonenumber (heriter de la classe user)
            - expenses (liste de depense)
 */
-
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity {
 
@@ -36,12 +35,12 @@ public class RoommateEntity extends UserEntity {
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
-        this.tasks = new ArrayList<>();
+        setTasks(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, List<TaskEntity> tasks) throws BackendException {
         this(email, password, firstname, lastname, phonenumber);
-        this.tasks = tasks;
+        setTasks(tasks);
         setExpenses(new ArrayList<>());
     }
 
@@ -119,22 +118,27 @@ public class RoommateEntity extends UserEntity {
         return tasks;
     }
 
+    public void setTasks(List<TaskEntity> tasks) {
+        this.tasks = tasks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
-        return Objects.equals(tasks, that.tasks);
+        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(tasks);
+        return Objects.hash(tasks, expenses);
     }
 
     @Override
     public String toString() {
         return "RoommateEntity{" +
                 "tasks=" + tasks +
+                ", expenses=" + expenses +
                 '}';
     }
 }
