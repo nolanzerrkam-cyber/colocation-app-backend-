@@ -4,6 +4,7 @@ import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
 import be.dikkenek.colocationbackend.dto.GetExpenseDto;
+import be.dikkenek.colocationbackend.dto.ListExpenseResponseDto;
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -29,7 +30,12 @@ public class ExpenseResource
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllExpenses() throws BackendException {
-        List<ExpenseEntity> expenses = ExpenseEntity.findAll(expenseDao);
+
+        List<RoommateEntity> roommates = RoommateEntity.findAll(userDao);
+        float totalPrice = RoommateEntity.getTotalExpense(roommates);
+        List<ExpenseEntity> expenses = roommates.stream()
+                .flatMap(roommate -> roommate.getExpenses().stream())
+                .collect(Collectors.toList());
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -38,12 +44,22 @@ public class ExpenseResource
                 entity.getLabel(),
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,
-                entity.getRoomate() != null ? entity.getRoomate().getFirstname() : null,
-                entity.getRoomate() != null ? entity.getRoomate().getLastname() : null,
-                entity.getRoomate() != null ? entity.getRoomate().getEmail() : null
+                entity.getRoomate().getFirstname(),
+                entity.getRoomate().getLastname(),
+                entity.getRoomate().getEmail()
         )).collect(Collectors.toList());
+        ListExpenseResponseDto responseDto = new ListExpenseResponseDto(totalPrice,expenseDtos);
 
-        return Response.status(200).entity(expenseDtos).build();
+        return Response.status(200).entity(responseDto).build();
+    }
+    @GET
+    @Path("/total")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPricePerRoommate(@QueryParam("email") String email) throws BackendException {
+        RoommateEntity roommate = RoommateEntity.get(userDao, email);
+        float priceRoommate = roommate.getPriceRoomate();
+
+        return Response.status(200).entity(priceRoommate).build();
     }
     @DELETE
     @Path("/{id}")

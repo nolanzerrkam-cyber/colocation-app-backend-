@@ -1,7 +1,7 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class GetExpenseDto
-{
+public class GetExpenseDto {
+
     private int id;
 
     private String label;
@@ -16,7 +16,7 @@ public class GetExpenseDto
 
     private String email;
 
-    public GetExpenseDto(int id, String label, float price, String date_expense, String firstname, String lastname, String email)
+    public GetExpenseDto(int id,String label, float price, String date_expense, String firstname, String lastname, String email)
     {
         setId(id);
         setLabel(label);
@@ -82,5 +82,4 @@ public class GetExpenseDto
     public void setEmail (String email) {
         this.email = email;
     }
-
 }
