@@ -126,9 +126,13 @@ public String getLabel() {
     }
 
     @Override
-    public String toString()
-    {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        return String.format("Expense [id=%d, label=%s, price=%f, date=%s, %s]",getId(),getLabel(),getPrice(),formatter.format(date_expense),getRoomate().toString());
+    public String toString() {
+        return "ExpenseEntity{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", price=" + price +
+                ", date=" + getDate() +
+                ", roommateEmail=" + (getRoomate() != null ? getRoomate().getEmail() : "null") +
+                '}';
     }
 }
