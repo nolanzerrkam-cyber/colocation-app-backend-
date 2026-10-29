@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
+import be.dikkenek.colocationbackend.entity.RentEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;

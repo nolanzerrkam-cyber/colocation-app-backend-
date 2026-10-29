@@ -8,6 +8,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.Optional;
 
 public class RentDao implements Dao<RentEntity, Integer>
@@ -78,14 +79,66 @@ public class RentDao implements Dao<RentEntity, Integer>
                 throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to update your rent.");
             }
         }
-        catch(BackendException e)
-        {
-            throw e;
-        }
         catch(Exception e)
         {
             e.printStackTrace();
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to update your rent.");
+        }
+    }
+
+    public boolean delete(RentEntity rent) throws BackendException
+    {
+        try(EntityManager man = DatabaseConfig.createEntityManager())
+        {
+            EntityTransaction et = man.getTransaction();
+            try
+            {
+                et.begin();
+
+                if(rent == null || rent.getLandlord() == null)
+                {
+                    et.rollback();
+                    return false;
+                }
+
+                RentEntity usedRent = man.merge(rent);
+
+                if(usedRent == null)
+                {
+                    et.rollback();
+                    return false;
+                }
+
+                man.remove(usedRent);
+                et.commit();
+                return true;
+            }
+            catch(Exception e)
+            {
+                if(et.isActive())
+                    et.rollback();
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to delete the rent.");
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to delete the rent.");
+        }
+    }
+
+    @Override
+    public List<RentEntity> getAll() throws BackendException
+    {
+        try(EntityManager man = DatabaseConfig.createEntityManager())
+        {
+            return man.createQuery("SELECT r FROM RentEntity r", RentEntity.class).getResultList();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to retrieve the rents.");
         }
     }
  }
