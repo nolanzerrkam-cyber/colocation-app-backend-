@@ -57,4 +57,35 @@ public class RentDao implements Dao<RentEntity, Integer>
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to create the rent.");
         }
     }
-}
+
+    public boolean update(RentEntity rent) throws BackendException
+    {
+        try(EntityManager man = DatabaseConfig.createEntityManager())
+        {
+            EntityTransaction tr = man.getTransaction();
+            try
+            {
+                tr.begin();
+                man.merge(rent);
+                tr.commit();
+                return true;
+            }
+            catch(Exception e)
+            {
+                if(tr.isActive())
+                    tr.rollback();
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to update your rent.");
+            }
+        }
+        catch(BackendException e)
+        {
+            throw e;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "We failed to update your rent.");
+        }
+    }
+ }
