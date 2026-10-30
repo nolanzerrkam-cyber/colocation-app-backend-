@@ -1,9 +1,12 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.Dao;
+import be.dikkenek.colocationbackend.dao.RentDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -62,6 +65,36 @@ public class RentEntity
         if(landlord == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "The rent has to be linked to a landlord. Please try again.");
         this.landlord = landlord;
+    }
+
+    public boolean create(RentDao dao) throws BackendException
+    {
+        // To check if an email has aleardy been linked to a rent
+        boolean checkForRent = dao.getAll().stream().anyMatch(r -> r.getLandlord().getEmail().equals(landlord.getEmail()));
+        if(checkForRent)
+            throw new BackendException(Response.Status.CONFLICT, "This landlord has already a rent !");
+
+        return dao.create(this);
+    }
+
+    public static RentEntity get(RentDao dao, int id) throws BackendException
+    {
+        return dao.get(id).orElse(null);
+    }
+
+    public boolean delete(RentDao rentDao) throws BackendException
+    {
+        return rentDao.delete(this);
+    }
+
+    public boolean update(RentDao rentDao) throws BackendException
+    {
+        return rentDao.update(this);
+    }
+
+    public static List<RentEntity> getAll(RentDao dao) throws BackendException
+    {
+        return dao.getAll();
     }
 
     @Override
