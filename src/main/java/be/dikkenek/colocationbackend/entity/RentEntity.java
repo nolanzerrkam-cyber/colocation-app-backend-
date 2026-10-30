@@ -4,6 +4,8 @@ import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Objects;
+
 @Entity
 @Table(name ="RENT")
 public class RentEntity
@@ -60,5 +62,25 @@ public class RentEntity
         if(landlord == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "The rent has to be linked to a landlord. Please try again.");
         this.landlord = landlord;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(o instanceof RentEntity)
+            return o.toString().equals(toString());
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(this.toString());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "The RentEntity : ID => " + getId() + ", with the price to pay : " + getPrice() + ", from the landlord : " + landlord.getFullName() + ".";
     }
 }
