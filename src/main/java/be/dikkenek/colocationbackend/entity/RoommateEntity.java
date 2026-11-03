@@ -29,6 +29,9 @@ public class RoommateEntity extends UserEntity {
     @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
+    @OneToMany
+    private List<ShoppingItemEntity> shoppingItems;
+
     public RoommateEntity() {
         setExpenses(new ArrayList<>());
     }
@@ -110,6 +113,22 @@ public class RoommateEntity extends UserEntity {
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
+    public void addItem(ShoppingItemEntity item)
+    {
+        if(!shoppingItems.contains(item) && item != null)
+        {
+            shoppingItems.add(item);
+        }
+    }
+
+    public void removeItem(ShoppingItemEntity item)
+    {
+        if(shoppingItems.contains(item) && item != null)
+        {
+            shoppingItems.remove(item);
+        }
+    }
+
     public void removeTask(TaskEntity taskEntity) {
         tasks.remove(taskEntity);
     }
@@ -120,6 +139,14 @@ public class RoommateEntity extends UserEntity {
 
     public void setTasks(List<TaskEntity> tasks) {
         this.tasks = tasks;
+    }
+
+    public List<ShoppingItemEntity> getShoppingItems() {
+        return shoppingItems;
+    }
+
+    public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
+        this.shoppingItems = shoppingItems;
     }
 
     @Override
