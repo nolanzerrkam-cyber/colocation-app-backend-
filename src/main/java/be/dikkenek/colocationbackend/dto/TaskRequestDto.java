@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-public class TaskCreateDto {
+public class TaskRequestDto {
 
     private String name;
     private String description;
@@ -13,10 +13,10 @@ public class TaskCreateDto {
     private Date deadline;
     private String roommateEmail;
 
-    public TaskCreateDto() {
+    public TaskRequestDto() {
     }
 
-    public TaskCreateDto(String name, String description, boolean isDone, Date deadline, String roommateEmail) {
+    public TaskRequestDto(String name, String description, boolean isDone, Date deadline, String roommateEmail) {
         setName(name);
         setDescription(description);
         setDone(isDone);
