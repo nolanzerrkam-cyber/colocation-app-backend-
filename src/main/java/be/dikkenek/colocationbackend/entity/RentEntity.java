@@ -83,32 +83,7 @@ public class RentEntity
         return deadline;
     }
 
-    // This function is made to set the deadline of the rent.
-    // It checks if the deadline is at least at two weeks later as the date from today,
-    // and maximum at one month.
-    public void setDeadline(Date deadline) throws BackendException
-    {
-        if(deadline == null)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
-        }
-
-        // To put the business rule, I have to use Calendar.
-        // It's not can use Date only, but its way more weird, and you have to
-        // put the limits in milliseconds... It's better to use Calendar I believe.
-        Calendar min = Calendar.getInstance();
-        min.add(Calendar.DAY_OF_MONTH, 14);
-
-        Calendar max = Calendar.getInstance();
-        max.add(Calendar.MONTH, 1);
-
-        if(deadline.before(min.getTime()) || deadline.after(max.getTime()))
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is incorrect, you should put the deadline between two weeks later and at maximum one month later.");
-        }
-        this.deadline = deadline;
-    }
-
+    // This is going to get used in the endpoint, to know who paid their rent.
     public List<RentRoommateStatusEntity> getRoommatePaymentStatus() {
         return roommatePaymentStatus;
     }
@@ -148,11 +123,59 @@ public class RentEntity
             r.setPaid(false);
         }
 
-        // Its just to set the deadline to the next month.
+        // It's just to set the deadline to the next month.
+        // I changed this part because if the date for example is 3rd december and the deadline was 2nd november, the next deadline would be 2nd december (not correct)
         Calendar nextDeadline = Calendar.getInstance();
         nextDeadline.setTime(deadline);
-        nextDeadline.add(Calendar.MONTH, 1);
+        Date d = new Date();
+        do
+        {
+            nextDeadline.add(Calendar.MONTH, 1);
+        }
+        while(!nextDeadline.getTime().after(d));
         this.deadline = nextDeadline.getTime();
+    }
+
+    // This function is made to set the deadline of the rent.
+    // It checks if the deadline is at least at two weeks later as the date from today,
+    // and maximum at one month.
+    public void setDeadline(Date deadline) throws BackendException
+    {
+        if(deadline == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
+        }
+
+        // To put the business rule, I have to use Calendar.
+        // It's not can use Date only, but its way more weird, and you have to
+        // put the limits in milliseconds... It's better to use Calendar I believe.
+        Calendar min = Calendar.getInstance();
+        min.add(Calendar.DAY_OF_MONTH, 14);
+
+        Calendar max = Calendar.getInstance();
+        max.add(Calendar.MONTH, 1);
+
+        if(deadline.before(min.getTime()) || deadline.after(max.getTime()))
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is incorrect, you should put the deadline between two weeks later and at maximum one month later.");
+        }
+        this.deadline = deadline;
+    }
+
+    public float getAmountPerRoommate() throws BackendException
+    {
+        if(roommatePaymentStatus.isEmpty())
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "The rent needs roommates to divide the money.");
+        }
+
+        float amount = totalPrice / roommatePaymentStatus.size();
+
+        // To make the value round to the hundredth, we need to multiply by 100, than to round the value of the decimal, and finally divide it by 100.
+        // Example : 82374,0948 (times 100) 8237409,48 (no decimals) 8237409 (divide by 100) 82374,09 !
+        // You can see where I found the technique on the java ressource of the discord.
+
+        return Math.round(amount * 100) / 100f;
     }
 
     public void removeRoommate(RoommateEntity roommate) {

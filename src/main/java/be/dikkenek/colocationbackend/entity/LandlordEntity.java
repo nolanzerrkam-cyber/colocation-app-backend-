@@ -15,8 +15,6 @@ public class LandlordEntity extends UserEntity
     {
     }
 
-
-
     public LandlordEntity(String email, String password, String firstname, String lastname, String phonenumber, RentEntity rent) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
         setRent(rent);
