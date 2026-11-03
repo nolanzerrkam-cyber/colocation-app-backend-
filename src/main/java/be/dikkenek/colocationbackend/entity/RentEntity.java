@@ -4,8 +4,6 @@ import be.dikkenek.colocationbackend.dao.RentDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
-
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -85,8 +83,6 @@ public class RentEntity
         return deadline;
     }
 
-    //TODO make sure the deadline is for at least two week later and a month max
-
     // This function is made to set the deadline of the rent.
     // It checks if the deadline is at least at two weeks later as the date from today,
     // and maximum at one month.
@@ -96,10 +92,10 @@ public class RentEntity
         {
             throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
         }
-        // To put the buisness rule, I have to use Calendar.
-        // It's not can use Date only, but its way more weird and you have to
-        // put the limits in milliseconds... It's better to use Calendar I believe.
 
+        // To put the business rule, I have to use Calendar.
+        // It's not can use Date only, but its way more weird, and you have to
+        // put the limits in milliseconds... It's better to use Calendar I believe.
         Calendar min = Calendar.getInstance();
         min.add(Calendar.DAY_OF_MONTH, 14);
 
@@ -133,7 +129,31 @@ public class RentEntity
 
 /*------------------------function and method-----------------------*/
 
-    //TODO function to reset the boolean
+    /* This method is made for resetting the deadline of the payement.
+        When over, it's going to generate a new deadline for the next month.
+        For each RentRoommateStatusEntity, we are going to put the isPaid boolean
+        Into false to restart a payment.
+     */
+    public void resetPayement() throws BackendException
+    {
+        // Check if the deadline of the object is null or if the date of today has aleardy passed the deadline.
+        if(deadline == null || !new Date().after(deadline))
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "Please put a correct deadline to continue.");
+        }
+
+        // By setting false, that means that roommates has to pay their rent for the next deadline
+        for(RentRoommateStatusEntity r : roommatePaymentStatus)
+        {
+            r.setPaid(false);
+        }
+
+        // Its just to set the deadline to the next month.
+        Calendar nextDeadline = Calendar.getInstance();
+        nextDeadline.setTime(deadline);
+        nextDeadline.add(Calendar.MONTH, 1);
+        this.deadline = nextDeadline.getTime();
+    }
 
     public void removeRoommate(RoommateEntity roommate) {
         roommatePaymentStatus.removeIf(r -> r.getRoommate().equals(roommate));
