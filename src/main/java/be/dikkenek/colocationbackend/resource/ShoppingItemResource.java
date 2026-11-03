@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Path("/item")
+@Path("/shoppingItem")
 public class ShoppingItemResource
 {
     @Inject

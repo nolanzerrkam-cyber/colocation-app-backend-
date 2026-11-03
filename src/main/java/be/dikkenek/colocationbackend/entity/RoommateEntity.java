@@ -113,18 +113,18 @@ public class RoommateEntity extends UserEntity {
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
-    public void addItem(ShoppingItemEntity item) throws BackendException {
-        if (item == null)
+    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
+        if (shoppingItemEntity == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
 
-        if (item.getRoommate() != this)
+        if (shoppingItemEntity.getRoommate() != this)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in ShoppingItemEntity is not well referenced");
 
-        if (!shoppingItems.contains(item)) shoppingItems.add(item);
+        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
     }
 
-    public void removeItem(ShoppingItemEntity item) {
-        shoppingItems.remove(item);
+    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
+        shoppingItems.remove(shoppingItemEntity);
     }
 
     public void removeTask(TaskEntity taskEntity) {
