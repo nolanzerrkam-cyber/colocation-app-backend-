@@ -10,8 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "SHOPPING_ITEM")
-public class ShoppingItemEntity
-{
+public class ShoppingItemEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +34,9 @@ public class ShoppingItemEntity
         return label;
     }
 
-    public void setLabel(String label) throws BackendException
-    {
-        if(label == null || label.isEmpty())
-        {
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR,"Label cannot be empty");
+    public void setLabel(String label) throws BackendException {
+        if (label == null || label.isEmpty()) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Label cannot be empty");
         }
         this.label = label;
     }
@@ -49,8 +46,7 @@ public class ShoppingItemEntity
     }
 
     public void setQuantity(int quantity) throws BackendException {
-        if(quantity <= 0)
-        {
+        if (quantity <= 0) {
             throw new BackendException(Response.Status.BAD_REQUEST, "Quantity must be positive");
         }
         this.quantity = quantity;
@@ -61,14 +57,14 @@ public class ShoppingItemEntity
     }
 
     public void setRoommate(RoommateEntity roommate) throws BackendException {
-        if(roommate == null)
-        {
+        if (roommate == null) {
             throw new BackendException(Response.Status.BAD_REQUEST, "roommate is null");
         }
         this.roommate = roommate;
     }
 
-    public ShoppingItemEntity(){}
+    public ShoppingItemEntity() {
+    }
 
     public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
         setId(id);
@@ -79,20 +75,29 @@ public class ShoppingItemEntity
 
     //Méthodes
 
-    public static List<ShoppingItemEntity> getAll(ShoppingItemDao dao) throws BackendException
-    {
+    public static List<ShoppingItemEntity> getAll(ShoppingItemDao dao) throws BackendException {
         return dao.getAll();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id == that.id;
+        return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id, label, quantity, roommate);
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingItemEntity{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", quantity=" + quantity +
+                ", roommate=" + roommate +
+                '}';
     }
 }
