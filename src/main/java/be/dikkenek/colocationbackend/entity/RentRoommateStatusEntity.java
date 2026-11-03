@@ -6,8 +6,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "rent_roommate_status")
-/*is an association class, who represent the status of payement by a roomate
-* it tel if a roomate has paid is part of the rent or not*/
+// This is an association class, that represents the status of payment by a roommate.
+// It tells if a roommate has paid is part of the rent or not
 public class RentRoommateStatusEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +29,15 @@ public class RentRoommateStatusEntity {
 
     public RentRoommateStatusEntity(int id, RentEntity rent, RoommateEntity roommate, boolean isPaid) {
         setId(id);
+        setRent(rent);
+        setRoommate(roommate);
+        setPaid(isPaid);
+    }
+
+    // This constructor is needed for adding a roommate (for reminder , the id is generated automatically by the data base, so no need for a id in the parameters.)
+
+    public RentRoommateStatusEntity(RentEntity rent, RoommateEntity roommate, boolean isPaid)
+    {
         setRent(rent);
         setRoommate(roommate);
         setPaid(isPaid);
@@ -84,7 +93,7 @@ public class RentRoommateStatusEntity {
                 "id=" + id +
                 ", rent=" + rent.getId() +
                 ", roommate=" + roommate.getEmail() +
-                ", isPaid=" + isPaid +
+                ", Does the rent has been paid ? ==> " + (isPaid ? "Yes" : "No") +
                 '}';
     }
 }

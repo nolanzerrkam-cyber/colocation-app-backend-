@@ -26,10 +26,12 @@ public class RentEntity
     @JoinColumn(name = "email", nullable = false, unique = true)
     private LandlordEntity landlord;
 
-    //is like a dictionnary<roomate, booleen> but in simple for the ORM
+    //This is like a dictionary<roommate, boolean> but in simple for the ORM
     @OneToMany(mappedBy = "rent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RentRoommateStatusEntity> roommatePaymentStatus;
+
     /*--------------------------------constructor--------------------------------------------*/
+
     public RentEntity()
     {
         setRoommatePaymentStatus(new ArrayList<RentRoommateStatusEntity>());
@@ -55,7 +57,9 @@ public class RentEntity
         setRoommatePaymentStatus(new ArrayList<RentRoommateStatusEntity>());
         this.addRoomate(roommate);
     }
-    /*-------setter and getter---------------------------------------------------*/
+
+    /*----------------------------setter and getter--------------------------*/
+
     public int getId() {
         return id;
     }
@@ -102,7 +106,9 @@ public class RentEntity
             throw new BackendException(Response.Status.BAD_REQUEST, "The rent has to be linked to a landlord. Please try again.");
         this.landlord = landlord;
     }
-/*----------------function and method--------------------------------------*/
+
+/*------------------------function and method-----------------------*/
+
     //TODO function to reset the boolean
 
     public void removeRoommate(RoommateEntity roommate) {
@@ -111,31 +117,23 @@ public class RentEntity
 
     public void addRoomate(RoommateEntity roommate)
     {
-        //TODO pass by the constructor
-        RentRoommateStatusEntity status = new RentRoommateStatusEntity();
-        status.setRent(this);
-        status.setRoommate(roommate);
-        status.setPaid(false);
+        RentRoommateStatusEntity status = new RentRoommateStatusEntity(this, roommate, false);
 
         if(!roommatePaymentStatus.contains(status))
         {
             this.roommatePaymentStatus.add(status);
         }
-
     }
 
-
-
-
-//    public boolean create(RentDao dao) throws BackendException
-//    {
-//        // To check if an email has aleardy been linked to a rent
-//        boolean checkForRent = dao.getAll().stream().anyMatch(r -> r.getLandlord().getEmail().equals(landlord.getEmail()));
-//        if(checkForRent)
-//            throw new BackendException(Response.Status.CONFLICT, "This landlord has already a rent !");
-//
-//        return dao.create(this);
-//    }
+    //    public boolean create(RentDao dao) throws BackendException
+    //    {
+    //        // To check if an email has aleardy been linked to a rent
+    //        boolean checkForRent = dao.getAll().stream().anyMatch(r -> r.getLandlord().getEmail().equals(landlord.getEmail()));
+    //        if(checkForRent)
+    //            throw new BackendException(Response.Status.CONFLICT, "This landlord has already a rent !");
+    //
+    //        return dao.create(this);
+    //    }
 
     public static RentEntity get(RentDao dao, int id) throws BackendException
     {
