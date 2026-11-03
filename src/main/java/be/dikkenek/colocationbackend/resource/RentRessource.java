@@ -13,10 +13,7 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
 import be.dikkenek.colocationbackend.dto.RentUpdateDto;
-import be.dikkenek.colocationbackend.entity.ExpenseEntity;
-import be.dikkenek.colocationbackend.entity.RentEntity;
-import be.dikkenek.colocationbackend.entity.RoommateEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
+import be.dikkenek.colocationbackend.entity.*;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -33,17 +30,6 @@ public class RentRessource
 
     @Inject
     private UserDao userDao;
-
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getAllRents() throws BackendException
-//    {
-//        List<RentEntity> rents = RentEntity.getAll(rentDao);
-//
-//        List<RentResponseDto> rentsResponse = rents.stream().map(t -> new RentResponseDto(t.getId(), t.getPrice(), t.getLandlord().getEmail())).collect(Collectors.toList());
-//
-//        return Response.status(200).entity(rentsResponse).build();
-//    }
 
     @PUT
     @Path("/{id}")
@@ -66,17 +52,30 @@ public class RentRessource
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update the rent").build();
     }
 
+    /*
+        This is for getting the rent of a landlord.
+        To get it, we need the email of a user, that we are going to check if the userEntity is a Landlord or a Roommate.
+        If the user is a Landlord, the process continues.
+        Then, we are casting userEntity into a LandlordEntity, to finally get the rent.
+        With that, all the information about the rent will be given.
+     */
     @GET
-    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRent(@PathParam("id") int id) throws BackendException
+    public Response getRent(@QueryParam("email") String email) throws BackendException
     {
-        RentEntity rent = RentEntity.get(rentDao, id);
+        // I prefer this way insted of multiple if(x == null).
+        // If the email given is null, then its stays null but the twist is that if its not null, I get the userEntity since the email is not null.
+        UserEntity userEntity = (email == null) ? null : UserEntity.get(userDao, email);
+
+        if (!(userEntity instanceof LandlordEntity))
+            return Response.status(403).entity("ONLY the landlord can access this method.").build();
+
+        LandlordEntity landlordEntity = (LandlordEntity) userEntity;
+        RentEntity rent = landlordEntity.getRent();
 
         if (rent == null)
-        {
-            return Response.status(Response.Status.NOT_FOUND).entity("The rent was not found.").build();
-        }
-        return Response.status(Response.Status.OK).entity(new RentResponseDto(rent.getId(), rent.getPrice(), rent.getLandlord().getEmail())).build();
+            return Response.status(404).entity("This landlord has no rent for now.").build();
+
+        return Response.ok(new RentResponseDto(rent.getId(), rent.getPrice(), landlordEntity.getEmail())).build();
     }
 }

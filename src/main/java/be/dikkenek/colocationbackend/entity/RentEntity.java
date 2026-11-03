@@ -172,9 +172,6 @@ public class RentEntity
         float amount = totalPrice / roommatePaymentStatus.size();
 
         // To make the value round to the hundredth, we need to multiply by 100, than to round the value of the decimal, and finally divide it by 100.
-        // Example : 82374,0948 (times 100) 8237409,48 (no decimals) 8237409 (divide by 100) 82374,09 !
-        // You can see where I found the technique on the java ressource of the discord.
-
         return Math.round(amount * 100) / 100f;
     }
 
