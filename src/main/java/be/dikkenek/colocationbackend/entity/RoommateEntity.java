@@ -29,7 +29,7 @@ public class RoommateEntity extends UserEntity {
     @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
 
     public RoommateEntity() {
