@@ -58,6 +58,10 @@ public class TaskEntity {
         return taskDao.create(this);
     }
 
+    public boolean update(TaskDao taskDao) throws BackendException{
+        return taskDao.update(this);
+    }
+
     public int getId() {
         return id;
     }
