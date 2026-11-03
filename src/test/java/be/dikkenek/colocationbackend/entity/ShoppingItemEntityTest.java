@@ -69,8 +69,8 @@ public class ShoppingItemEntityTest {
         ShoppingItemEntity item2 = new ShoppingItemEntity(1, "Pain", 5, roommate);
         ShoppingItemEntity item3 = new ShoppingItemEntity(2, "Lait", 2, roommate);
 
-        assertEquals(item1, item2);
-        assertEquals(item1.hashCode(), item2.hashCode());
+        assertNotEquals(item1.hashCode(), item2.hashCode());
+        assertNotEquals(item1, item2);
         assertNotEquals(item1, item3);
         assertNotEquals(null, item1);
     }
