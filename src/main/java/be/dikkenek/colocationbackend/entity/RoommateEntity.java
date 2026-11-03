@@ -29,6 +29,9 @@ public class RoommateEntity extends UserEntity {
     @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ShoppingItemEntity> shoppingItems;
+
     public RoommateEntity() {
         setExpenses(new ArrayList<>());
     }
@@ -110,6 +113,20 @@ public class RoommateEntity extends UserEntity {
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
+    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
+        if (shoppingItemEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
+
+        if (shoppingItemEntity.getRoommate() != this)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in ShoppingItemEntity is not well referenced");
+
+        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
+    }
+
+    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
+        shoppingItems.remove(shoppingItemEntity);
+    }
+
     public void removeTask(TaskEntity taskEntity) {
         tasks.remove(taskEntity);
     }
@@ -122,16 +139,24 @@ public class RoommateEntity extends UserEntity {
         this.tasks = tasks;
     }
 
+    public List<ShoppingItemEntity> getShoppingItems() {
+        return shoppingItems;
+    }
+
+    public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
+        this.shoppingItems = shoppingItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
-        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses);
+        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses) && Objects.equals(shoppingItems, that.shoppingItems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tasks, expenses);
+        return Objects.hash(tasks, expenses, shoppingItems);
     }
 
     @Override
@@ -139,6 +164,7 @@ public class RoommateEntity extends UserEntity {
         return "RoommateEntity{" +
                 "tasks=" + tasks +
                 ", expenses=" + expenses +
+                ", shoppingItems=" + shoppingItems +
                 '}';
     }
 }

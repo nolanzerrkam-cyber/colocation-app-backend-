@@ -14,6 +14,7 @@
         <class>be.dikkenek.colocationbackend.entity.RoommateEntity</class>
         <class>be.dikkenek.colocationbackend.entity.TaskEntity</class>
         <class>be.dikkenek.colocationbackend.entity.UserEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.ShoppingItemEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
