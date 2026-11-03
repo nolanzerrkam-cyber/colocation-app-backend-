@@ -24,10 +24,10 @@ public class ShoppingItemResourceTest {
     @InjectMocks
     private ShoppingItemResource shoppingItemResource;
 
-    private ShoppingItemEntity mockItem(int id, String libelle, int quantity, RoommateEntity roommate) {
+    private ShoppingItemEntity mockItem(int id, String label, int quantity, RoommateEntity roommate) {
         ShoppingItemEntity item = Mockito.mock(ShoppingItemEntity.class);
         Mockito.when(item.getId()).thenReturn(id);
-        Mockito.when(item.getLibelle()).thenReturn(libelle);
+        Mockito.when(item.getLabel()).thenReturn(label);
         Mockito.when(item.getQuantity()).thenReturn(quantity);
         Mockito.when(item.getRoommate()).thenReturn(roommate);
         return item;
@@ -46,7 +46,7 @@ public class ShoppingItemResourceTest {
         // Then
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(1, result.get(0).getId());
-        Assertions.assertEquals("Lait", result.get(0).getLibelle());
+        Assertions.assertEquals("Lait", result.get(0).getLabel());
         Assertions.assertEquals(2, result.get(0).getQuantity());
         Assertions.assertEquals("email@email.com", result.get(0).getRoommateId());
     }

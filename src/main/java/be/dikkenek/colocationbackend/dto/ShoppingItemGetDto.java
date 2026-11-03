@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 public class ShoppingItemGetDto
 {
     private int id;
-    private String libelle;
+    private String label;
     private int quantity;
     private String roommateId;
 
@@ -18,8 +18,8 @@ public class ShoppingItemGetDto
         return id;
     }
 
-    public String getLibelle() {
-        return libelle;
+    public String getLabel() {
+        return label;
     }
 
     public int getQuantity() {
@@ -30,9 +30,9 @@ public class ShoppingItemGetDto
 
     public ShoppingItemGetDto(){}
 
-    public ShoppingItemGetDto(int id, String libelle, int quantity, String roommateId) {
+    public ShoppingItemGetDto(int id, String label, int quantity, String roommateId) {
         this.id = id;
-        this.libelle = libelle;
+        this.label = label;
         this.quantity = quantity;
         this.roommateId = roommateId;
     }

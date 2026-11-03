@@ -25,7 +25,7 @@ public class ShoppingItemResource
         List<ShoppingItemEntity> entities = ShoppingItemEntity.getAll(itemDao);
 
         return entities.stream()
-                .map(entity -> new ShoppingItemGetDto(entity.getId(), entity.getLibelle(), entity.getQuantity(), entity.getRoommate().getEmail()))
+                .map(entity -> new ShoppingItemGetDto(entity.getId(), entity.getLabel(), entity.getQuantity(), entity.getRoommate().getEmail()))
                 .collect(Collectors.toList());
     }
 }

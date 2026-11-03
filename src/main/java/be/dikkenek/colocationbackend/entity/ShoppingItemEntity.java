@@ -16,8 +16,8 @@ public class ShoppingItemEntity
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "libelle")
-    private String libelle;
+    @Column(name = "label")
+    private String label;
     @Column(name = "quantity")
     private int quantity;
     @ManyToOne
@@ -31,12 +31,17 @@ public class ShoppingItemEntity
         this.id = id;
     }
 
-    public String getLibelle() {
-        return libelle;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
+    public void setLabel(String label) throws BackendException
+    {
+        if(label == null || label.isEmpty())
+        {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR,"Label cannot be empty");
+        }
+        this.label = label;
     }
 
     public int getQuantity() {
@@ -46,7 +51,7 @@ public class ShoppingItemEntity
     public void setQuantity(int quantity) throws BackendException {
         if(quantity <= 0)
         {
-            throw new BackendException(Response.Status.BAD_REQUEST, "La quantité doit être strictement positive");
+            throw new BackendException(Response.Status.BAD_REQUEST, "Quantity must be positive");
         }
         this.quantity = quantity;
     }
@@ -65,9 +70,9 @@ public class ShoppingItemEntity
 
     public ShoppingItemEntity(){}
 
-    public ShoppingItemEntity(int id, String libelle, int quantity, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
         setId(id);
-        setLibelle(libelle);
+        setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
     }

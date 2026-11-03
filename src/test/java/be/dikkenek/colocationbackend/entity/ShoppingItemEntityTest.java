@@ -42,7 +42,7 @@ public class ShoppingItemEntityTest {
         ShoppingItemEntity item = new ShoppingItemEntity(7, "Pain", 3, roommate);
 
         assertEquals(7, item.getId());
-        assertEquals("Pain", item.getLibelle());
+        assertEquals("Pain", item.getLabel());
         assertEquals(3, item.getQuantity());
         assertSame(roommate, item.getRoommate());
     }
