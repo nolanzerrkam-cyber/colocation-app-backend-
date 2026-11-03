@@ -5,6 +5,7 @@ import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -84,8 +85,31 @@ public class RentEntity
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
-        //TODO make sure the deadline is for at least two week later and a month max
+    //TODO make sure the deadline is for at least two week later and a month max
+
+    // This function is made to set the deadline of the rent.
+    // It checks if the deadline is at least at two weeks later as the date from today,
+    // and maximum at one month.
+    public void setDeadline(Date deadline) throws BackendException
+    {
+        if(deadline == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
+        }
+        // To put the buisness rule, I have to use Calendar.
+        // It's not can use Date only, but its way more weird and you have to
+        // put the limits in milliseconds... It's better to use Calendar I believe.
+
+        Calendar min = Calendar.getInstance();
+        min.add(Calendar.DAY_OF_MONTH, 14);
+
+        Calendar max = Calendar.getInstance();
+        max.add(Calendar.MONTH, 1);
+
+        if(deadline.before(min.getTime()) || deadline.after(max.getTime()))
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is incorrect, you should put the deadline between two weeks later and at maximum one month later.");
+        }
         this.deadline = deadline;
     }
 
