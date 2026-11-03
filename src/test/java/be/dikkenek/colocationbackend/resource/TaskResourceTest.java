@@ -2,7 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.TaskCreateDto;
+import be.dikkenek.colocationbackend.dto.TaskRequestDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -31,7 +31,7 @@ public class TaskResourceTest {
     @Test
     void testPostTask_Success() throws BackendException {
         // Given
-        TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date(), "email@email.com");
+        TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
         RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
         Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
@@ -46,7 +46,7 @@ public class TaskResourceTest {
     @Test
     void testPostTask_NotSuccess() throws BackendException {
         // Given
-        TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date(), "email@email.com");
+        TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
         RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
         Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
@@ -61,7 +61,7 @@ public class TaskResourceTest {
     @Test
     void testPostTask_user_not_found() throws BackendException {
         // Given
-        TaskCreateDto inputTask = new TaskCreateDto("Task name", "Task description", false, new Date(), "email@email.com");
+        TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.empty());
 
         // When
@@ -82,5 +82,53 @@ public class TaskResourceTest {
 
         // Then
         Assertions.assertEquals(404, response.getStatus());
+    }
+    @Test
+    void testValidateTask_Success() throws BackendException {
+        // Given
+        int taskId = 1;
+        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date());
+        TaskEntity existingTask = new TaskEntity(); // Instance factice de la tâche trouvée
+
+        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
+        Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(true);
+
+        // When
+        Response response = taskResource.validateTask(taskId, inputData);
+
+        // Then
+        Assertions.assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    void testValidateTask_NotFound() throws BackendException {
+        // Given
+        int taskId = 99;
+        TaskRequestDto inputData = new TaskRequestDto("Name", "Description", false, new Date());
+
+        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.empty());
+
+        // When
+        Response response = taskResource.validateTask(taskId, inputData);
+
+        // Then
+        Assertions.assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void testValidateTask_UpdateError() throws BackendException {
+        // Given
+        int taskId = 1;
+        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date());
+        TaskEntity existingTask = new TaskEntity();
+
+        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
+        Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(false);
+
+        // When
+        Response response = taskResource.validateTask(taskId, inputData);
+
+        // Then
+        Assertions.assertEquals(500, response.getStatus());
     }
 }

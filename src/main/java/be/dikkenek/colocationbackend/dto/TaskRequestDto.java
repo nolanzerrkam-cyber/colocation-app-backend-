@@ -24,6 +24,13 @@ public class TaskRequestDto {
         setRoommateEmail(roommateEmail);
     }
 
+    public TaskRequestDto(String name, String description, boolean isDone, Date deadline) {
+        setName(name);
+        setDescription(description);
+        setDone(isDone);
+        setDeadline(deadline);
+    }
+
     public String getName() {
         return name;
     }
