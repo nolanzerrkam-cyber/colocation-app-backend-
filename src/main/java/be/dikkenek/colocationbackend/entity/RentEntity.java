@@ -142,6 +142,11 @@ public class RentEntity
         return dao.get(id).orElse(null);
     }
 
+    public boolean update(RentDao rentDao) throws BackendException
+    {
+        return rentDao.update(this);
+    }
+
 
     @Override
     public boolean equals(Object o)
