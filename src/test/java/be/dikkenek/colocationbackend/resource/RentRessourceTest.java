@@ -3,12 +3,14 @@ package be.dikkenek.colocationbackend.resource;
 import be.dikkenek.colocationbackend.dao.RentDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
+import be.dikkenek.colocationbackend.dto.RentUpdateDto;
 import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RentEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
+import net.bytebuddy.build.ToStringPlugin;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +34,7 @@ public class RentRessourceTest
     @InjectMocks
     private RentRessource rentRessource;
 
+    // --------------------- .../GET only ----------------------- //
     @Test
     void userEntity_isNull() throws BackendException
     {
@@ -91,5 +94,26 @@ public class RentRessourceTest
         // Then
 
         Assertions.assertEquals(200, resp.getStatus());
+    }
+
+    // ------------------ /PUT only ----------------------- //
+
+    @Test
+    void updateRent_dtoNotValid() throws BackendException
+    {
+        Response resp = rentRessource.updateRent("landlord@account.com", null);
+
+        Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void updateRent_userEntityNull() throws BackendException
+    {
+        RentUpdateDto dto = new RentUpdateDto();
+        dto.setPrice(800f);
+
+        Response resp = rentRessource.updateRent(null, dto);
+
+        Assertions.assertEquals(404, resp.getStatus());
     }
 }
