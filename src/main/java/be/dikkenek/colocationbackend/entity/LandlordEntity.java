@@ -1,17 +1,17 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 @Entity(name = "Landlord")
 public class LandlordEntity extends UserEntity
 {
+    @OneToMany
+    private List<FlatshareEntity> flatshares;
 
     public LandlordEntity()
     {
-    }
-
-    public LandlordEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
-        super(email, password, firstname, lastname, phonenumber);
     }
 }

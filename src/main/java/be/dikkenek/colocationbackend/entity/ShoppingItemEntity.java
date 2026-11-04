@@ -20,7 +20,7 @@ public class ShoppingItemEntity {
     @Column(name = "quantity")
     private int quantity;
     @ManyToOne
-    private RoommateEntity roommate;
+    private FlatshareEntity flatshare;
 
     public int getId() {
         return id;
@@ -52,25 +52,26 @@ public class ShoppingItemEntity {
         this.quantity = quantity;
     }
 
-    public RoommateEntity getRoommate() {
-        return roommate;
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
     }
 
-    public void setRoommate(RoommateEntity roommate) throws BackendException {
-        if (roommate == null) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "roommate is null");
-        }
-        this.roommate = roommate;
+    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
+        if (flatshare == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Flatshare is null");
+
+        flatshare.addItem(this);
+        this.flatshare = flatshare;
     }
 
     public ShoppingItemEntity() {
     }
 
-    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity(int id, String label, int quantity, FlatshareEntity flatshare) throws BackendException {
         setId(id);
         setLabel(label);
         setQuantity(quantity);
-        setRoommate(roommate);
+        setFlatshare(flatshare);
     }
 
     //Méthodes
@@ -83,12 +84,12 @@ public class ShoppingItemEntity {
     public boolean equals(Object o) {
         if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
+        return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(flatshare, that.flatshare);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, quantity, roommate);
+        return Objects.hash(id, label, quantity, flatshare);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class ShoppingItemEntity {
                 "id=" + id +
                 ", label='" + label + '\'' +
                 ", quantity=" + quantity +
-                ", roommate=" + roommate +
+                ", flatshare=" + flatshare +
                 '}';
     }
 }

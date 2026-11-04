@@ -2,10 +2,7 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +29,21 @@ public class RoommateEntity extends UserEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
 
+    @ManyToOne
+    private FlatshareEntity flatshare;
+
     public RoommateEntity() {
         setExpenses(new ArrayList<>());
     }
 
-    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
+    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
+        setFlatshare(flatshareEntity);
         setTasks(new ArrayList<>());
     }
 
-    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, List<TaskEntity> tasks) throws BackendException {
-        this(email, password, firstname, lastname, phonenumber);
+    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity, List<TaskEntity> tasks) throws BackendException {
+        this(email, password, firstname, lastname, phonenumber, flatshareEntity);
         setTasks(tasks);
         setExpenses(new ArrayList<>());
     }
@@ -113,20 +114,6 @@ public class RoommateEntity extends UserEntity {
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
-    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
-        if (shoppingItemEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
-
-        if (shoppingItemEntity.getRoommate() != this)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in ShoppingItemEntity is not well referenced");
-
-        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
-    }
-
-    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
-        shoppingItems.remove(shoppingItemEntity);
-    }
-
     public void removeTask(TaskEntity taskEntity) {
         tasks.remove(taskEntity);
     }
@@ -145,6 +132,18 @@ public class RoommateEntity extends UserEntity {
 
     public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
         this.shoppingItems = shoppingItems;
+    }
+
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
+    }
+
+    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
+        if (flatshare == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Flatshare cannot be null");
+
+        flatshare.addRoommate(this);
+        this.flatshare = flatshare;
     }
 
     @Override
