@@ -54,6 +54,10 @@ public class RentEntity
         setLandlord(landlord);
         setDeadline(deadline);
         setRoommatePaymentStatus(new ArrayList<RentRoommateStatusEntity>());
+        if(roommate == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "You need a existing roommate to create a rent if your inputing a roommate directly into the creation of the rent");
+        }
         this.addRoomate(roommate);
     }
 
@@ -81,6 +85,32 @@ public class RentEntity
 
     public Date getDeadline() {
         return deadline;
+    }
+
+    // This function is made to set the deadline of the rent.
+    // It checks if the deadline is at least at two weeks later as the date from today,
+    // and maximum at one month.
+    public void setDeadline(Date deadline) throws BackendException
+    {
+        if(deadline == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
+        }
+
+        // To put the business rule, I have to use Calendar.
+        // It's not can use Date only, but its way more weird, and you have to
+        // put the limits in milliseconds... It's better to use Calendar I believe.
+        Calendar min = Calendar.getInstance();
+        min.add(Calendar.DAY_OF_MONTH, 14);
+
+        Calendar max = Calendar.getInstance();
+        max.add(Calendar.MONTH, 1);
+
+        if(deadline.before(min.getTime()) || deadline.after(max.getTime()))
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is incorrect, you should put the deadline between two weeks later and at maximum one month later.");
+        }
+        this.deadline = deadline;
     }
 
     // This is going to get used in the endpoint, to know who paid their rent.
@@ -134,32 +164,6 @@ public class RentEntity
         }
         while(!nextDeadline.getTime().after(d));
         this.deadline = nextDeadline.getTime();
-    }
-
-    // This function is made to set the deadline of the rent.
-    // It checks if the deadline is at least at two weeks later as the date from today,
-    // and maximum at one month.
-    public void setDeadline(Date deadline) throws BackendException
-    {
-        if(deadline == null)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is null ! Please put a deadline before validing !");
-        }
-
-        // To put the business rule, I have to use Calendar.
-        // It's not can use Date only, but its way more weird, and you have to
-        // put the limits in milliseconds... It's better to use Calendar I believe.
-        Calendar min = Calendar.getInstance();
-        min.add(Calendar.DAY_OF_MONTH, 14);
-
-        Calendar max = Calendar.getInstance();
-        max.add(Calendar.MONTH, 1);
-
-        if(deadline.before(min.getTime()) || deadline.after(max.getTime()))
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST, "This deadline is incorrect, you should put the deadline between two weeks later and at maximum one month later.");
-        }
-        this.deadline = deadline;
     }
 
     public float getAmountPerRoommate() throws BackendException

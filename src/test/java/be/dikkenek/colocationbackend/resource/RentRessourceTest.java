@@ -140,7 +140,7 @@ public class RentRessourceTest
         Assertions.assertEquals(400, resp.getStatus());
         Assertions.assertEquals(400, resp2.getStatus());
     }
-    
+
     @Test
     void updateRent_NotLandlord() throws BackendException
     {
