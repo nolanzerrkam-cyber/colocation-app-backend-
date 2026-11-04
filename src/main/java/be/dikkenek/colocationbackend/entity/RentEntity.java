@@ -118,7 +118,9 @@ public class RentEntity
         return roommatePaymentStatus;
     }
 
-    public void setRoommatePaymentStatus(List<RentRoommateStatusEntity> roommatePaymentStatus) {
+    public void setRoommatePaymentStatus(List<RentRoommateStatusEntity> roommatePaymentStatus)
+    {
+
         this.roommatePaymentStatus = roommatePaymentStatus;
     }
 

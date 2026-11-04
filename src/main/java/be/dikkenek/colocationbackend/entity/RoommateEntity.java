@@ -151,7 +151,7 @@ public class RoommateEntity extends UserEntity {
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
-        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses) && Objects.equals(shoppingItems, that.shoppingItems);
+        return Objects.equals(getEmail(), that.getEmail()) && Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses) && Objects.equals(shoppingItems, that.shoppingItems);
     }
 
     @Override
@@ -162,6 +162,7 @@ public class RoommateEntity extends UserEntity {
     @Override
     public String toString() {
         return "RoommateEntity{" +
+                "email : " + getEmail() +
                 "tasks=" + tasks +
                 ", expenses=" + expenses +
                 ", shoppingItems=" + shoppingItems +
