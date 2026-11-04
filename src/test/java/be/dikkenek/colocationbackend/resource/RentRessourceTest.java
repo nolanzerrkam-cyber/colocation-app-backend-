@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.listeners.MockitoListener;
 
 import java.util.Calendar;
 import java.util.Optional;
@@ -139,9 +140,7 @@ public class RentRessourceTest
         Assertions.assertEquals(400, resp.getStatus());
         Assertions.assertEquals(400, resp2.getStatus());
     }
-
-    // TODO : CheckLandlord, checkrent, check rentUpdateSuccess, test code 500 server failed
-
+    
     @Test
     void updateRent_NotLandlord() throws BackendException
     {
@@ -157,4 +156,67 @@ public class RentRessourceTest
         // Then
         Assertions.assertEquals(403, resp.getStatus());
     }
+
+    @Test
+    void updateRent_rentNull() throws BackendException
+    {
+        // Given
+        LandlordEntity lndLrd = new LandlordEntity("landlord@account.com", "password", "land", "lord", "012345678", null);
+        RentUpdateDto dto = new RentUpdateDto(); dto.setPrice(800f);
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(lndLrd));
+
+        // When
+        Response resp = rentRessource.updateRent(lndLrd.getEmail(), dto);
+
+        // Then
+        Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void updateRent_Success() throws BackendException
+    {
+        // Given
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 20);
+
+        LandlordEntity lndLrd = new LandlordEntity("landlord@account.com", "password", "land", "lord", "012345678", null);
+        RentEntity rntNtt = new RentEntity(1, 800f, c.getTime(), lndLrd);
+        lndLrd.setRent(rntNtt);
+
+        RentUpdateDto dto = new RentUpdateDto(); dto.setPrice(1200f);
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(lndLrd));
+        Mockito.when(rentDao.update(Mockito.any(RentEntity.class))).thenReturn(true);
+
+        // When
+        Response resp = rentRessource.updateRent(lndLrd.getEmail(), dto);
+
+        // Then
+
+        Assertions.assertEquals(200, resp.getStatus());
+    }
+
+    @Test
+    void updateRent_Failed() throws BackendException
+    {
+        // Given
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 20);
+
+        LandlordEntity lndLrd = new LandlordEntity("landlord@account.com", "password", "land", "lord", "012345678", null);
+        RentEntity rntNtt = new RentEntity(1, 800f, c.getTime(), lndLrd);
+        lndLrd.setRent(rntNtt);
+
+        RentUpdateDto dto = new RentUpdateDto(); dto.setPrice(1200f);
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(lndLrd));
+        Mockito.when(rentDao.update(Mockito.any(RentEntity.class))).thenReturn(false);
+
+        // When
+        Response resp = rentRessource.updateRent(lndLrd.getEmail(), dto);
+
+        // Then
+
+        Assertions.assertEquals(500, resp.getStatus());
+    }
+
+
 }
