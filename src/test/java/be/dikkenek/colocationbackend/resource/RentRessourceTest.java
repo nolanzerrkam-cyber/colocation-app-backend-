@@ -141,4 +141,20 @@ public class RentRessourceTest
     }
 
     // TODO : CheckLandlord, checkrent, check rentUpdateSuccess, test code 500 server failed
+
+    @Test
+    void updateRent_NotLandlord() throws BackendException
+    {
+        // Given
+        RentUpdateDto dto = new RentUpdateDto();
+        dto.setPrice(800f);
+        RoommateEntity rmteNtt = new RoommateEntity("roommate@account.com", "password", "room", "mate", "012345678");
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(rmteNtt));
+
+        // When
+        Response resp = rentRessource.updateRent(rmteNtt.getEmail(), dto);
+
+        // Then
+        Assertions.assertEquals(403, resp.getStatus());
+    }
 }
