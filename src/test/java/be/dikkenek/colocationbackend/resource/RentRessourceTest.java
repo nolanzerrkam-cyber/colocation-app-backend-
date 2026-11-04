@@ -3,6 +3,8 @@ package be.dikkenek.colocationbackend.resource;
 import be.dikkenek.colocationbackend.dao.RentDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
+import be.dikkenek.colocationbackend.entity.LandlordEntity;
+import be.dikkenek.colocationbackend.entity.RentEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -51,5 +53,21 @@ public class RentRessourceTest
 
         // Then
         Assertions.assertEquals(403, resp.getStatus());
+    }
+
+    @Test
+    void landlord_noRents() throws BackendException
+    {
+        // Given
+        LandlordEntity lndLrd = new LandlordEntity("landlord@account.com", "password", "land", "lord", "012345678", null);
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(lndLrd));
+
+        // When
+
+        Response resp = rentRessource.getRent(lndLrd.getEmail());
+
+        // Then
+
+        Assertions.assertEquals(404, resp.getStatus());
     }
 }
