@@ -101,19 +101,44 @@ public class RentRessourceTest
     @Test
     void updateRent_dtoNotValid() throws BackendException
     {
+        // Given - when
         Response resp = rentRessource.updateRent("landlord@account.com", null);
 
+        // Then
         Assertions.assertEquals(404, resp.getStatus());
     }
 
     @Test
     void updateRent_userEntityNull() throws BackendException
     {
+        // Given
         RentUpdateDto dto = new RentUpdateDto();
-        dto.setPrice(800f);
+        dto.setPrice(200f);
 
+        // When
         Response resp = rentRessource.updateRent(null, dto);
 
+        // Then
         Assertions.assertEquals(404, resp.getStatus());
     }
+
+    @Test
+    void updateRent_InvalidPrice() throws BackendException
+    {
+        // Given
+        RentUpdateDto dto = new RentUpdateDto();
+        RentUpdateDto dto2 = new RentUpdateDto();
+        dto.setPrice(0);
+        dto2.setPrice(-800);
+
+        // When
+        Response resp = rentRessource.updateRent("landlord@account.com", dto);
+        Response resp2 = rentRessource.updateRent("landlord@account.com", dto2);
+
+        // Then
+        Assertions.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp2.getStatus());
+    }
+
+
 }

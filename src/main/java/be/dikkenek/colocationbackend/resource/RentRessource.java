@@ -65,6 +65,11 @@ public class RentRessource
             return Response.status(Response.Status.NOT_FOUND).entity("Updated rent is null.").build();
         }
 
+        if(dto.getPrice() <= 0)
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("The new price of the rent needs to be above 0 !").build();
+        }
+
         UserEntity userEntity = (email == null) ? null : UserEntity.get(userDao, email);
 
         if(userEntity == null)
