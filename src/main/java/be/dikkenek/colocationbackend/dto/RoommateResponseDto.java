@@ -5,12 +5,14 @@ public class RoommateResponseDto {
     private String firstname;
     private String lastname;
     private String phonenumber;
+    private String fullName;
 
-    public RoommateResponseDto(String email, String firstname, String lastname, String phonenumber) {
+    public RoommateResponseDto(String email, String firstname, String lastname, String phonenumber, String fullName) {
         setEmail(email);
         setFirstname(firstname);
         setLastname(lastname);
         setPhonenumber(phonenumber);
+        setFullName(fullName);
     }
 
     public String getEmail() {
@@ -43,5 +45,13 @@ public class RoommateResponseDto {
 
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

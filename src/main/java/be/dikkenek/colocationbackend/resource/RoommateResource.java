@@ -25,7 +25,7 @@ public class RoommateResource
     public Response getAll() throws BackendException {
         List<RoommateEntity> roommates = RoommateEntity.getAll(dao);
 
-        List<RoommateResponseDto> roommateDtoList = roommates.stream().map(r -> new RoommateResponseDto(r.getEmail(), r.getFirstname(), r.getLastname(), r.getPhonenumber())).collect(Collectors.toList());
+        List<RoommateResponseDto> roommateDtoList = roommates.stream().map(r -> new RoommateResponseDto(r.getEmail(), r.getFirstname(), r.getLastname(), r.getPhonenumber(), r.getFullName())).collect(Collectors.toList());
 
         return Response.status(Response.Status.OK)
                 .entity(roommateDtoList)
