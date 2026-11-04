@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Calendar;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,5 +70,26 @@ public class RentRessourceTest
         // Then
 
         Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void getRent_Success() throws BackendException
+    {
+        // Given
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 20);
+
+        LandlordEntity lndLrd = new LandlordEntity("landlord@account.com", "password", "land", "lord", "012345678", null);
+        RentEntity rntNtt = new RentEntity(1, 800f, c.getTime(), lndLrd);
+        lndLrd.setRent(rntNtt);
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(lndLrd));
+
+        // When
+
+        Response resp = rentRessource.getRent(lndLrd.getEmail());
+
+        // Then
+
+        Assertions.assertEquals(200, resp.getStatus());
     }
 }

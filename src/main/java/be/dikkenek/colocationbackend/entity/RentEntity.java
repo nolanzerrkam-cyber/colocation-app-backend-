@@ -209,7 +209,6 @@ public class RentEntity
         return rentDao.update(this);
     }
 
-
     @Override
     public boolean equals(Object o)
     {
