@@ -34,7 +34,7 @@ public class RentResponseDto
         this.price = price;
     }
 
-    public String getlEmail() {
+    public String getEmail() {
         return lEmail;
     }
 

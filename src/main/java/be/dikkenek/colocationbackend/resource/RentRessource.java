@@ -1,16 +1,7 @@
-/*
-    WIP : Only one rent problem
-
-    Since we have only one roomshare, i don't think its useful to keep the id Parameter.
-    Since we have one roomshare that means we have one rent. And all the rent is divided for the number of roommates.
-    I didn't think about it, but maybe then GetAll will be useless...
- */
-
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.RentDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
 import be.dikkenek.colocationbackend.dto.RentUpdateDto;
 import be.dikkenek.colocationbackend.entity.*;
@@ -19,8 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/rent")
 public class RentRessource
@@ -30,27 +19,6 @@ public class RentRessource
 
     @Inject
     private UserDao userDao;
-
-//    @PUT
-//    @Path("/{id}")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response updateRent(@PathParam("id") int id, RentUpdateDto dto) throws BackendException
-//    {
-//        RentEntity rent = RentEntity.get(rentDao, id);
-//
-//        if (rent == null)
-//        {
-//            return Response.status(Response.Status.NOT_FOUND).entity("Failed to update the rent").build();
-//        }
-//
-//        rent.setPrice(dto.getPrice());
-//
-//        if (rent.update(rentDao))
-//        {
-//            return Response.status(Response.Status.OK).build();
-//        }
-//        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update the rent").build();
-//    }
 
     /*
         This is for getting the rent of a landlord.
@@ -66,6 +34,10 @@ public class RentRessource
         // I prefer this way insted of multiple if(x == null).
         // If the email given is null, then its stays null but the twist is that if its not null, I get the userEntity since the email is not null.
         UserEntity userEntity = (email == null) ? null : UserEntity.get(userDao, email);
+
+        if(userEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("You can't get a rent.").build();
+        }
 
         if (!(userEntity instanceof LandlordEntity))
             return Response.status(Response.Status.FORBIDDEN).entity("You can't get a rent.").build();
@@ -92,8 +64,13 @@ public class RentRessource
         {
             return Response.status(Response.Status.NOT_FOUND).entity("Updated rent is null.").build();
         }
-        
+
         UserEntity userEntity = (email == null) ? null : UserEntity.get(userDao, email);
+
+        if(userEntity == null)
+        {
+            return Response.status(Response.Status.NOT_FOUND).entity("You can't get a rent.").build();
+        }
 
         if(!(userEntity instanceof LandlordEntity))
         {
@@ -111,9 +88,9 @@ public class RentRessource
         rent.setPrice(dto.getPrice());
         if(rent.update(rentDao))
         {
-            return Response.ok().build();
+            return Response.status(Response.Status.OK).build();
         }
 
-        return Response.status(500).entity("We failed to update your rent.").build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to update your rent.").build();
     }
 }
