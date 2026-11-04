@@ -59,4 +59,23 @@ public class TaskDao implements Dao<TaskEntity, Integer> {
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error when creating task");
         }
     }
+    @Override
+    public boolean update(TaskEntity task) throws BackendException
+    {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
+            EntityTransaction tr = man.getTransaction();
+            try {
+                tr.begin();
+                man.merge(task);
+                tr.commit();
+                return true;
+            } catch (Exception e) {
+                if (tr.isActive())
+                    tr.rollback();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
+            }
+        } catch (Exception e) {
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
+        }
+    }
 }

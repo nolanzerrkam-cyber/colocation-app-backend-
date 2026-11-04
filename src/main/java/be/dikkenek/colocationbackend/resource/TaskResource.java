@@ -2,7 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.TaskCreateDto;
+import be.dikkenek.colocationbackend.dto.TaskRequestDto;
 import be.dikkenek.colocationbackend.dto.TaskResponseDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
@@ -39,7 +39,7 @@ public class TaskResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postTask(TaskCreateDto taskDto) throws BackendException {
+    public Response postTask(TaskRequestDto taskDto) throws BackendException {
         UserEntity userEntity = UserEntity.get(userDao, taskDto.getRoommateEmail());
 
         if (!(userEntity instanceof RoommateEntity))
@@ -72,5 +72,26 @@ public class TaskResource {
             return Response.status(Response.Status.OK).build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error when deleting task").build();
+    }
+    @PUT
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response validateTask(@PathParam("id") int id, TaskRequestDto data) throws BackendException {
+        TaskEntity taskEntity = TaskEntity.get(taskDao, id);
+        if (taskEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
+
+        taskEntity.setName(data.getName());
+        taskEntity.setDescription(data.getDescription());
+        taskEntity.setDeadline(data.getDeadline());
+        taskEntity.setIsDone(data.isDone());
+        // TODO update the user
+        boolean isUpdated = taskEntity.update(taskDao);
+        if(isUpdated)
+        {
+            return Response.status(Response.Status.OK).build();
+        }
+        return Response.status(500).entity("Error when updating task").build();
     }
 }
