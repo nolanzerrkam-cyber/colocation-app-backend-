@@ -140,5 +140,5 @@ public class RentRessourceTest
         Assertions.assertEquals(400, resp2.getStatus());
     }
 
-
+    // TODO : CheckLandlord, checkrent, check rentUpdateSuccess, test code 500 server failed
 }
