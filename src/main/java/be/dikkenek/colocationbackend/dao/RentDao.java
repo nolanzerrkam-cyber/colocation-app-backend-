@@ -4,6 +4,7 @@ package be.dikkenek.colocationbackend.dao;
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.RentEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.core.Response;
@@ -11,6 +12,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
+
+@ApplicationScoped
 public class RentDao implements Dao<RentEntity, Integer>
 {
     @Override
