@@ -4,10 +4,9 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Objects;
 
 import jakarta.ws.rs.core.Response;
 
@@ -156,6 +155,15 @@ public class RoommateEntity extends UserEntity {
 
         flatshare.addRoommate(this);
         this.flatshare = flatshare;
+    }
+
+    public boolean isRentPaid() {
+        int thisMonth = LocalDateTime.now().getMonth().getValue();
+        Optional<RentExpenseEntity> rentExpense = expenses.stream()
+                .filter(e -> e instanceof RentExpenseEntity)
+                .map(e -> (RentExpenseEntity) e)
+                .filter(r -> r.getMonth() == thisMonth).findFirst();
+        return rentExpense.isPresent();
     }
 
     @Override
