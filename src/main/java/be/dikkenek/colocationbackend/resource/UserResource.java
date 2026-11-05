@@ -1,9 +1,11 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginResponseDto;
 import be.dikkenek.colocationbackend.dto.LoginRequestDto;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -17,16 +19,23 @@ import jakarta.ws.rs.core.Response;
 public class UserResource {
     @Inject
     private UserDao userDao;
+    @Inject
+    private FlatshareDao flatshareDao;
 
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response register(RegisterRequestDto dto) throws BackendException {
-        UserEntity entity = new RoommateEntity(dto.getEmail(), "changeme",dto.getFirstname(),
-                dto.getLastname(), dto.getPhonenumber());
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        boolean isCreated = entity.create(userDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+
+        UserEntity userEntity = new RoommateEntity(dto.getEmail(), "changeme", dto.getFirstname(),
+                dto.getLastname(), dto.getPhonenumber(), flatshareEntity);
+
+        boolean isCreated = userEntity.create(userDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
