@@ -1,6 +1,8 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.Entity;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Objects;
 
@@ -15,9 +17,31 @@ public class RentExpenseEntity extends ExpenseEntity {
     public RentExpenseEntity() {
     }
 
+    public RentExpenseEntity(String label, float price, RoommateEntity roommate, int month, int year) throws BackendException {
+        super(label, price, roommate);
+        setMonth(month);
+        setYear(year);
+    }
+
     public int getMonth() {
         return month;
     }
+
+    public void setMonth(int month) throws BackendException {
+        if (month < 1 || month > 12)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Month must be between 1 and 12");
+
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
 
     @Override
     public boolean equals(Object o) {
