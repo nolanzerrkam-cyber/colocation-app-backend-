@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ *
+ * @param <T> the entity
+ * @param <S> the id
+ */
 public interface Dao<T, S> {
     default List<T> getAll() throws BackendException {
         return new ArrayList<>();
