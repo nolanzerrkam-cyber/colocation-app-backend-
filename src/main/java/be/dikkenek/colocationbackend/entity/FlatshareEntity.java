@@ -21,7 +21,8 @@ public class FlatshareEntity {
     private List<RoommateEntity> roommates;
     @ManyToOne
     private LandlordEntity landlord;
-    private double rent;
+    @OneToOne
+    private RentEntity rent;
 
     public FlatshareEntity() {
     }
@@ -32,14 +33,6 @@ public class FlatshareEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public List<ShoppingItemEntity> getShoppingItems() {
-        return shoppingItems;
-    }
-
-    public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
-        this.shoppingItems = shoppingItems;
     }
 
     public void addRoommate(RoommateEntity roommateEntity) throws BackendException {
@@ -55,30 +48,19 @@ public class FlatshareEntity {
         roommates.remove(roommateEntity);
     }
 
-    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
-        if (shoppingItemEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
-
-        shoppingItemEntity.setFlatshare(this);
-        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
-    }
-
-    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
-        shoppingItems.remove(shoppingItemEntity);
-    }
-
     public LandlordEntity getLandlord() {
         return landlord;
     }
 
-    public double getRent() {
+    public RentEntity getRent() {
         return rent;
     }
 
-    public void setRent(double rent) throws BackendException {
-        if (rent <= 0)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Rent must be greater than 0");
+    public void setRent(RentEntity rent) throws BackendException {
+        if (rent == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Rent is null");
 
+        rent.setFlatshare(this);
         this.rent = rent;
     }
 
