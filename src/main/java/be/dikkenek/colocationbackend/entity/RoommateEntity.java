@@ -55,14 +55,13 @@ public class RoommateEntity extends UserEntity {
         this.expenses = expenses;
     }
 
-    public void addExpense(ExpenseEntity expense) {
+    public void addExpense(ExpenseEntity expense) throws BackendException {
         //methode qui ajoute une depense dans la liste
-        if (expense != null && !expenses.contains(expense)) {
-            expenses.add(expense);
-            if (expense.getRoomate() != this) {
-                expense.setRoomate(this);
-            }
-        }
+        if (expense == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ExpenseEntity cannot be null");
+
+        expense.setRoommate(this);
+        if (!expenses.contains(expense)) expenses.add(expense);
     }
 
     public void removeExpense(ExpenseEntity expense) {
@@ -96,26 +95,11 @@ public class RoommateEntity extends UserEntity {
                 .map(RoommateEntity.class::cast).collect(Collectors.toList());
     }
 
-    public static RoommateEntity get(UserDao dao, String email) throws BackendException {
-        return (RoommateEntity) dao.get(email).orElse(null);
-    }
-
-    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException {
-        List<UserEntity> entities = dao.getAll();
-
-        return entities.stream()
-                .filter(RoommateEntity.class::isInstance)
-                .map(RoommateEntity.class::cast)
-                .collect(Collectors.toList());
-    }
-
     public void addTask(TaskEntity taskEntity) throws BackendException {
         if (taskEntity == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
 
-        if (taskEntity.getRoommate() != this)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Roommate in TaskEntity is not well referenced");
-
+        taskEntity.setRoommate(this);
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
@@ -158,6 +142,19 @@ public class RoommateEntity extends UserEntity {
                 .map(e -> (RentExpenseEntity) e)
                 .filter(r -> r.getMonth() == thisMonth).findFirst();
         return rentExpense.isPresent();
+    }
+
+    public static RoommateEntity get(UserDao dao, String email) throws BackendException {
+        return (RoommateEntity) dao.get(email).orElse(null);
+    }
+
+    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException {
+        List<UserEntity> entities = dao.getAll();
+
+        return entities.stream()
+                .filter(RoommateEntity.class::isInstance)
+                .map(RoommateEntity.class::cast)
+                .collect(Collectors.toList());
     }
 
     @Override
