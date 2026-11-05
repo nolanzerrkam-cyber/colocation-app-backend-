@@ -25,6 +25,11 @@ public class FlatshareEntity {
     @OneToOne
     private RentEntity rent;
 
+    /**
+     * VERY IMPORTANT COMMENT
+     * We wanted to implement a Singleton design pattern to ensure the FlatshareEntity
+     * exists only once but Hibernate needs a public or protected constructor without any parameters
+     */
     public FlatshareEntity() {
     }
 
@@ -41,7 +46,6 @@ public class FlatshareEntity {
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "RoommateEntity cannot be null");
 
         roommateEntity.setFlatshare(this);
-
         if (!roommates.contains(roommateEntity)) roommates.add(roommateEntity);
     }
 
