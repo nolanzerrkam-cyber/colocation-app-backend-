@@ -2,10 +2,7 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +25,9 @@ public class RoommateEntity extends UserEntity {
 
     @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
+
+    @OneToOne(mappedBy = "roommate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RentRoommateStatusEntity rentStatus;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
@@ -151,7 +151,7 @@ public class RoommateEntity extends UserEntity {
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
-        return Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses) && Objects.equals(shoppingItems, that.shoppingItems);
+        return Objects.equals(getEmail(), that.getEmail()) && Objects.equals(tasks, that.tasks) && Objects.equals(expenses, that.expenses) && Objects.equals(shoppingItems, that.shoppingItems);
     }
 
     @Override
@@ -162,6 +162,7 @@ public class RoommateEntity extends UserEntity {
     @Override
     public String toString() {
         return "RoommateEntity{" +
+                "email : " + getEmail() +
                 "tasks=" + tasks +
                 ", expenses=" + expenses +
                 ", shoppingItems=" + shoppingItems +
