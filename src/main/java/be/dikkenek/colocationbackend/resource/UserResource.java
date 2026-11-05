@@ -32,10 +32,11 @@ public class UserResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        UserEntity userEntity = new RoommateEntity(dto.getEmail(), "changeme", dto.getFirstname(),
+        // RoommateEntity constructor automatically add the roommate in the roommates list of FlatshareEntity
+        new RoommateEntity(dto.getEmail(), "changeme", dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber(), flatshareEntity);
 
-        boolean isCreated = userEntity.create(userDao);
+        boolean isCreated = flatshareEntity.update(flatshareDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
