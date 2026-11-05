@@ -70,6 +70,10 @@ public class FlatshareEntity {
         this.rent = rent;
     }
 
+    public List<RoommateEntity> getRoommates() {
+        return roommates;
+    }
+
     public List<ExpenseEntity> getAllExpenses() {
         return roommates.stream().flatMap(r -> r.getExpenses().stream()).collect(Collectors.toList());
     }
@@ -88,6 +92,10 @@ public class FlatshareEntity {
      */
     public float getTotalExpenses() {
         return roommates.stream().map(RoommateEntity::getTotalPrice).reduce(0.0f, Float::sum);
+    }
+
+    public static FlatshareEntity get(FlatshareDao dao) throws BackendException {
+        return dao.getFirst().orElse(null);
     }
 
     @Override
