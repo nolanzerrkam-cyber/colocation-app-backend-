@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
@@ -74,5 +75,27 @@ public class FlatshareEntity {
 
     public List<ShoppingItemEntity> getAllShoppingItems() {
         return roommates.stream().flatMap(r -> r.getShoppingItems().stream()).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof FlatshareEntity)) return false;
+        FlatshareEntity that = (FlatshareEntity) o;
+        return id == that.id && Objects.equals(roommates, that.roommates) && Objects.equals(landlord, that.landlord) && Objects.equals(rent, that.rent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, roommates, landlord, rent);
+    }
+
+    @Override
+    public String toString() {
+        return "FlatshareEntity{" +
+                "id=" + id +
+                ", roommates=" + roommates +
+                ", landlord=" + landlord +
+                ", rent=" + rent +
+                '}';
     }
 }
