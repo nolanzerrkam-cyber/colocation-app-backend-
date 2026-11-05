@@ -71,6 +71,18 @@ public class RoommateEntity extends UserEntity {
         expenses.remove(expense);
     }
 
+    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
+        if (shoppingItemEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
+
+        shoppingItemEntity.setRoommate(this);
+        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
+    }
+
+    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
+        shoppingItems.remove(shoppingItemEntity);
+    }
+
     public float getPriceRoomate() {
         // fonction qui calcule le montant total des depense d'un coloc
         return expenses.stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);

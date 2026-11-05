@@ -18,8 +18,6 @@ public class FlatshareEntity {
     @Column(name = "id")
     private int id;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<ShoppingItemEntity> shoppingItems;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<RoommateEntity> roommates;
     @ManyToOne
     private LandlordEntity landlord;
@@ -90,5 +88,9 @@ public class FlatshareEntity {
 
     public List<TaskEntity> getAllTasks() {
         return roommates.stream().flatMap(r -> r.getTasks().stream()).collect(Collectors.toList());
+    }
+
+    public List<ShoppingItemEntity> getAllShoppingItems() {
+        return roommates.stream().flatMap(r -> r.getShoppingItems().stream()).collect(Collectors.toList());
     }
 }
