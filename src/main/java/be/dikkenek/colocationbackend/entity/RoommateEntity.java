@@ -94,6 +94,26 @@ public class RoommateEntity extends UserEntity {
         return expenses.stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
     }
 
+    /**
+     *
+     * @param month the target month (1 -> 12) when the roommate is paying for
+     * @param year the target year when the roommate is paying for
+     * @throws BackendException from RentExpenseEntity constructor
+     */
+    public void payRent(int month, int year) throws BackendException {
+        String label = "Rent " + month + "/" + year;
+        RentExpenseEntity rentExpenseEntity = new RentExpenseEntity(label, getRent(), this, month, year);
+        addExpense(rentExpenseEntity);
+    }
+
+    /**
+     *
+     * @return how much the roommate must pay
+     */
+    public float getRent() {
+        return flatshare.getRent().getAmount() / flatshare.getRoommates().size();
+    }
+
     public static List<RoommateEntity> findAll(UserDao userDao) throws BackendException {
         return userDao.getAll().stream()
                 .filter(user -> user instanceof RoommateEntity)
@@ -136,18 +156,23 @@ public class RoommateEntity extends UserEntity {
         if (flatshare == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Flatshare cannot be null");
 
-        if(!flatshare.equals(this.flatshare)) {
+        if (!flatshare.equals(this.flatshare)) {
             this.flatshare = flatshare;
             flatshare.addRoommate(this);
         }
     }
 
-    public boolean isRentPaid() {
+    public boolean isCurrentRentPaid() {
+        int thisYear = LocalDateTime.now().getYear();
         int thisMonth = LocalDateTime.now().getMonth().getValue();
+        return isRentPaid(thisMonth, thisYear);
+    }
+
+    public boolean isRentPaid(int month, int year) {
         Optional<RentExpenseEntity> rentExpense = expenses.stream()
                 .filter(e -> e instanceof RentExpenseEntity)
                 .map(e -> (RentExpenseEntity) e)
-                .filter(r -> r.getMonth() == thisMonth).findFirst();
+                .filter(r -> r.getMonth() == month && r.getYear() == year).findFirst();
         return rentExpense.isPresent();
     }
 

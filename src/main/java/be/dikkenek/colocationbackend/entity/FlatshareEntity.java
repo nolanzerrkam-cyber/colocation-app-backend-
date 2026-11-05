@@ -100,8 +100,30 @@ public class FlatshareEntity {
         return roommates.stream().map(RoommateEntity::getTotalPrice).reduce(0.0f, Float::sum);
     }
 
+    /**
+     *
+     * @return true if each roommate paid the rent for this month
+     */
+    public boolean isCurrentRentPaid() {
+        return roommates.stream().allMatch(RoommateEntity::isCurrentRentPaid);
+    }
+
+    /**
+     *
+     * @param month the target month number (1 -> 12)
+     * @param year  the target year number
+     * @return true if each roommate paid the rent for the specified month and year
+     */
+    public boolean isRentPaid(int month, int year) {
+        return roommates.stream().allMatch(r -> r.isRentPaid(month, year));
+    }
+
     public static FlatshareEntity get(FlatshareDao dao) throws BackendException {
         return dao.getFirst().orElse(null);
+    }
+
+    public boolean update(FlatshareDao dao) throws BackendException {
+        return dao.update(this);
     }
 
     @Override

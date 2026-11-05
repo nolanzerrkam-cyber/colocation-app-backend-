@@ -18,7 +18,7 @@ public class RentEntity {
     @Column(name = "id")
     private int id;
     private int deadlineDay;
-    private double amount;
+    private float amount;
     @OneToOne
     private FlatshareEntity flatshare;
 
@@ -48,5 +48,9 @@ public class RentEntity {
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Deadline must be between 1 and 31");
 
         this.deadlineDay = deadlineDay;
+    }
+
+    public float getAmount() {
+        return amount;
     }
 }
