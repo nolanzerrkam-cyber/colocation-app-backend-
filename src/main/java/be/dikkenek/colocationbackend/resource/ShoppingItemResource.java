@@ -35,8 +35,6 @@ public class ShoppingItemResource
 
     @DELETE
     @Path("/{id_shopItem}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException
     {
         ShoppingItemEntity shoppingItem = ShoppingItemEntity.get(itemDao, id);
@@ -46,15 +44,8 @@ public class ShoppingItemResource
             return Response.status(Response.Status.NOT_FOUND).entity("We couldn't found your shopping item.").build();
         }
 
-        RoommateEntity rmteNtt = shoppingItem.getRoommate();
-        rmteNtt.removeItem(shoppingItem);
-
-        boolean isUpdated = rmteNtt.update(userDao);
-
-        if(isUpdated)
-        {
+        if(itemDao.delete(shoppingItem))
             return Response.status(Response.Status.OK).build();
-        }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
     }

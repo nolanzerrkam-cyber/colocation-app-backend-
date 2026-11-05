@@ -1,6 +1,7 @@
 package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
+import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -68,6 +69,10 @@ public class ShoppingItemDao implements Dao<ShoppingItemEntity, Integer>
                     et.rollback();
                     return false;
                 }
+
+                RoommateEntity roommate = managedShoppingItem.getRoommate();
+                if(roommate != null && roommate.getShoppingItems() != null)
+                    roommate.getShoppingItems().removeIf(i -> i.getId() == managedShoppingItem.getId());
 
                 man.remove(managedShoppingItem);
 
