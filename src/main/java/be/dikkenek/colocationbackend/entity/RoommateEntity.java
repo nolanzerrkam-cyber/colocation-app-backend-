@@ -82,18 +82,12 @@ public class RoommateEntity extends UserEntity {
         shoppingItems.remove(shoppingItemEntity);
     }
 
-    public float getPriceRoomate() {
-        // fonction qui calcule le montant total des depense d'un coloc
+    /**
+     *
+     * @return the total amount of his/her expenses
+     */
+    public float getTotalPrice() {
         return expenses.stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
-    }
-
-    public static float getTotalExpense(List<RoommateEntity> roommates) {
-        // fonction qui calcule l'ensemble des depense de la colocation
-        float totalGlobal = roommates.stream()
-                .flatMap(roommate -> roommate.getExpenses().stream())
-                .map(ExpenseEntity::getPrice)
-                .reduce(0.0f, Float::sum);
-        return totalGlobal;
     }
 
     public static List<RoommateEntity> findAll(UserDao userDao) throws BackendException {

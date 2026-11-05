@@ -1,5 +1,6 @@
 package be.dikkenek.colocationbackend.entity;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
@@ -79,6 +80,14 @@ public class FlatshareEntity {
 
     public List<ShoppingItemEntity> getAllShoppingItems() {
         return roommates.stream().flatMap(r -> r.getShoppingItems().stream()).collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @return the total amount of every expenses of the flatshare
+     */
+    public float getTotalExpenses() {
+        return roommates.stream().map(RoommateEntity::getTotalPrice).reduce(0.0f, Float::sum);
     }
 
     @Override
