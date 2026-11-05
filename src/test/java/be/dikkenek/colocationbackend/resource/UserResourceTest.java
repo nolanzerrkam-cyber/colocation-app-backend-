@@ -35,7 +35,7 @@ class UserResourceTest
         // Given
         RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(new FlatshareEntity()));
-        Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
         Response response = userResource.register(registerRequestDto);
@@ -49,7 +49,7 @@ class UserResourceTest
         // Given
         RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(new FlatshareEntity()));
-        Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
         Response response = userResource.register(registerRequestDto);
