@@ -7,9 +7,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class ShoppingItemDao implements Dao<ShoppingItemEntity, Integer>
@@ -24,6 +28,20 @@ public class ShoppingItemDao implements Dao<ShoppingItemEntity, Integer>
         {
             exception.printStackTrace();
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error when getting shopping items");
+        }
+    }
+
+    @Override
+    public Optional<ShoppingItemEntity> get(Integer id) throws BackendException
+    {
+        try(EntityManager man = DatabaseConfig.createEntityManager())
+        {
+            return Optional.ofNullable(man.find(ShoppingItemEntity.class, id));
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.NOT_FOUND, "We failed to retrieve the shopping item.");
         }
     }
 

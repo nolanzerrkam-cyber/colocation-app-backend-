@@ -11,7 +11,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import javax.print.attribute.standard.Media;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,6 @@ public class ShoppingItemResource
             return Response.status(Response.Status.OK).build();
         }
 
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error, failed to delete the shopping item.");
-
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
     }
 }

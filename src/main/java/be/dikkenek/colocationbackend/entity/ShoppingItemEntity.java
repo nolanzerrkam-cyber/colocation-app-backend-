@@ -80,6 +80,11 @@ public class ShoppingItemEntity {
         return dao.getAll();
     }
 
+    public static ShoppingItemEntity get(ShoppingItemDao dao, int id) throws BackendException
+    {
+        return dao.get(id).orElse(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ShoppingItemEntity)) return false;
