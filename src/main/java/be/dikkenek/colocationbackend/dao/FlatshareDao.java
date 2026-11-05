@@ -14,9 +14,11 @@ import java.util.Optional;
 public class FlatshareDao implements Dao<FlatshareEntity, Integer> {
 
     @Override
-    public Optional<FlatshareEntity> get(Integer id) throws BackendException {
+    public Optional<FlatshareEntity> getFirst() throws BackendException {
         try (EntityManager man = DatabaseConfig.createEntityManager()) {
-            return Optional.ofNullable(man.find(FlatshareEntity.class, id));
+            return man.createQuery("SELECT flatshare FROM FlatshareEntity flatshare ORDER BY id", FlatshareEntity.class)
+                    .getResultStream()
+                    .findFirst();
         } catch (Exception e) {
             e.printStackTrace();
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Database error: cannot retrieve Flatshare");
