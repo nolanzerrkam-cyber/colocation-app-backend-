@@ -60,8 +60,11 @@ public class ShoppingItemEntity {
         if (roommate == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Roommate is null");
 
-        roommate.addItem(this);
-        this.roommate = roommate;
+        if (!roommate.equals(this.roommate)) {
+            this.roommate.removeItem(this);
+            roommate.addItem(this);
+            this.roommate = roommate;
+        }
     }
 
     public ShoppingItemEntity() {
