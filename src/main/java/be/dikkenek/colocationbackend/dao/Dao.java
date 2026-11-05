@@ -16,6 +16,10 @@ public interface Dao<T, S> {
         return new ArrayList<>();
     }
 
+    default Optional<T> getFirst() throws BackendException {
+        return Optional.empty();
+    }
+
     default Optional<T> get(S id) throws BackendException {
         return Optional.empty();
     }
