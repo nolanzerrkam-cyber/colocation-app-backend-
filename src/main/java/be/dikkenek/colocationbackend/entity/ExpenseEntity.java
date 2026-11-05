@@ -93,9 +93,9 @@ public class ExpenseEntity {
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
 
         if (!roommate.equals(this.roommate)) {
-            this.roommate.removeExpense(this);
-            roommate.addExpense(this);
+            if (this.roommate != null) this.roommate.removeExpense(this);
             this.roommate = roommate;
+            roommate.addExpense(this);
         }
     }
 

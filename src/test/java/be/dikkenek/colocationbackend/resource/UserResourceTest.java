@@ -1,9 +1,11 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginRequestDto;
 import be.dikkenek.colocationbackend.dto.LoginResponseDto;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -23,6 +25,8 @@ class UserResourceTest
 {
     @Mock
     private UserDao userDao;
+    @Mock
+    private FlatshareDao flatshareDao;
     @InjectMocks
     private UserResource userResource;
 
@@ -30,6 +34,7 @@ class UserResourceTest
     void user_register_valid() throws BackendException {
         // Given
         RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(new FlatshareEntity()));
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
@@ -43,6 +48,7 @@ class UserResourceTest
     void user_register_not_valid() throws BackendException {
         // Given
         RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(new FlatshareEntity()));
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When
@@ -56,7 +62,8 @@ class UserResourceTest
     void user_login_valid() throws BackendException {
         // Given
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(), userEntity.getLastname(), userEntity.getPhonenumber(), LoginResponseDto.Role.ROOMMATE);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 
@@ -90,7 +97,8 @@ class UserResourceTest
     void user_login_passwords_dont_match() throws BackendException {
         // Given
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "passwordpassword", "a", "a", "0474998234");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        UserEntity userEntity = new RoommateEntity("email@email.com", "passwordpassword", "a", "a", "0474998234", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 
         // When
@@ -104,7 +112,8 @@ class UserResourceTest
     void user_delete_valid() throws BackendException {
         // Given
         String email = "email@email.com";
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789", flatshareEntity);
         Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
         Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(true);
 
@@ -118,7 +127,8 @@ class UserResourceTest
     void user_delete_not_valid() throws BackendException {
         // Given
         String email = "email@email.com";
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789", flatshareEntity);
         Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
         Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(false);
 

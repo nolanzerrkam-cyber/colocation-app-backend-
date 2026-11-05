@@ -33,18 +33,21 @@ public class RoommateEntity extends UserEntity {
 
     public RoommateEntity() {
         setExpenses(new ArrayList<>());
+        setTasks(new ArrayList<>());
+        setShoppingItems(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
         setFlatshare(flatshareEntity);
         setTasks(new ArrayList<>());
+        setExpenses(new ArrayList<>());
+        setShoppingItems(new ArrayList<>());
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity, List<TaskEntity> tasks) throws BackendException {
         this(email, password, firstname, lastname, phonenumber, flatshareEntity);
         setTasks(tasks);
-        setExpenses(new ArrayList<>());
     }
 
     public List<ExpenseEntity> getExpenses() {
@@ -61,7 +64,9 @@ public class RoommateEntity extends UserEntity {
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ExpenseEntity cannot be null");
 
         expense.setRoommate(this);
-        if (!expenses.contains(expense)) expenses.add(expense);
+        if (!expenses.contains(expense)) {
+            expenses.add(expense);
+        }
     }
 
     public void removeExpense(ExpenseEntity expense) {
@@ -131,8 +136,10 @@ public class RoommateEntity extends UserEntity {
         if (flatshare == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Flatshare cannot be null");
 
-        flatshare.addRoommate(this);
-        this.flatshare = flatshare;
+        if(!flatshare.equals(this.flatshare)) {
+            this.flatshare = flatshare;
+            flatshare.addRoommate(this);
+        }
     }
 
     public boolean isRentPaid() {

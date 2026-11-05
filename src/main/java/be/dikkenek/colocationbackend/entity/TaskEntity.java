@@ -118,9 +118,9 @@ public class TaskEntity {
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
 
         if (!roommate.equals(this.roommate)) {
-            this.roommate.removeTask(this);
-            roommate.addTask(this);
+            if(this.roommate != null) this.roommate.removeTask(this);
             this.roommate = roommate;
+            roommate.addTask(this);
         }
     }
 

@@ -5,6 +5,7 @@ import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class FlatshareEntity {
      * exists only once but Hibernate needs a public or protected constructor without any parameters
      */
     public FlatshareEntity() {
+        setRoommates(new ArrayList<>());
     }
 
     public int getId() {
@@ -68,6 +70,10 @@ public class FlatshareEntity {
 
         rent.setFlatshare(this);
         this.rent = rent;
+    }
+
+    public void setRoommates(List<RoommateEntity> roommates) {
+        this.roommates = roommates;
     }
 
     public List<RoommateEntity> getRoommates() {
