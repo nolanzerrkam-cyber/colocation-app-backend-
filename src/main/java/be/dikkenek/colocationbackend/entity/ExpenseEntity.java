@@ -1,4 +1,5 @@
 package be.dikkenek.colocationbackend.entity;
+
 import be.dikkenek.colocationbackend.dao.Dao;
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -6,17 +7,14 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import java.math.BigDecimal;
 import java.time.*;
 import java.util.Objects;
-import java.util.Optional;
 
 @Entity
-@Table(name ="EXPENSE")
+@Table(name = "EXPENSE")
 public class ExpenseEntity {
 
     @Id
@@ -36,19 +34,16 @@ public class ExpenseEntity {
     @ManyToOne
     // gère la relation en BD
     @JoinColumn(name = "Email", nullable = false)
-    private RoommateEntity roomate;
+    private RoommateEntity roommate;
 
     public ExpenseEntity() {
     }
 
-    public ExpenseEntity(String label, float price, RoommateEntity roomate) throws BackendException{
+    public ExpenseEntity(String label, float price, RoommateEntity roommate) throws BackendException {
         setLabel(label);
         setPrice(price);
         setDate();
-        setRoomate(roomate);
-        if (roomate != null && !roomate.getExpenses().contains(this)) {
-            roomate.getExpenses().add(this);
-        }
+        setRoommate(roommate);
     }
 
     public int getId() {
@@ -59,11 +54,11 @@ public class ExpenseEntity {
         this.id = id;
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
-    private void setLabel(String label) throws BackendException{
+    private void setLabel(String label) throws BackendException {
         if (label == null || label.isEmpty()) {
             throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
         }
@@ -85,14 +80,23 @@ public String getLabel() {
         return date_expense;
     }
 
-    private void setDate() {this.date_expense = new Date();}
-
-    public RoommateEntity getRoomate() {
-        return roomate;
+    private void setDate() {
+        this.date_expense = new Date();
     }
 
-    public void setRoomate(RoommateEntity roomate) {
-        this.roomate = roomate;
+    public RoommateEntity getRoommate() {
+        return roommate;
+    }
+
+    public void setRoommate(RoommateEntity roommate) throws BackendException {
+        if (roommate == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
+
+        if (!roommate.equals(this.roommate)) {
+            this.roommate.removeExpense(this);
+            roommate.addExpense(this);
+            this.roommate = roommate;
+        }
     }
 
     public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
@@ -101,11 +105,11 @@ public String getLabel() {
         return expenseDao.getAll();
     }
 
-    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException{
+    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException {
         return dao.get(id).orElse(null);
     }
-    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
-    {
+
+    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException {
         return dao.create(this);
     }
 
@@ -128,7 +132,7 @@ public String getLabel() {
                 ", label='" + label + '\'' +
                 ", price=" + price +
                 ", date=" + getDate() +
-                ", roommateEmail=" + (getRoomate() != null ? getRoomate().getEmail() : "null") +
+                ", roommateEmail=" + (getRoommate() != null ? getRoommate().getEmail() : "null") +
                 '}';
     }
 }
