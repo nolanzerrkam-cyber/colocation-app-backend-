@@ -1,8 +1,5 @@
 package be.dikkenek.colocationbackend.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
 public class ShoppingItemGetDto
 {
     private int id;

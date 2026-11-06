@@ -39,6 +39,7 @@ public class RoommateEntity extends UserEntity {
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber) throws BackendException {
         super(email, password, firstname, lastname, phonenumber);
         setTasks(new ArrayList<>());
+        this.shoppingItems = new ArrayList<>();
     }
 
     public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, List<TaskEntity> tasks) throws BackendException {
