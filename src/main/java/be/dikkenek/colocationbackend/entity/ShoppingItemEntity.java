@@ -70,6 +70,7 @@ public class ShoppingItemEntity {
         setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
+        roommate.addItem(this);
     }
 
     public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {

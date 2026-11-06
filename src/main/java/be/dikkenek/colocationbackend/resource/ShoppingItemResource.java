@@ -39,9 +39,10 @@ public class ShoppingItemResource
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(ShoppingItemPostDto dto) throws BackendException {
-        ShoppingItemEntity entity = new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), RoommateEntity.get(userDao,dto.getRoommateId()));
+        RoommateEntity roommate = RoommateEntity.get(userDao,dto.getRoommateId());
+        ShoppingItemEntity entity = new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
 
-        boolean isCreated = entity.create(itemDao);
+        boolean isCreated = roommate.update(userDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

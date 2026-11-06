@@ -91,31 +91,45 @@ public class ShoppingItemResourceTest {
     @Test
     void shoppingItem_create_valid() throws BackendException {
         // Given
-        ShoppingItemPostDto shoppingItemPostDto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
-        Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
-        Mockito.when(itemDao.create(Mockito.any(ShoppingItemEntity.class))).thenReturn(true);
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
-        Response response = shoppingItemResource.create(shoppingItemPostDto);
+        Response response = shoppingItemResource.create(dto);
 
         // Then
         Assertions.assertEquals(201, response.getStatus());
+        Mockito.verify(userDao).update(roommate);
+        Mockito.verifyNoInteractions(itemDao);
     }
 
     @Test
     void shoppingItem_create_not_valid() throws BackendException {
         // Given
-        ShoppingItemPostDto shoppingItemPostDto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
-        Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
-        Mockito.when(itemDao.create(Mockito.any(ShoppingItemEntity.class))).thenReturn(false);
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When
-        Response response = shoppingItemResource.create(shoppingItemPostDto);
+        Response response = shoppingItemResource.create(dto);
 
         // Then
         Assertions.assertEquals(500, response.getStatus());
+        Assertions.assertEquals("Failed to create item", response.getEntity());
     }
 
+    @Test
+    void shoppingItem_create_roommate_not_found() throws BackendException {
+        // Given
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "inconnu@email.com");
+        Mockito.when(userDao.get("inconnu@email.com")).thenReturn(Optional.empty());
+
+        // When / Then
+        Assertions.assertThrows(BackendException.class, () -> shoppingItemResource.create(dto));
+        Mockito.verify(userDao, Mockito.never()).update(Mockito.any());
+    }
 }
+
