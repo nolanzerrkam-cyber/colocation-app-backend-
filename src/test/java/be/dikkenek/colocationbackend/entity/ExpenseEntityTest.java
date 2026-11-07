@@ -11,7 +11,8 @@ public class ExpenseEntityTest {
     @Test
     // NEW : I changed the name of test_price_valid to test_constructor_rejects_invalid_values.
     void test_constructor_rejects_invalid_values() throws BackendException {
-        RoommateEntity roommateEntity = new RoommateEntity();
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ExpenseEntity expense = new ExpenseEntity("Courses", 24.50f, roommateEntity);
 
         assertEquals(24.50f, expense.getPrice());
@@ -32,7 +33,8 @@ public class ExpenseEntityTest {
     @Test
     void test_getters_return_constructor_values() throws BackendException {
         // Test the constructor
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ExpenseEntity testExpense = new ExpenseEntity("Courses", 67.67f, roommate);
 
         assertEquals("Courses", testExpense.getLabel());

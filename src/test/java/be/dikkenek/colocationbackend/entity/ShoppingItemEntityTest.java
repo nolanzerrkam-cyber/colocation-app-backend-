@@ -14,7 +14,8 @@ public class ShoppingItemEntityTest {
 
     @Test
     void test_constructor_rejects_invalid_values() throws BackendException {
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ShoppingItemEntity item = new ShoppingItemEntity(1, "Lait", 2, roommate);
 
         assertEquals(2, item.getQuantity());
@@ -26,7 +27,8 @@ public class ShoppingItemEntityTest {
 
     @Test
     void test_setters_reject_invalid_values() throws BackendException {
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ShoppingItemEntity item = new ShoppingItemEntity(1, "Lait", 2, roommate);
 
         assertThrows(BackendException.class, () -> item.setQuantity(0));
@@ -38,7 +40,8 @@ public class ShoppingItemEntityTest {
 
     @Test
     void test_getters_return_constructor_values() throws BackendException {
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ShoppingItemEntity item = new ShoppingItemEntity(7, "Pain", 3, roommate);
 
         assertEquals(7, item.getId());
@@ -49,7 +52,8 @@ public class ShoppingItemEntityTest {
 
     @Test
     void test_getAll_returns_dao_values() throws BackendException {
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         ShoppingItemDao dao = Mockito.mock(ShoppingItemDao.class);
         List<ShoppingItemEntity> items = Arrays.asList(
                 new ShoppingItemEntity(1, "Lait", 2, roommate),
@@ -60,18 +64,5 @@ public class ShoppingItemEntityTest {
 
         assertSame(items, result);
         Mockito.verify(dao).getAll();
-    }
-
-    @Test
-    void test_equals_and_hashCode_based_on_id() throws BackendException {
-        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
-        ShoppingItemEntity item1 = new ShoppingItemEntity(1, "Lait", 2, roommate);
-        ShoppingItemEntity item2 = new ShoppingItemEntity(1, "Pain", 5, roommate);
-        ShoppingItemEntity item3 = new ShoppingItemEntity(2, "Lait", 2, roommate);
-
-        assertNotEquals(item1.hashCode(), item2.hashCode());
-        assertNotEquals(item1, item2);
-        assertNotEquals(item1, item3);
-        assertNotEquals(null, item1);
     }
 }

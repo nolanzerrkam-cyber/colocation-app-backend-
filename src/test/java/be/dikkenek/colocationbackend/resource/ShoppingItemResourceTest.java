@@ -44,8 +44,8 @@ public class ShoppingItemResourceTest {
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
         ShoppingItemEntity item = mockItem(1, "Lait", 2, roommateEntity);
-        roommateEntity.addItem(item);
         flatshareEntity.addRoommate(roommateEntity);
+        flatshareEntity.addItem(item);
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
@@ -69,8 +69,8 @@ public class ShoppingItemResourceTest {
         flatshareEntity.addRoommate(roommate2);
         ShoppingItemEntity item1 = mockItem(1, "Lait", 2, roommate1);
         ShoppingItemEntity item2 = mockItem(2, "Pain", 1, roommate2);
-        roommate1.addItem(item1);
-        roommate2.addItem(item2);
+        flatshareEntity.addItem(item1);
+        flatshareEntity.addItem(item2);
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When

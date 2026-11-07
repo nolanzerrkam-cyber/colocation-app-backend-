@@ -92,7 +92,8 @@ public class TaskResourceTest {
         int taskId = 1;
         TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
         TaskEntity existingTask = new TaskEntity();
-        RoommateEntity roommateEntity = new RoommateEntity(); // Instance factice de la tâche trouvée
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
 
         Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
@@ -126,7 +127,8 @@ public class TaskResourceTest {
         int taskId = 1;
         TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
         TaskEntity existingTask = new TaskEntity();
-        RoommateEntity roommateEntity = new RoommateEntity();
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
 
         Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
