@@ -37,7 +37,7 @@ public class ExpenseResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        List<ExpenseEntity> expenses = flatshareEntity.getAllExpenses();
+        List<ExpenseEntity> expenses = flatshareEntity.getExpenses();
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -62,7 +62,7 @@ public class ExpenseResource {
     public Response getPricePerRoommate(@QueryParam("email") String email) throws BackendException {
         RoommateEntity roommate = RoommateEntity.get(userDao, email);
 
-        return Response.status(200).entity(roommate.getTotalPrice()).build();
+        return Response.status(200).entity(roommate.getTotalExpenses()).build();
     }
 
     @DELETE
@@ -78,10 +78,10 @@ public class ExpenseResource {
                     .build();
         }
 
-        RoommateEntity roommate = expense.getRoommate();
-        roommate.removeExpense(expense);
+        FlatshareEntity flatshareEntity = expense.getRoommate().getFlatshare();
+        flatshareEntity.removeExpense(expense);
 
-        boolean isUpdated = roommate.update(userDao);
+        boolean isUpdated = flatshareEntity.update(flatshareDao);
         if (isUpdated) {
             return Response.status(Response.Status.OK).build();
         }
@@ -100,11 +100,15 @@ public class ExpenseResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Only roommates can add expenses !").build();
         }
 
-        ExpenseEntity expense = new ExpenseEntity(dto.getLabel(), dto.getPrice(), (RoommateEntity) user);
+        RoommateEntity roommateEntity = (RoommateEntity) user;
 
-        if (expense.create(expenseDao)) {
+        // ExpenseEntity constructor automatically adds the expense in the roommate's flatshare
+        new ExpenseEntity(dto.getLabel(), dto.getPrice(), roommateEntity);
+
+        if (roommateEntity.getFlatshare().update(flatshareDao)) {
             return Response.status(Response.Status.CREATED).entity("The expense has been created !").build();
         }
+
         return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Sorry, we couldn't create your expense.").build();
     }
 }

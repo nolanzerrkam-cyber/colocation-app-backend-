@@ -93,15 +93,13 @@ public class ExpenseEntity {
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
 
         if (!roommate.equals(this.roommate)) {
-            if (this.roommate != null) this.roommate.removeExpense(this);
+            if (this.roommate != null) this.roommate.getFlatshare().removeExpense(this);
             this.roommate = roommate;
-            roommate.addExpense(this);
+            roommate.getFlatshare().addExpense(this);
         }
     }
 
-    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
-    //fonction qui va appeler le DAO pour recuperer toute les depenses
-    {
+    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException {
         return expenseDao.getAll();
     }
 

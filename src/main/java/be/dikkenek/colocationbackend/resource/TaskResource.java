@@ -35,7 +35,7 @@ public class TaskResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        List<TaskResponseDto> taskResponseDtos = flatshareEntity.getAllTasks().stream()
+        List<TaskResponseDto> taskResponseDtos = flatshareEntity.getTasks().stream()
                 .map(t -> new TaskResponseDto(
                         t.getId(),
                         t.getName(),
@@ -78,10 +78,10 @@ public class TaskResource {
         if (taskEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
 
-        RoommateEntity roommateEntity = taskEntity.getRoommate();
-        roommateEntity.removeTask(taskEntity);
+        FlatshareEntity flatshareEntity = taskEntity.getRoommate().getFlatshare();
+        flatshareEntity.removeTask(taskEntity);
 
-        boolean isUpdated = roommateEntity.update(userDao);
+        boolean isUpdated = flatshareEntity.update(flatshareDao);
         if (isUpdated)
             return Response.status(Response.Status.OK).build();
 
@@ -109,8 +109,7 @@ public class TaskResource {
         taskEntity.setRoommate(roommateEntity);
 
         boolean isUpdated = taskEntity.update(taskDao);
-        if (isUpdated)
-        {
+        if (isUpdated) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(500).entity("Error when updating task").build();

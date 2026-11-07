@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "FLATSHARE")
@@ -20,12 +19,25 @@ public class FlatshareEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<RoommateEntity> roommates;
+
     @ManyToOne
     private LandlordEntity landlord;
+
     @OneToOne
     private RentEntity rent;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<RoommateEntity> roommates;
+
+    // FetchType.EAGER will load tasks list as soon as RoommateEntity is created
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<TaskEntity> tasks;
+
+    @OneToMany(mappedBy = "roomate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ExpenseEntity> expenses;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ShoppingItemEntity> shoppingItems;
 
     /**
      * VERY IMPORTANT COMMENT
@@ -34,6 +46,9 @@ public class FlatshareEntity {
      */
     public FlatshareEntity() {
         setRoommates(new ArrayList<>());
+        setTasks(new ArrayList<>());
+        setExpenses(new ArrayList<>());
+        setShoppingItems(new ArrayList<>());
     }
 
     public int getId() {
@@ -80,16 +95,61 @@ public class FlatshareEntity {
         return roommates;
     }
 
-    public List<ExpenseEntity> getAllExpenses() {
-        return roommates.stream().flatMap(r -> r.getExpenses().stream()).collect(Collectors.toList());
+    public void addTask(TaskEntity taskEntity) throws BackendException {
+        if (taskEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
+
+        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
 
-    public List<TaskEntity> getAllTasks() {
-        return roommates.stream().flatMap(r -> r.getTasks().stream()).collect(Collectors.toList());
+    public void removeTask(TaskEntity taskEntity) {
+        tasks.remove(taskEntity);
     }
 
-    public List<ShoppingItemEntity> getAllShoppingItems() {
-        return roommates.stream().flatMap(r -> r.getShoppingItems().stream()).collect(Collectors.toList());
+    public List<TaskEntity> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskEntity> tasks) {
+        this.tasks = tasks;
+    }
+
+    public List<ShoppingItemEntity> getShoppingItems() {
+        return shoppingItems;
+    }
+
+    public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
+        this.shoppingItems = shoppingItems;
+    }
+
+    public List<ExpenseEntity> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<ExpenseEntity> expenses) {
+        this.expenses = expenses;
+    }
+
+    public void addExpense(ExpenseEntity expense) throws BackendException {
+        if (expense == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ExpenseEntity cannot be null");
+
+        if (!expenses.contains(expense)) expenses.add(expense);
+    }
+
+    public void removeExpense(ExpenseEntity expense) {
+        expenses.remove(expense);
+    }
+
+    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
+        if (shoppingItemEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
+
+        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
+    }
+
+    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
+        shoppingItems.remove(shoppingItemEntity);
     }
 
     /**
@@ -97,7 +157,7 @@ public class FlatshareEntity {
      * @return the total amount of every expenses of the flatshare
      */
     public float getTotalExpenses() {
-        return roommates.stream().map(RoommateEntity::getTotalPrice).reduce(0.0f, Float::sum);
+        return roommates.stream().map(RoommateEntity::getTotalExpenses).reduce(0.0f, Float::sum);
     }
 
     /**

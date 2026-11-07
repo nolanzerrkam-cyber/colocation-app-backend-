@@ -27,7 +27,7 @@ public class ShoppingItemResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getAllShoppingItems().stream()
+        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingItems().stream()
                 .map(entity -> new ShoppingItemGetDto(
                         entity.getId(),
                         entity.getLabel(),
