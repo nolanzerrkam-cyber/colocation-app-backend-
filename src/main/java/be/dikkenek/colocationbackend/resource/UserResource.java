@@ -22,11 +22,13 @@ public class UserResource {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDto dto) throws BackendException {
+    public Response register(RegisterRequestDto dto) throws BackendException
+    {
         UserEntity entity = new RoommateEntity(dto.getEmail(), "changeme",dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber());
 
         boolean isCreated = entity.create(userDao);
+
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

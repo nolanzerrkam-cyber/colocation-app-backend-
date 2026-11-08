@@ -29,7 +29,7 @@ class UserResourceTest
     @Test
     void user_register_valid() throws BackendException {
         // Given
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272", "rawPasword");
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
@@ -42,7 +42,7 @@ class UserResourceTest
     @Test
     void user_register_not_valid() throws BackendException {
         // Given
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272", "rawPassword");
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When

@@ -111,7 +111,8 @@ public abstract class UserEntity {
         return userDao.update(this);
     }
 
-    public boolean verifyPassword(String password) {
+    public boolean verifyPassword(String password)
+    {
         return this.getPassword().equals(password);
     }
 
