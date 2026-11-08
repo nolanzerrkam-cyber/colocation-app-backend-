@@ -18,7 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserResource {
     @Inject
     private UserDao userDao;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
     @POST
     @Path("/register")
@@ -27,11 +27,9 @@ public class UserResource {
     public Response register(RegisterRequestDto dto) throws BackendException
     {
         String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
-        UserEntity entity = new RoommateEntity(dto.getEmail(), "changeme",dto.getFirstname(),
+        UserEntity entity = new RoommateEntity(dto.getEmail(),hashedPassword,dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber());
-
-        entity.setPassword(hashedPassword);
-
+        
         boolean isCreated = entity.create(userDao);
 
         if (!isCreated)
