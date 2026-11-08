@@ -29,7 +29,7 @@ public class UserResource {
         String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
         UserEntity entity = new RoommateEntity(dto.getEmail(),hashedPassword,dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber());
-        
+
         boolean isCreated = entity.create(userDao);
 
         if (!isCreated)

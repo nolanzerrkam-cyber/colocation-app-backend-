@@ -35,7 +35,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>6.2.3</version> <!-- (ou une version adaptée à ta version de Java) -->
+            <version>6.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
