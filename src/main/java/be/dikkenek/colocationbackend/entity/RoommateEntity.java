@@ -136,7 +136,7 @@ public class RoommateEntity extends UserEntity {
     @Override
     public String toString() {
         return "RoommateEntity{" +
-                "flatshare=" + flatshare +
-                '}';
+                "flatshare=" + flatshare.getId() +
+                "} " + super.toString();
     }
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Entity
@@ -121,5 +121,28 @@ public abstract class UserEntity {
 
     public String getFullName() {
         return firstname + " " + lastname;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UserEntity)) return false;
+        UserEntity that = (UserEntity) o;
+        return Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(firstname, that.firstname) && Objects.equals(lastname, that.lastname) && Objects.equals(phonenumber, that.phonenumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, password, firstname, lastname, phonenumber);
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", phonenumber='" + phonenumber + '\'' +
+                '}';
     }
 }
