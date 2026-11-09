@@ -18,6 +18,7 @@ public class RentEntity {
     @Column(name = "id")
     private int id;
     private int deadlineDay;
+    @Column(name = "amount", nullable = false, columnDefinition = "NUMBER(10,2)")
     private float amount;
     @OneToOne
     private FlatshareEntity flatshare;
