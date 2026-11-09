@@ -62,7 +62,7 @@ public class TaskResource {
         // TaskEntity constructor automatically adds the taskEntity in the RoommateEntity's tasks list
         new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
 
-        boolean success = roommateEntity.update(userDao);
+        boolean success = roommateEntity.getFlatshare().update(flatshareDao);
         if (success)
             return Response.status(201).build();
 
