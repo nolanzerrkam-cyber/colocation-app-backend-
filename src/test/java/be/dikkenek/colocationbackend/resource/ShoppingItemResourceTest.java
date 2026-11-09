@@ -7,6 +7,7 @@ import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -93,5 +94,54 @@ public class ShoppingItemResourceTest {
 
         // Then
         Assertions.assertTrue(result.isEmpty());
+    }
+
+    /* ----------------------- /DELETE ---------------------- */
+
+    @Test
+    void deleteShopItem_nullShoppingItem() throws BackendException
+    {
+        // Given
+        Mockito.when(itemDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
+
+        // When
+        Response resp = shoppingItemResource.deleteShoppingItem(10000000);
+
+        // Then
+        Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_deleteFailed() throws BackendException
+    {
+        // GIVEN
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
+        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
+        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(false);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Mockito.verify(itemDao).delete(e);
+        Assertions.assertEquals(500, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_Success() throws BackendException
+    {
+        // GIVEN
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
+        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
+        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(true);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Mockito.verify(itemDao).delete(e);
+        Assertions.assertEquals(200, resp.getStatus());
     }
 }

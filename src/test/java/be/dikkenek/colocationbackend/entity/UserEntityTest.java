@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.exception.BackendException;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -108,16 +109,20 @@ class UserEntityTest
     void user_verify_password() throws BackendException {
         UserEntity roommateEntity = new RoommateEntity();
 
-        roommateEntity.setPassword("motdepasse");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        String rawPassword = "motdepasse";
+        String hashPassword = encoder.encode(rawPassword);
 
-        assertTrue(roommateEntity.verifyPassword("motdepasse"));
+        roommateEntity.setPassword(hashPassword);
+
+        assertTrue(roommateEntity.verifyPassword(rawPassword));
         assertFalse(roommateEntity.verifyPassword(""));
 
         UserEntity landlordEntity = new LandlordEntity();
 
-        landlordEntity.setPassword("motdepasse");
+        landlordEntity.setPassword(hashPassword);
 
-        assertTrue(landlordEntity.verifyPassword("motdepasse"));
+        assertTrue(landlordEntity.verifyPassword(rawPassword));
         assertFalse(landlordEntity.verifyPassword(""));
     }
 }

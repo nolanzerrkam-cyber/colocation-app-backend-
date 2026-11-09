@@ -4,6 +4,7 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -111,8 +112,11 @@ public abstract class UserEntity {
         return userDao.update(this);
     }
 
-    public boolean verifyPassword(String password) {
-        return this.getPassword().equals(password);
+    public boolean verifyPassword(String rawPassword)
+    {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        return encoder.matches(rawPassword, this.getPassword());
     }
 
     public String getFullName() {

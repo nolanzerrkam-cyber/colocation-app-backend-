@@ -14,11 +14,13 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Path("/user")
 public class UserResource {
     @Inject
     private UserDao userDao;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
     @Inject
     private FlatshareDao flatshareDao;
 
@@ -32,8 +34,9 @@ public class UserResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
+        String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
         // RoommateEntity constructor automatically add the roommate in the roommates list of FlatshareEntity
-        new RoommateEntity(dto.getEmail(), "changeme", dto.getFirstname(),
+        new RoommateEntity(dto.getEmail(), hashedPassword, dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber(), flatshareEntity);
 
         boolean isCreated = flatshareEntity.update(flatshareDao);
