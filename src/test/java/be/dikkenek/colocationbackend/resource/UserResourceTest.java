@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ class UserResourceTest
     @Test
     void user_register_valid() throws BackendException {
         // Given
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272", "rawPasword");
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(true);
 
         // When
@@ -42,7 +43,7 @@ class UserResourceTest
     @Test
     void user_register_not_valid() throws BackendException {
         // Given
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272");
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto("email@email.com", "a", "a", "0472727272", "rawPassword");
         Mockito.when(userDao.create(Mockito.any(UserEntity.class))).thenReturn(false);
 
         // When
@@ -55,8 +56,9 @@ class UserResourceTest
     @Test
     void user_login_valid() throws BackendException {
         // Given
+        String hash = new BCryptPasswordEncoder().encode("password");
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234");
+        UserEntity userEntity = new RoommateEntity("email@email.com", hash, "a", "a", "0474998234");
         LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(), userEntity.getLastname(), userEntity.getPhonenumber(), LoginResponseDto.Role.ROOMMATE);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 
@@ -89,8 +91,9 @@ class UserResourceTest
     @Test
     void user_login_passwords_dont_match() throws BackendException {
         // Given
+        String hash = new BCryptPasswordEncoder().encode("passwordpassword");
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
-        UserEntity userEntity = new RoommateEntity("email@email.com", "passwordpassword", "a", "a", "0474998234");
+        UserEntity userEntity = new RoommateEntity("email@email.com", hash , "a", "a", "0474998234");
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 
         // When
