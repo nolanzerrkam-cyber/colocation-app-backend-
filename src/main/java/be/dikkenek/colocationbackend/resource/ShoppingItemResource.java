@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
+import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
@@ -22,6 +23,8 @@ public class ShoppingItemResource {
     private FlatshareDao flatshareDao;
     @Inject
     private ShoppingItemDao itemDao;
+    @Inject
+    private UserDao userDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,9 +50,10 @@ public class ShoppingItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(ShoppingItemPostDto dto) throws BackendException {
         RoommateEntity roommate = RoommateEntity.get(userDao,dto.getRoommateId());
-        ShoppingItemEntity entity = new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
+        // ShoppingItemEntity constructor automatically adds the shopping item in the flatshare shopping items list
+        new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
 
-        boolean isCreated = roommate.update(userDao);
+        boolean isCreated = roommate.getFlatshare().update(flatshareDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

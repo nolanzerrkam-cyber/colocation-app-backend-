@@ -103,27 +103,29 @@ public class ShoppingItemResourceTest {
     @Test
     void shoppingItem_create_valid() throws BackendException {
         // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
         ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
         Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
         Response response = shoppingItemResource.create(dto);
 
         // Then
         Assertions.assertEquals(201, response.getStatus());
-        Mockito.verify(userDao).update(roommate);
+        Mockito.verify(flatshareDao).update(flatshareEntity);
         Mockito.verifyNoInteractions(itemDao);
     }
 
     @Test
     void shoppingItem_create_not_valid() throws BackendException {
         // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
         ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
         Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
         Response response = shoppingItemResource.create(dto);
