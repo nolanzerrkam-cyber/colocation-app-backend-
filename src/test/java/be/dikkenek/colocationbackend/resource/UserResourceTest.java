@@ -118,7 +118,7 @@ class UserResourceTest
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789", flatshareEntity);
         Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
-        Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
         Response response = userResource.delete(email);
@@ -133,7 +133,7 @@ class UserResourceTest
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0123456789", flatshareEntity);
         Mockito.when(userDao.get(Mockito.anyString())).thenReturn(Optional.of(userEntity));
-        Mockito.when(userDao.delete(Mockito.any(UserEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
         Response response = userResource.delete(email);
