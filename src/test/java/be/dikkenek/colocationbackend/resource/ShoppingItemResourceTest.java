@@ -2,10 +2,13 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
+import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
+import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
+import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -26,6 +29,8 @@ public class ShoppingItemResourceTest {
     private ShoppingItemDao itemDao;
     @Mock
     private FlatshareDao flatshareDao;
+    @Mock
+    private UserDao userDao;
     @InjectMocks
     private ShoppingItemResource shoppingItemResource;
 
@@ -93,6 +98,50 @@ public class ShoppingItemResourceTest {
 
         // Then
         Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shoppingItem_create_valid() throws BackendException {
+        // Given
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
+
+        // When
+        Response response = shoppingItemResource.create(dto);
+
+        // Then
+        Assertions.assertEquals(201, response.getStatus());
+        Mockito.verify(userDao).update(roommate);
+        Mockito.verifyNoInteractions(itemDao);
+    }
+
+    @Test
+    void shoppingItem_create_not_valid() throws BackendException {
+        // Given
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272");
+        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
+        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
+
+        // When
+        Response response = shoppingItemResource.create(dto);
+
+        // Then
+        Assertions.assertEquals(500, response.getStatus());
+        Assertions.assertEquals("Failed to create item", response.getEntity());
+    }
+
+    @Test
+    void shoppingItem_create_roommate_not_found() throws BackendException {
+        // Given
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "inconnu@email.com");
+        Mockito.when(userDao.get("inconnu@email.com")).thenReturn(Optional.empty());
+
+        // When / Then
+        Assertions.assertThrows(BackendException.class, () -> shoppingItemResource.create(dto));
+        Mockito.verify(userDao, Mockito.never()).update(Mockito.any());
     }
 
     /* ----------------------- /DELETE ---------------------- */

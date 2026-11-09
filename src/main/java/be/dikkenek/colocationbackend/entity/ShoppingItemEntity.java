@@ -71,11 +71,16 @@ public class ShoppingItemEntity {
     public ShoppingItemEntity() {
     }
 
-    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
-        setId(id);
+    public ShoppingItemEntity( String label, int quantity, RoommateEntity roommate) throws BackendException {
         setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
+        roommate.addItem(this);
+    }
+
+    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
+        this(label,quantity,roommate);
+        setId(id);
     }
 
     //Méthodes
@@ -94,6 +99,11 @@ public class ShoppingItemEntity {
         if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
         return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
+    }
+
+    public boolean create(ShoppingItemDao dao) throws BackendException
+    {
+        return dao.create(this);
     }
 
     @Override
