@@ -15,6 +15,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "EXPENSE")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ExpenseEntity {
 
     @Id
@@ -22,7 +23,7 @@ public class ExpenseEntity {
     @Column(name = "id_expense")
     private int id;
 
-    @Column(name = "libele", nullable = false, length = 100)
+    @Column(name = "label", nullable = false, length = 100)
     private String label;
 
     @Column(name = "price", nullable = false, columnDefinition = "NUMBER(10,2)")
@@ -62,6 +63,10 @@ public class ExpenseEntity {
         if (label == null || label.isEmpty()) {
             throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
         }
+
+        if (label.length() > 100)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Label must be lower than 100 characters");
+
         this.label = label;
     }
 

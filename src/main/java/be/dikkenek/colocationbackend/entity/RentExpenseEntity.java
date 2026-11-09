@@ -61,6 +61,6 @@ public class RentExpenseEntity extends ExpenseEntity {
         return "RentExpenseEntity{" +
                 "month=" + month +
                 ", year=" + year +
-                '}';
+                "} " + super.toString();
     }
 }
