@@ -12,18 +12,22 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Path("/user")
 public class UserResource {
     @Inject
     private UserDao userDao;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDto dto) throws BackendException {
-        UserEntity entity = new RoommateEntity(dto.getEmail(), "changeme",dto.getFirstname(),
+    public Response register(RegisterRequestDto dto) throws BackendException
+    {
+        String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
+        UserEntity entity = new RoommateEntity(dto.getEmail(),hashedPassword,dto.getFirstname(),
                 dto.getLastname(), dto.getPhonenumber());
 
         boolean isCreated = entity.create(userDao);
@@ -41,7 +45,8 @@ public class UserResource {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginRequestDto loginRequestDto) throws BackendException {
+    public Response login(LoginRequestDto loginRequestDto) throws BackendException
+    {
         UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
 
         if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))

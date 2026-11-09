@@ -15,6 +15,7 @@ public class ShoppingItemEntity {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    // For now, the name will stay libelle,
     @Column(name = "label")
     private String label;
     @Column(name = "quantity")
@@ -82,6 +83,11 @@ public class ShoppingItemEntity {
 
     public static List<ShoppingItemEntity> getAll(ShoppingItemDao dao) throws BackendException {
         return dao.getAll();
+    }
+
+    public static ShoppingItemEntity get(ShoppingItemDao dao, int id) throws BackendException
+    {
+        return dao.get(id).orElse(null);
     }
 
     @Override

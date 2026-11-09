@@ -23,8 +23,6 @@ public class ShoppingItemGetDto
         return quantity;
     }
 
-
-
     public ShoppingItemGetDto(){}
 
     public ShoppingItemGetDto(int id, String label, int quantity, String roommateId) {

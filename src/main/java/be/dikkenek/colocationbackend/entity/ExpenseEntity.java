@@ -59,7 +59,7 @@ public class ExpenseEntity {
         this.id = id;
     }
 
-public String getLabel() {
+    public String getLabel() {
         return label;
     }
 

@@ -20,7 +20,6 @@ public class ShoppingItemResource
 {
     @Inject
     private ShoppingItemDao itemDao;
-
     @Inject
     private UserDao userDao;
 
@@ -51,5 +50,23 @@ public class ShoppingItemResource
 
         return Response.status(Response.Status.CREATED)
                 .build();
+    }
+
+    @DELETE
+    @Path("/{id_shopItem}")
+    public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException
+    {
+        ShoppingItemEntity shoppingItem = ShoppingItemEntity.get(itemDao, id);
+
+        if(shoppingItem == null)
+        {
+            return Response.status(Response.Status.NOT_FOUND).entity("We couldn't found your shopping item.").build();
+        }
+
+        if(itemDao.delete(shoppingItem))
+            return Response.status(Response.Status.OK).build();
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
+
     }
 }

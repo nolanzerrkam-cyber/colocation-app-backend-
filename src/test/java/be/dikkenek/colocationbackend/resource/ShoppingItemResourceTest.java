@@ -131,5 +131,55 @@ public class ShoppingItemResourceTest {
         Assertions.assertThrows(BackendException.class, () -> shoppingItemResource.create(dto));
         Mockito.verify(userDao, Mockito.never()).update(Mockito.any());
     }
+
+    /* ----------------------- /DELETE ---------------------- */
+
+    @Test
+    void deleteShopItem_nullShoppingItem() throws BackendException
+    {
+        // Given
+        Mockito.when(itemDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
+
+        // When
+        Response resp = shoppingItemResource.deleteShoppingItem(10000000);
+
+        // Then
+        Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_deleteFailed() throws BackendException
+    {
+        // GIVEN
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
+        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
+        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(false);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Mockito.verify(itemDao).delete(e);
+        Assertions.assertEquals(500, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_Success() throws BackendException
+    {
+        // GIVEN
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
+        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
+        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(true);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Mockito.verify(itemDao).delete(e);
+        Assertions.assertEquals(200, resp.getStatus());
+
+    }
 }
 
