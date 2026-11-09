@@ -62,6 +62,9 @@ public class ExpenseResource {
     public Response getPricePerRoommate(@QueryParam("email") String email) throws BackendException {
         RoommateEntity roommate = RoommateEntity.get(userDao, email);
 
+        if(roommate == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
+
         return Response.status(200).entity(roommate.getTotalExpenses()).build();
     }
 
