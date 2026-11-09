@@ -34,6 +34,11 @@ public class UserResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
+        UserEntity userEntity = UserEntity.get(userDao, dto.getEmail());
+
+        if (userEntity != null)
+            return Response.status(Response.Status.BAD_REQUEST).entity("User with this email address already exists").build();
+
         String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
         // RoommateEntity constructor automatically add the roommate in the roommates list of FlatshareEntity
         new RoommateEntity(dto.getEmail(), hashedPassword, dto.getFirstname(),
@@ -84,9 +89,16 @@ public class UserResource {
                     .build();
         }
 
-        boolean isDeleted = user.delete(userDao);
-        if (isDeleted) {
-            return Response.status(Response.Status.OK).build();
+        if (user instanceof RoommateEntity) {
+            RoommateEntity roommateEntity = (RoommateEntity) user;
+            FlatshareEntity flatshareEntity = roommateEntity.getFlatshare();
+            flatshareEntity.removeRoommate(roommateEntity);
+
+            if (flatshareEntity.update(flatshareDao))
+                return Response.status(Response.Status.OK).build();
+        } else {
+            if (user.delete(userDao))
+                return Response.status(Response.Status.OK).build();
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
