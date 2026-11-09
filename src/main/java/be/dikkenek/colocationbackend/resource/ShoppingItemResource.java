@@ -3,6 +3,7 @@ package be.dikkenek.colocationbackend.resource;
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
+import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -33,6 +34,24 @@ public class ShoppingItemResource
                 .collect(Collectors.toList());
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(ShoppingItemPostDto dto) throws BackendException {
+        RoommateEntity roommate = RoommateEntity.get(userDao,dto.getRoommateId());
+        ShoppingItemEntity entity = new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
+
+        boolean isCreated = roommate.update(userDao);
+
+        if (!isCreated)
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to create item")
+                    .build();
+
+        return Response.status(Response.Status.CREATED)
+                .build();
+    }
+
     @DELETE
     @Path("/{id_shopItem}")
     public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException
@@ -48,5 +67,6 @@ public class ShoppingItemResource
             return Response.status(Response.Status.OK).build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
+
     }
 }

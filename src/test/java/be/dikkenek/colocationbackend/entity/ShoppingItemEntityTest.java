@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -73,5 +74,50 @@ public class ShoppingItemEntityTest {
         assertNotEquals(item1, item2);
         assertNotEquals(item1, item3);
         assertNotEquals(null, item1);
+    }
+
+    @Test
+    void test_create_valid() throws BackendException {
+        // Given
+        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        ShoppingItemDao dao = Mockito.mock(ShoppingItemDao.class);
+        ShoppingItemEntity item = new ShoppingItemEntity("Lait", 2, roommate);
+        Mockito.when(dao.create(item)).thenReturn(true);
+
+        // When
+        boolean result = item.create(dao);
+
+        // Then
+        assertTrue(result);
+        Mockito.verify(dao).create(item);
+    }
+
+    @Test
+    void test_create_not_valid() throws BackendException {
+        // Given
+        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        ShoppingItemDao dao = Mockito.mock(ShoppingItemDao.class);
+        ShoppingItemEntity item = new ShoppingItemEntity("Lait", 2, roommate);
+        Mockito.when(dao.create(item)).thenReturn(false);
+
+        // When
+        boolean result = item.create(dao);
+
+        // Then
+        assertFalse(result);
+        Mockito.verify(dao).create(item);
+    }
+
+    @Test
+    void test_create_dao_throws_exception() throws BackendException {
+        // Given
+        RoommateEntity roommate = Mockito.mock(RoommateEntity.class);
+        ShoppingItemDao dao = Mockito.mock(ShoppingItemDao.class);
+        ShoppingItemEntity item = new ShoppingItemEntity("Lait", 2, roommate);
+        Mockito.when(dao.create(item))
+                .thenThrow(new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "DB error"));
+
+        // When / Then
+        assertThrows(BackendException.class, () -> item.create(dao));
     }
 }

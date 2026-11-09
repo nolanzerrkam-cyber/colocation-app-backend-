@@ -11,6 +11,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -33,6 +34,25 @@ public class ShoppingItemDao implements Dao<ShoppingItemEntity, Integer>
     }
 
     @Override
+    public boolean create(ShoppingItemEntity entity) throws BackendException {
+        try (EntityManager man = DatabaseConfig.createEntityManager()) {
+            EntityTransaction tr = man.getTransaction();
+            try {
+                tr.begin();
+                man.persist(entity);
+                tr.commit();
+                return true;
+            } catch (Exception e) {
+                if (tr.isActive())
+                    tr.rollback();
+                e.printStackTrace();
+                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create item");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create item");
+        }
+    }
     public Optional<ShoppingItemEntity> get(Integer id) throws BackendException
     {
         try(EntityManager man = DatabaseConfig.createEntityManager())
