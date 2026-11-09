@@ -58,9 +58,11 @@ public class RoommateEntity extends UserEntity {
      * @throws BackendException from RentExpenseEntity constructor
      */
     public void payRent(int month, int year) throws BackendException {
+        if (month < 1 || month > 12)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Month must be between 1 and 12");
         String label = "Rent " + month + "/" + year;
-        RentExpenseEntity rentExpenseEntity = new RentExpenseEntity(label, getRent(), this, month, year);
-        flatshare.addExpense(rentExpenseEntity);
+        // RentExpenseEntity constructor automatically adds the expense to the flatshare expenses list
+        new RentExpenseEntity(label, getRent(), this, month, year);
     }
 
     /**
@@ -84,19 +86,20 @@ public class RoommateEntity extends UserEntity {
     /**
      *
      * @param month targeted month number (1 -> 12)
-     * @param year targeted year number
+     * @param year  targeted year number
      * @return true if the rent of the targeted month and targeted year is paid
      */
     public boolean isRentPaid(int month, int year) {
         Optional<RentExpenseEntity> rentExpense = flatshare.getExpenses().stream()
                 .filter(e -> e instanceof RentExpenseEntity)
                 .map(e -> (RentExpenseEntity) e)
-                .filter(r -> r.getMonth() == month && r.getYear() == year).findFirst();
+                .filter(r -> r.getMonth() == month && r.getYear() == year && r.getRoommate().equals(this)).findFirst();
         return rentExpense.isPresent();
     }
 
     /**
      * Retrieve a roommate object from the database based on his email
+     *
      * @param dao
      * @param email
      * @return
@@ -108,6 +111,7 @@ public class RoommateEntity extends UserEntity {
 
     /**
      * Retrieve all roommates from the database
+     *
      * @param dao
      * @return
      * @throws BackendException
@@ -125,7 +129,7 @@ public class RoommateEntity extends UserEntity {
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
-        return Objects.equals(flatshare, that.flatshare);
+        return Objects.equals(flatshare, that.flatshare) && super.equals(that);
     }
 
     @Override
