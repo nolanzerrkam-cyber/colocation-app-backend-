@@ -4,13 +4,13 @@ public class RentResponseDto
 {
     private int id;
     private float price;
-    private String lEmail;
+    private int deadlineDay;
 
-    public RentResponseDto(int id, float price, String lEmail)
+    public RentResponseDto(int id, float price, int deadlineDay)
     {
         setId(id);
         setPrice(price);
-        setlEmail(lEmail);
+        setDeadlineDay(deadlineDay);
     }
 
     public RentResponseDto()
@@ -34,11 +34,11 @@ public class RentResponseDto
         this.price = price;
     }
 
-    public String getEmail() {
-        return lEmail;
+    public int getDeadlineDay() {
+        return deadlineDay;
     }
 
-    public void setlEmail(String lEmail) {
-        this.lEmail = lEmail;
+    public void setDeadlineDay(int deadlineDay) {
+        this.deadlineDay = deadlineDay;
     }
 }
