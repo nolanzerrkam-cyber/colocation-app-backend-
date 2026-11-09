@@ -70,10 +70,6 @@ public class ShoppingItemDao implements Dao<ShoppingItemEntity, Integer>
                     return false;
                 }
 
-                RoommateEntity roommate = managedShoppingItem.getRoommate();
-                if(roommate != null && roommate.getShoppingItems() != null)
-                    roommate.getShoppingItems().removeIf(i -> i.getId() == managedShoppingItem.getId());
-
                 man.remove(managedShoppingItem);
 
                 et.commit();
