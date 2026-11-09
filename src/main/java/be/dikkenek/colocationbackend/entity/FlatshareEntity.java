@@ -83,8 +83,10 @@ public class FlatshareEntity {
         if (rent == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Rent is null");
 
-        rent.setFlatshare(this);
-        this.rent = rent;
+        if(this.getRent() != rent) {
+            this.rent = rent;
+            rent.setFlatshare(this);
+        }
     }
 
     public void setRoommates(List<RoommateEntity> roommates) {

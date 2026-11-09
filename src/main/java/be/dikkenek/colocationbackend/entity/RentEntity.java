@@ -29,8 +29,10 @@ public class RentEntity {
         if (flatshare == null)
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Flatshare is null");
 
-        flatshare.setRent(this);
-        this.flatshare = flatshare;
+        if(this.getFlatshare() != flatshare) {
+            this.flatshare = flatshare;
+            flatshare.setRent(this);
+        }
     }
 
     /**
@@ -50,7 +52,21 @@ public class RentEntity {
         this.deadlineDay = deadlineDay;
     }
 
+    public void setAmount(float amount) throws BackendException {
+        if(amount <= 0)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Rent must be greater than 0");
+        this.amount = amount;
+    }
+
     public float getAmount() {
         return amount;
+    }
+
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
+    }
+
+    public int getId() {
+        return id;
     }
 }
