@@ -16,13 +16,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class ShoppingItemResourceTest {
+
     @Mock
     private ShoppingItemDao itemDao;
     @Mock
@@ -43,7 +42,7 @@ public class ShoppingItemResourceTest {
     void testGetAll_Success() throws BackendException {
         // Given
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
         ShoppingItemEntity item = mockItem(1, "Lait", 2, roommateEntity);
         flatshareEntity.addRoommate(roommateEntity);
         flatshareEntity.addItem(item);
@@ -64,8 +63,8 @@ public class ShoppingItemResourceTest {
     void testGetAll_multiple_items() throws BackendException {
         // Given
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RoommateEntity roommate1 = new RoommateEntity("email1@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
-        RoommateEntity roommate2 = new RoommateEntity("email2@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
+        RoommateEntity roommate1 = new RoommateEntity("email1@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        RoommateEntity roommate2 = new RoommateEntity("email2@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
         flatshareEntity.addRoommate(roommate1);
         flatshareEntity.addRoommate(roommate2);
         ShoppingItemEntity item1 = mockItem(1, "Lait", 2, roommate1);
@@ -99,8 +98,7 @@ public class ShoppingItemResourceTest {
     /* ----------------------- /DELETE ---------------------- */
 
     @Test
-    void deleteShopItem_nullShoppingItem() throws BackendException
-    {
+    void deleteShopItem_nullShoppingItem() throws BackendException {
         // Given
         Mockito.when(itemDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
 
@@ -112,36 +110,35 @@ public class ShoppingItemResourceTest {
     }
 
     @Test
-    void deleteShopItem_deleteFailed() throws BackendException
-    {
+    void deleteShopItem_deleteFailed() throws BackendException {
         // GIVEN
-        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678", flatshareEntity);
         ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
         Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
-        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // WHEN
         Response resp = shoppingItemResource.deleteShoppingItem(67);
 
         // THEN
-        Mockito.verify(itemDao).delete(e);
         Assertions.assertEquals(500, resp.getStatus());
     }
 
     @Test
-    void deleteShopItem_Success() throws BackendException
-    {
+    void deleteShopItem_Success() throws BackendException {
         // GIVEN
-        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678");
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678", flatshareEntity);
         ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
         Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
-        Mockito.when(itemDao.delete(Mockito.any(ShoppingItemEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // WHEN
         Response resp = shoppingItemResource.deleteShoppingItem(67);
 
         // THEN
-        Mockito.verify(itemDao).delete(e);
         Assertions.assertEquals(200, resp.getStatus());
     }
+
 }

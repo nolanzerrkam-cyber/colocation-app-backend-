@@ -1,12 +1,12 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.TaskRequestDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -26,6 +26,8 @@ public class TaskResourceTest {
     private TaskDao taskDao;
     @Mock
     private UserDao userDao;
+    @Mock
+    private FlatshareDao flatshareDao;
     @InjectMocks
     private TaskResource taskResource;
 
@@ -36,7 +38,7 @@ public class TaskResourceTest {
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
         RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
         Response response = taskResource.postTask(inputTask);
@@ -52,7 +54,7 @@ public class TaskResourceTest {
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
         RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
         Response response = taskResource.postTask(inputTask);
