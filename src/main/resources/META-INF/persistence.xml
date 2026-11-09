@@ -9,14 +9,15 @@
 
         <!-- Entities list -->
         <class>be.dikkenek.colocationbackend.entity.ExpenseEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.FlatshareEntity</class>
         <class>be.dikkenek.colocationbackend.entity.HelloWorldEntity</class>
         <class>be.dikkenek.colocationbackend.entity.LandlordEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.RentEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.RentExpenseEntity</class>
         <class>be.dikkenek.colocationbackend.entity.RoommateEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.ShoppingItemEntity</class>
         <class>be.dikkenek.colocationbackend.entity.TaskEntity</class>
         <class>be.dikkenek.colocationbackend.entity.UserEntity</class>
-        <class>be.dikkenek.colocationbackend.entity.RentEntity</class>
-        <class>be.dikkenek.colocationbackend.entity.RentRoommateStatusEntity</class>
-        <class>be.dikkenek.colocationbackend.entity.ShoppingItemEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
