@@ -75,6 +75,11 @@ public class FlatshareEntity {
         return landlord;
     }
 
+    public void setLandlord(LandlordEntity landlord)
+    {
+        this.landlord = landlord;
+    }
+
     public RentEntity getRent() {
         return rent;
     }

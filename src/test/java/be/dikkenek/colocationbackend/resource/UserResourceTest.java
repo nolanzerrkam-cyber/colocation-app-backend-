@@ -2,11 +2,9 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
-import be.dikkenek.colocationbackend.dto.LoginRequestDto;
-import be.dikkenek.colocationbackend.dto.LoginResponseDto;
-import be.dikkenek.colocationbackend.dto.PasswordResetDTO;
-import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
+import be.dikkenek.colocationbackend.dto.*;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
+import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -193,5 +191,21 @@ class UserResourceTest
 
         Assertions.assertEquals(401, resp.getStatus());
         Assertions.assertTrue(roommate.verifyPassword("password"));
+    }
+
+    @Test
+    void user_reset_passwordByLandlord_valid() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "mdpofroommate", "a", "b", "012345678", flat);
+        UserEntity landlord = new LandlordEntity("test@landlord.be", "password", "a", "b", "012345678", flat);
+        LandlordResetPasswordDto dto = new LandlordResetPasswordDto("test@landlord.be", "password", "test@room.be", "aNewPassword");
+        Mockito.when(userDao.get("test@room.be")).thenReturn(Optional.of(roommate));
+        Mockito.when(userDao.get("test@landlord.be")).thenReturn(Optional.of(landlord));
+
+        Response resp = userResource.resetPasswordByLandlord(dto);
+
+        Assertions.assertEquals(200, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("aNewPassword"));
     }
 }
