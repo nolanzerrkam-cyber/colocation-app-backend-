@@ -130,6 +130,9 @@ public class UserResource {
         return Response.status(Response.Status.OK).entity("The password has been reset !").build();
     }
 
+    // This method will only work if we have a landlord account and his correct password
+    // and if we have a roommate account that exists, with the new password.
+    // For reminder, the landlord, since he has total control over the flatshare, doesn't need to have the actual password because if the password is lost, no one can reset the password.
     @PUT
     @Path("/newPassword/landlord")
     @Consumes(MediaType.APPLICATION_JSON)

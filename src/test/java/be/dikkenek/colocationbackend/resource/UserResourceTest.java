@@ -4,6 +4,7 @@ import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginRequestDto;
 import be.dikkenek.colocationbackend.dto.LoginResponseDto;
+import be.dikkenek.colocationbackend.dto.PasswordResetDTO;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
@@ -17,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -97,10 +97,9 @@ class UserResourceTest
     @Test
     void user_login_passwords_dont_match() throws BackendException {
         // Given
-        String hash = new BCryptPasswordEncoder().encode("passwordpassword");
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        UserEntity userEntity = new RoommateEntity("email@email.com", hash, "a", "a", "0474998234", flatshareEntity);
+        UserEntity userEntity = new RoommateEntity("email@email.com", "passwordpassword", "a", "a", "0474998234", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 
         // When
@@ -137,6 +136,23 @@ class UserResourceTest
         // When
         Response response = userResource.delete(email);
         // Then
-        Assertions.assertEquals(500, response.getStatus()); // ou 404 selon ce que tu renvoies
+        Assertions.assertEquals(500, response.getStatus());
+    }
+
+    @Test
+    void user_reset_password_valid() throws BackendException
+    {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@roommate.com", "password", "a", "b", "012345678", flatshareEntity);
+        PasswordResetDTO dto = new PasswordResetDTO("newPassword123", "password", "test@roommate.com");
+        Mockito.when(userDao.get("test@roommate.com")).thenReturn(Optional.of(roommate));
+
+        // When
+        Response resp = userResource.resetPassword(dto);
+
+        // Then
+        Assertions.assertEquals(200, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("newPassword123"));
     }
 }
