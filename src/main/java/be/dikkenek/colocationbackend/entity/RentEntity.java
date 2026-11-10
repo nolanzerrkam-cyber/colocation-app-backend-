@@ -4,9 +4,7 @@ import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Year;
+import java.util.Calendar;
 
 @Entity
 /**
@@ -41,9 +39,9 @@ public class RentEntity {
      * @return the month length if the deadline is greater than the month length
      */
     public int getDeadlineDay() {
-        Month thisMonth = LocalDateTime.now().getMonth();
-        boolean isLeap = Year.now().isLeap();
-        return Math.min(deadlineDay, thisMonth.length(isLeap));
+        Calendar calendar = Calendar.getInstance();
+        int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        return Math.min(deadlineDay, daysInMonth);
     }
 
     public void setDeadlineDay(int deadlineDay) throws BackendException {

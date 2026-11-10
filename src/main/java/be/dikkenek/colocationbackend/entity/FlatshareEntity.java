@@ -20,7 +20,7 @@ public class FlatshareEntity {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne
+    @OneToOne
     private LandlordEntity landlord;
 
     @OneToOne
@@ -81,16 +81,16 @@ public class FlatshareEntity {
 
     public void setRent(RentEntity rent) throws BackendException {
         if (rent == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Rent is null");
+            throw new BackendException(Response.Status.BAD_REQUEST, "Rent is null");
 
-        if(this.getRent() != rent) {
+        if (this.getRent() != rent) {
             this.rent = rent;
             rent.setFlatshare(this);
         }
     }
 
     public void setRoommates(List<RoommateEntity> roommates) {
-        this.roommates = roommates;
+        this.roommates = roommates == null ? new ArrayList<>() : roommates;
     }
 
     public List<RoommateEntity> getRoommates() {
@@ -99,7 +99,7 @@ public class FlatshareEntity {
 
     public void addTask(TaskEntity taskEntity) throws BackendException {
         if (taskEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "TaskEntity cannot be null");
+            throw new BackendException(Response.Status.BAD_REQUEST, "TaskEntity cannot be null");
 
         if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
     }
@@ -113,7 +113,7 @@ public class FlatshareEntity {
     }
 
     public void setTasks(List<TaskEntity> tasks) {
-        this.tasks = tasks;
+        this.tasks = tasks == null ? new ArrayList<>() : tasks;
     }
 
     public List<ShoppingItemEntity> getShoppingItems() {
@@ -121,7 +121,7 @@ public class FlatshareEntity {
     }
 
     public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
-        this.shoppingItems = shoppingItems;
+        this.shoppingItems = shoppingItems == null ? new ArrayList<>() : shoppingItems;
     }
 
     public List<ExpenseEntity> getExpenses() {
@@ -129,7 +129,7 @@ public class FlatshareEntity {
     }
 
     public void setExpenses(List<ExpenseEntity> expenses) {
-        this.expenses = expenses;
+        this.expenses = expenses == null ? new ArrayList<>() : expenses;
     }
 
     public void addExpense(ExpenseEntity expense) throws BackendException {
@@ -145,7 +145,7 @@ public class FlatshareEntity {
 
     public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
         if (shoppingItemEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ShoppingItemEntity cannot be null");
+            throw new BackendException(Response.Status.BAD_REQUEST, "ShoppingItemEntity cannot be null");
 
         if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
     }

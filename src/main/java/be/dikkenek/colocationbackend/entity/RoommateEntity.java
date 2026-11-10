@@ -4,7 +4,6 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class RoommateEntity extends UserEntity {
      */
     public void payRent(int month, int year) throws BackendException {
         if (month < 1 || month > 12)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Month must be between 1 and 12");
+            throw new BackendException(Response.Status.BAD_REQUEST, "Month must be between 1 and 12");
         String label = "Rent " + month + "/" + year;
         // RentExpenseEntity constructor automatically adds the expense to the flatshare expenses list
         new RentExpenseEntity(label, getRent(), this, month, year);
@@ -78,8 +77,9 @@ public class RoommateEntity extends UserEntity {
      * @return true if the rent of the current month is paid
      */
     public boolean isCurrentRentPaid() {
-        int thisYear = LocalDateTime.now().getYear();
-        int thisMonth = LocalDateTime.now().getMonth().getValue();
+        Calendar calendar = Calendar.getInstance();
+        int thisYear = calendar.get(Calendar.YEAR);
+        int thisMonth = calendar.get(Calendar.MONTH) + 1;
         return isRentPaid(thisMonth, thisYear);
     }
 

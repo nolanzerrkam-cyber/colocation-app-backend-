@@ -1,16 +1,11 @@
 package be.dikkenek.colocationbackend.dao;
 
 import be.dikkenek.colocationbackend.config.DatabaseConfig;
-import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 
 import jakarta.ws.rs.core.Response;
 

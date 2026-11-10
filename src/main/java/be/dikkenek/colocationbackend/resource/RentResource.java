@@ -76,7 +76,7 @@ public class RentResource {
 
     @GET
     @Path("/payRent")
-    public Response isRentPaid(@QueryParam("email") String email, @QueryParam("month") Integer month, @QueryParam("year") Integer year) throws BackendException {
+    public Response payRent(@QueryParam("email") String email, @QueryParam("month") Integer month, @QueryParam("year") Integer year) throws BackendException {
         if(email == null || month == null || year == null)
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing required params : email, month (1 -> 12), year").build();
 
