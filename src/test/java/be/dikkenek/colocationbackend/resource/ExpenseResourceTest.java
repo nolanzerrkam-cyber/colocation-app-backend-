@@ -1,9 +1,10 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.ExpenseDao;
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
-import be.dikkenek.colocationbackend.entity.ExpenseEntity;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -31,6 +32,8 @@ public class ExpenseResourceTest {
     @Mock
     // NEW : Since now we are finding the roommate from his email via this dao, I have to implent it. This is going to change a lot in the unit test.
     private UserDao userDao;
+    @Mock
+    private FlatshareDao flatshareDao;
 
     @InjectMocks
     // there im creating an object, to test later the false dao
@@ -57,7 +60,9 @@ public class ExpenseResourceTest {
      */
     private void roommate_exists() throws BackendException
     {
-        Optional<UserEntity> user = Optional.of(Mockito.mock(RoommateEntity.class));
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate = new RoommateEntity("test@test.com", "password", "a", "a", "0474998234", flatshareEntity);
+        Optional<UserEntity> user = Optional.of(roommate);
         Mockito.when(userDao.get("test@test.com")).thenReturn(user);
     }
 
@@ -66,7 +71,7 @@ public class ExpenseResourceTest {
     {
         roommate_exists();
         // when the DAO is created, it has to return true (to do an illusion of insertion into oracle)
-        Mockito.when(expenseDAO.create(Mockito.any(ExpenseEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // Im calling the postExpense to build the ExpenseEntity , it will do the @Inject from the ressource of expenseDAO (calling the false DAO) and than return true (normally)
         // Be careful that the expenseDAO here and in ExpenseRessource is the same, each field is a reference
@@ -74,14 +79,14 @@ public class ExpenseResourceTest {
 
         // We verify if the ressource did successfully the creation, exactly one time (because we don't need more)
         assertEquals(201, response.getStatus());
-        Mockito.verify(expenseDAO, Mockito.times(1)).create(Mockito.any(ExpenseEntity.class));
+        Mockito.verify(flatshareDao, Mockito.times(1)).update(Mockito.any(FlatshareEntity.class));
     }
 
     @Test
     void testPostExpense_DaoFails() throws BackendException
     {
         roommate_exists();
-        Mockito.when(expenseDAO.create(Mockito.any(ExpenseEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         Response response = expenseResource.postExpense(validDto());
 

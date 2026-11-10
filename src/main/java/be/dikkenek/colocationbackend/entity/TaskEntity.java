@@ -43,7 +43,6 @@ public class TaskEntity {
         setIsDone(isDone);
         setDeadline(deadline);
         setRoommate(roommate);
-        roommate.addTask(this);
     }
 
     public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
@@ -58,7 +57,7 @@ public class TaskEntity {
         return taskDao.create(this);
     }
 
-    public boolean update(TaskDao taskDao) throws BackendException{
+    public boolean update(TaskDao taskDao) throws BackendException {
         return taskDao.update(this);
     }
 
@@ -75,7 +74,7 @@ public class TaskEntity {
     }
 
     public void setName(String name) throws BackendException {
-        if (name.isEmpty())
+        if (name == null || name.isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: Task name must not be empty.");
         this.name = name;
     }
@@ -117,7 +116,12 @@ public class TaskEntity {
     public void setRoommate(RoommateEntity roommate) throws BackendException {
         if (roommate == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
-        this.roommate = roommate;
+
+        if (!roommate.equals(this.roommate)) {
+            if(this.roommate != null) this.roommate.getFlatshare().removeTask(this);
+            this.roommate = roommate;
+            roommate.getFlatshare().addTask(this);
+        }
     }
 
     @Override

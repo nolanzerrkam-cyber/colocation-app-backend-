@@ -1,8 +1,10 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
@@ -16,8 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Path("/shoppingItem")
-public class ShoppingItemResource
-{
+public class ShoppingItemResource {
+    @Inject
+    private FlatshareDao flatshareDao;
     @Inject
     private ShoppingItemDao itemDao;
     @Inject
@@ -25,13 +28,21 @@ public class ShoppingItemResource
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ShoppingItemGetDto> getAll() throws BackendException
-    {
-        List<ShoppingItemEntity> entities = ShoppingItemEntity.getAll(itemDao);
+    public Response getAll() throws BackendException {
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        return entities.stream()
-                .map(entity -> new ShoppingItemGetDto(entity.getId(), entity.getLabel(), entity.getQuantity(), entity.getRoommate().getEmail()))
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+
+        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingItems().stream()
+                .map(entity -> new ShoppingItemGetDto(
+                        entity.getId(),
+                        entity.getLabel(),
+                        entity.getQuantity(),
+                        entity.getRoommate().getEmail()))
                 .collect(Collectors.toList());
+
+        return Response.status(Response.Status.OK).entity(shoppingItemGetDtos).build();
     }
 
     @POST
@@ -39,9 +50,10 @@ public class ShoppingItemResource
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(ShoppingItemPostDto dto) throws BackendException {
         RoommateEntity roommate = RoommateEntity.get(userDao,dto.getRoommateId());
-        ShoppingItemEntity entity = new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
+        // ShoppingItemEntity constructor automatically adds the shopping item in the flatshare shopping items list
+        new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
 
-        boolean isCreated = roommate.update(userDao);
+        boolean isCreated = roommate.getFlatshare().update(flatshareDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -54,19 +66,19 @@ public class ShoppingItemResource
 
     @DELETE
     @Path("/{id_shopItem}")
-    public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException
-    {
+    public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException {
         ShoppingItemEntity shoppingItem = ShoppingItemEntity.get(itemDao, id);
 
-        if(shoppingItem == null)
-        {
+        if(shoppingItem == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("We couldn't found your shopping item.").build();
         }
 
-        if(itemDao.delete(shoppingItem))
+        FlatshareEntity flatshareEntity = shoppingItem.getRoommate().getFlatshare();
+        flatshareEntity.removeItem(shoppingItem);
+
+        if(flatshareEntity.update(flatshareDao))
             return Response.status(Response.Status.OK).build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
-
     }
 }

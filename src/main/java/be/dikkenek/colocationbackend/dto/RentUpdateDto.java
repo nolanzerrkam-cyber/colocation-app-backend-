@@ -1,24 +1,31 @@
 package be.dikkenek.colocationbackend.dto;
 
-public class RentUpdateDto
-{
-    private float price;
+public class RentUpdateDto {
+    private float amount;
+    private int deadlineDay;
 
-    public RentUpdateDto()
-    {
+    public RentUpdateDto() {
 
     }
 
-    public RentUpdateDto(float price)
-    {
-        setPrice(price);
+    public RentUpdateDto(float amount, int deadlineDay) {
+        setAmount(amount);
+        setDeadlineDay(deadlineDay);
     }
 
-    public float getPrice() {
-        return price;
+    public float getAmount() {
+        return amount;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
+
+    public int getDeadlineDay() {
+        return deadlineDay;
+    }
+
+    public void setDeadlineDay(int deadlineDay) {
+        this.deadlineDay = deadlineDay;
     }
 }

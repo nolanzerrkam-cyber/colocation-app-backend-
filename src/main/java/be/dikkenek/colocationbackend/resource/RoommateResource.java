@@ -1,8 +1,8 @@
 package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.UserDao;
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dto.RoommateResponseDto;
-import be.dikkenek.colocationbackend.entity.RoommateEntity;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -15,20 +15,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Path("/roommate")
-public class RoommateResource
-{
+public class RoommateResource {
     @Inject
-    private UserDao dao;
+    private FlatshareDao flatshareDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() throws BackendException {
-        List<RoommateEntity> roommates = RoommateEntity.getAll(dao);
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        List<RoommateResponseDto> roommateDtoList = roommates.stream().map(r -> new RoommateResponseDto(r.getEmail(), r.getFirstname(), r.getLastname(), r.getPhonenumber(), r.getFullName())).collect(Collectors.toList());
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        return Response.status(Response.Status.OK)
-                .entity(roommateDtoList)
-                .build();
+        List<RoommateResponseDto> roommateDtoList = flatshareEntity.getRoommates().stream()
+                .map(r -> new RoommateResponseDto(
+                        r.getEmail(),
+                        r.getFirstname(),
+                        r.getLastname(),
+                        r.getPhonenumber(),
+                        r.getFullName()))
+                .collect(Collectors.toList());
+
+        return Response.status(Response.Status.OK).entity(roommateDtoList).build();
     }
 }

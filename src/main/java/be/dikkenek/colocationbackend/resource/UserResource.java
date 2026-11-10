@@ -1,9 +1,11 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginResponseDto;
 import be.dikkenek.colocationbackend.dto.LoginRequestDto;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.LandlordEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -19,18 +21,30 @@ public class UserResource {
     @Inject
     private UserDao userDao;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    @Inject
+    private FlatshareDao flatshareDao;
 
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(RegisterRequestDto dto) throws BackendException
-    {
-        String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
-        UserEntity entity = new RoommateEntity(dto.getEmail(),hashedPassword,dto.getFirstname(),
-                dto.getLastname(), dto.getPhonenumber());
+    public Response register(RegisterRequestDto dto) throws BackendException {
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        boolean isCreated = entity.create(userDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+
+        UserEntity userEntity = UserEntity.get(userDao, dto.getEmail());
+
+        if (userEntity != null)
+            return Response.status(Response.Status.BAD_REQUEST).entity("User with this email address already exists").build();
+
+        String hashedPassword = passwordEncoder.encode(dto.getRawPassword());
+        // RoommateEntity constructor automatically add the roommate in the roommates list of FlatshareEntity
+        new RoommateEntity(dto.getEmail(), hashedPassword, dto.getFirstname(),
+                dto.getLastname(), dto.getPhonenumber(), flatshareEntity);
+
+        boolean isCreated = flatshareEntity.update(flatshareDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -45,8 +59,7 @@ public class UserResource {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginRequestDto loginRequestDto) throws BackendException
-    {
+    public Response login(LoginRequestDto loginRequestDto) throws BackendException {
         UserEntity userEntity = UserEntity.get(userDao, loginRequestDto.getEmail());
 
         if (userEntity == null || !userEntity.verifyPassword(loginRequestDto.getPassword()))
@@ -76,9 +89,16 @@ public class UserResource {
                     .build();
         }
 
-        boolean isDeleted = user.delete(userDao);
-        if (isDeleted) {
-            return Response.status(Response.Status.OK).build();
+        if (user instanceof RoommateEntity) {
+            RoommateEntity roommateEntity = (RoommateEntity) user;
+            FlatshareEntity flatshareEntity = roommateEntity.getFlatshare();
+            flatshareEntity.removeRoommate(roommateEntity);
+
+            if (flatshareEntity.update(flatshareDao))
+                return Response.status(Response.Status.OK).build();
+        } else {
+            if (user.delete(userDao))
+                return Response.status(Response.Status.OK).build();
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

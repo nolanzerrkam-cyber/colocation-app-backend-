@@ -58,10 +58,14 @@ public class ShoppingItemEntity {
     }
 
     public void setRoommate(RoommateEntity roommate) throws BackendException {
-        if (roommate == null) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "roommate is null");
+        if (roommate == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Roommate is null");
+
+        if (!roommate.equals(this.roommate)) {
+            if (this.roommate != null) this.roommate.getFlatshare().removeItem(this);
+            this.roommate = roommate;
+            roommate.getFlatshare().addItem(this);
         }
-        this.roommate = roommate;
     }
 
     public ShoppingItemEntity() {
@@ -71,7 +75,6 @@ public class ShoppingItemEntity {
         setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
-        roommate.addItem(this);
     }
 
     public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {

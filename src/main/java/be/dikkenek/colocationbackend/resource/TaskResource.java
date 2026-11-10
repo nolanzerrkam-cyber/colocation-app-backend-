@@ -1,9 +1,11 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.TaskRequestDto;
 import be.dikkenek.colocationbackend.dto.TaskResponseDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
 import be.dikkenek.colocationbackend.entity.UserEntity;
@@ -22,17 +24,28 @@ public class TaskResource {
     private TaskDao taskDao;
     @Inject
     private UserDao userDao;
+    @Inject
+    private FlatshareDao flatshareDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTasks() throws BackendException {
-        List<TaskEntity> tasks = TaskEntity.getAllTasks(taskDao);
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        List<TaskResponseDto> tasksResponse = tasks.stream()
-                .map(t -> new TaskResponseDto(t.getId(), t.getName(), t.getDescription(), t.isDone(), t.getDeadline().toString(), t.getRoommate().getFullName()))
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+
+        List<TaskResponseDto> taskResponseDtos = flatshareEntity.getTasks().stream()
+                .map(t -> new TaskResponseDto(
+                        t.getId(),
+                        t.getName(),
+                        t.getDescription(),
+                        t.isDone(),
+                        t.getDeadline().toString(),
+                        t.getRoommate().getFullName()))
                 .collect(Collectors.toList());
 
-        return Response.status(200).entity(tasksResponse).build();
+        return Response.status(200).entity(taskResponseDtos).build();
     }
 
 
@@ -46,9 +59,10 @@ public class TaskResource {
             return Response.status(400).entity("Error when retrieving userEntity").build();
 
         RoommateEntity roommateEntity = (RoommateEntity) userEntity;
-        TaskEntity taskEntity = new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
+        // TaskEntity constructor automatically adds the taskEntity in the RoommateEntity's tasks list
+        new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
 
-        boolean success = roommateEntity.update(userDao);
+        boolean success = roommateEntity.getFlatshare().update(flatshareDao);
         if (success)
             return Response.status(201).build();
 
@@ -64,15 +78,16 @@ public class TaskResource {
         if (taskEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
 
-        RoommateEntity roommateEntity = taskEntity.getRoommate();
-        roommateEntity.removeTask(taskEntity);
+        FlatshareEntity flatshareEntity = taskEntity.getRoommate().getFlatshare();
+        flatshareEntity.removeTask(taskEntity);
 
-        boolean isUpdated = roommateEntity.update(userDao);
+        boolean isUpdated = flatshareEntity.update(flatshareDao);
         if (isUpdated)
             return Response.status(Response.Status.OK).build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error when deleting task").build();
     }
+
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -82,14 +97,19 @@ public class TaskResource {
         if (taskEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
 
+        RoommateEntity roommateEntity = RoommateEntity.get(userDao, data.getRoommateEmail());
+
+        if (roommateEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
+
         taskEntity.setName(data.getName());
         taskEntity.setDescription(data.getDescription());
         taskEntity.setDeadline(data.getDeadline());
         taskEntity.setIsDone(data.isDone());
-        // TODO update the user
+        taskEntity.setRoommate(roommateEntity);
+
         boolean isUpdated = taskEntity.update(taskDao);
-        if(isUpdated)
-        {
+        if (isUpdated) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(500).entity("Error when updating task").build();

@@ -1,11 +1,12 @@
 package be.dikkenek.colocationbackend.resource;
 
+import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.TaskRequestDto;
+import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.TaskEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -25,16 +26,19 @@ public class TaskResourceTest {
     private TaskDao taskDao;
     @Mock
     private UserDao userDao;
+    @Mock
+    private FlatshareDao flatshareDao;
     @InjectMocks
     private TaskResource taskResource;
 
     @Test
     void testPostTask_Success() throws BackendException {
         // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
-        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(true);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
         Response response = taskResource.postTask(inputTask);
@@ -46,10 +50,11 @@ public class TaskResourceTest {
     @Test
     void testPostTask_NotSuccess() throws BackendException {
         // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
-        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404");
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(userDao.update(Mockito.any(UserEntity.class))).thenReturn(false);
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
         Response response = taskResource.postTask(inputTask);
@@ -87,10 +92,13 @@ public class TaskResourceTest {
     void testValidateTask_Success() throws BackendException {
         // Given
         int taskId = 1;
-        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date());
-        TaskEntity existingTask = new TaskEntity(); // Instance factice de la tâche trouvée
+        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
+        TaskEntity existingTask = new TaskEntity();
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
 
         Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
         Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(true);
 
         // When
@@ -119,10 +127,13 @@ public class TaskResourceTest {
     void testValidateTask_UpdateError() throws BackendException {
         // Given
         int taskId = 1;
-        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date());
+        TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
         TaskEntity existingTask = new TaskEntity();
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
 
         Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
+        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
         Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(false);
 
         // When
