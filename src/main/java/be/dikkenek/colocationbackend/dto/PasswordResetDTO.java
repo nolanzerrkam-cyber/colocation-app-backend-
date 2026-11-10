@@ -26,7 +26,7 @@ public class PasswordResetDTO
 
     }
 
-    public PasswordResetDTO(String email, String newPassword) {
+    public PasswordResetDTO(String newPassword, String email) {
         this.email = email;
         this.newPassword = newPassword;
     }

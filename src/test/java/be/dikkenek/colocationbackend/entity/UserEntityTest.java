@@ -35,19 +35,29 @@ class UserEntityTest
 
     @Test
     void user_set_password() throws BackendException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         UserEntity roommateEntity = new RoommateEntity();
 
         roommateEntity.setPassword("abcdefghij");
-        assertEquals("abcdefghij", roommateEntity.getPassword());
+        String pass = roommateEntity.getPassword();
+
+        encoder.encode(pass);
+
+        assertEquals(pass, roommateEntity.getPassword());
 
         assertThrows(BackendException.class, () -> roommateEntity.setPassword(""));
         assertThrows(BackendException.class, () -> roommateEntity.setPassword("aaa"));
         assertThrows(BackendException.class, () -> roommateEntity.setPassword("aaaaaaa"));
+        assertThrows(BackendException.class, () -> roommateEntity.setPassword(null));
 
         UserEntity landlordEntity = new LandlordEntity();
 
         landlordEntity.setPassword("abcdefghij");
-        assertEquals("abcdefghij", landlordEntity.getPassword());
+        String passTwo = landlordEntity.getPassword();
+
+        encoder.encode(passTwo);
+
+        assertEquals(passTwo, landlordEntity.getPassword());
 
         assertThrows(BackendException.class, () -> landlordEntity.setPassword(""));
         assertThrows(BackendException.class, () -> landlordEntity.setPassword("aaa"));
@@ -111,16 +121,16 @@ class UserEntityTest
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         String rawPassword = "motdepasse";
-        String hashPassword = encoder.encode(rawPassword);
+        //String hashPassword = encoder.encode(rawPassword);
 
-        roommateEntity.setPassword(hashPassword);
+        roommateEntity.setPassword(rawPassword);
 
         assertTrue(roommateEntity.verifyPassword(rawPassword));
         assertFalse(roommateEntity.verifyPassword(""));
 
         UserEntity landlordEntity = new LandlordEntity();
 
-        landlordEntity.setPassword(hashPassword);
+        landlordEntity.setPassword(rawPassword);
 
         assertTrue(landlordEntity.verifyPassword(rawPassword));
         assertFalse(landlordEntity.verifyPassword(""));

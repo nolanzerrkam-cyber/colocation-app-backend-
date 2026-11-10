@@ -62,10 +62,9 @@ class UserResourceTest
     @Test
     void user_login_valid() throws BackendException {
         // Given
-        String hash = new BCryptPasswordEncoder().encode("password");
         LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        UserEntity userEntity = new RoommateEntity("email@email.com", hash, "a", "a", "0474998234", flatshareEntity);
+        UserEntity userEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234", flatshareEntity);
         LoginResponseDto loginResponseDto = new LoginResponseDto(userEntity.getEmail(), userEntity.getFirstname(), userEntity.getLastname(), userEntity.getPhonenumber(), LoginResponseDto.Role.ROOMMATE);
         Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(userEntity));
 

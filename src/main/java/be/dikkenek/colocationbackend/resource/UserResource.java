@@ -4,6 +4,7 @@ import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.LoginResponseDto;
 import be.dikkenek.colocationbackend.dto.LoginRequestDto;
+import be.dikkenek.colocationbackend.dto.PasswordResetDTO;
 import be.dikkenek.colocationbackend.dto.RegisterRequestDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.LandlordEntity;
@@ -15,6 +16,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.print.attribute.standard.Media;
 
 @Path("/user")
 public class UserResource {
@@ -105,4 +108,21 @@ public class UserResource {
                 .entity("Failed to delete user 3")
                 .build();
     }
+
+    @PUT
+    @Path("/newPassword")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response resetPassword(PasswordResetDTO dto) throws BackendException {
+        // 1 : I have to get the userEntity
+        UserEntity user = UserEntity.get(userDao, dto.getEmail());
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        // 2 : set the new password by updating the new one
+        user.setPassword(dto.getNewPassword());
+        user.update(userDao);
+        return Response.status(Response.Status.OK).entity("The password has been reset !").build();
+    }
 }
+
+
