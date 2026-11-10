@@ -208,4 +208,51 @@ class UserResourceTest
         Assertions.assertEquals(200, resp.getStatus());
         Assertions.assertTrue(roommate.verifyPassword("aNewPassword"));
     }
+
+    @Test
+    void user_reset_passwordByLandlord_notLandlord() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "mdpofroommate", "a", "b", "012345678", flat);
+        UserEntity fakeLandlord = new RoommateEntity("test@landlord.be", "password", "a", "b", "012345678", flat);
+        LandlordResetPasswordDto dto = new LandlordResetPasswordDto("test@landlord.be", "password", "test@room.be", "aNewPassword");
+        Mockito.when(userDao.get("test@landlord.be")).thenReturn(Optional.of(fakeLandlord));
+
+        Response resp = userResource.resetPasswordByLandlord(dto);
+
+        Assertions.assertEquals(401, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("mdpofroommate"));
+    }
+
+    @Test
+    void user_reset_passwordByLandlord_LandlordPasswordIsNull() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "mdpofroommate", "a", "b", "012345678", flat);
+        UserEntity landlord = new LandlordEntity("test@landlord.be", "password", "a", "b", "012345678", flat);
+        LandlordResetPasswordDto dto = new LandlordResetPasswordDto("test@landlord.be", null, "test@room.be", "aNewPassword");
+        Mockito.when(userDao.get("test@landlord.be")).thenReturn(Optional.of(landlord));
+
+        Response resp = userResource.resetPasswordByLandlord(dto);
+
+        Assertions.assertEquals(401, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("mdpofroommate"));
+    }
+
+    @Test
+    void user_reset_passwordByLandlord_WrongPasswordLandlord() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "mdpofroommate", "a", "b", "012345678", flat);
+        UserEntity landlord = new LandlordEntity("test@landlord.be", "password", "a", "b", "012345678", flat);
+        LandlordResetPasswordDto dto = new LandlordResetPasswordDto("test@landlord.be", "wrongPassword", "test@room.be", "aNewPassword");
+        Mockito.when(userDao.get("test@landlord.be")).thenReturn(Optional.of(landlord));
+
+        Response resp = userResource.resetPasswordByLandlord(dto);
+
+        Assertions.assertEquals(401, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("mdpofroommate"));
+    }
+
+
 }
