@@ -101,7 +101,6 @@ public class UserResource {
                 .build();
     }
 
-
     // This method is only used by the roommates.
     // For this to work properly, the roommate needs to know his actual password (called oldPassword here in PasswordResetDto)
     // There is a second method for the landlord below.

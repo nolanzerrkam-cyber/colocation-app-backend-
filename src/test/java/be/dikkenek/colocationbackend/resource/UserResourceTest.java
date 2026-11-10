@@ -155,4 +155,43 @@ class UserResourceTest
         Assertions.assertEquals(200, resp.getStatus());
         Assertions.assertTrue(roommate.verifyPassword("newPassword123"));
     }
+
+    @Test
+    void user_reset_password_unknown_user() throws BackendException
+    {
+        PasswordResetDTO dto = new PasswordResetDTO("newPassword123", "password", "test@roommate.com");
+        Mockito.when(userDao.get("test@roommate.com")).thenReturn(Optional.empty());
+
+        Response response = userResource.resetPassword(dto);
+
+        Assertions.assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void user_reset_password_nullOldPassword() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "oldpassword", "a", "b", "012345678", flat);
+        PasswordResetDTO dto = new PasswordResetDTO("newPassword", null, "test@room.be");
+        Mockito.when(userDao.get("test@room.be")).thenReturn(Optional.of(roommate));
+
+        Response resp = userResource.resetPassword(dto);
+
+        Assertions.assertEquals(401, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("oldpassword"));
+    }
+
+    @Test
+    void user_reset_password_incorrectPassword() throws BackendException
+    {
+        FlatshareEntity flat = new FlatshareEntity();
+        UserEntity roommate = new RoommateEntity("test@room.be", "password", "a", "b", "012345678", flat);
+        PasswordResetDTO dto = new PasswordResetDTO("newPassword", "notSamePassword", "test@room.be");
+        Mockito.when(userDao.get("test@room.be")).thenReturn(Optional.of(roommate));
+
+        Response resp = userResource.resetPassword(dto);
+
+        Assertions.assertEquals(401, resp.getStatus());
+        Assertions.assertTrue(roommate.verifyPassword("password"));
+    }
 }
