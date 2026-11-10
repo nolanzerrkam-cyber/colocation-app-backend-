@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 @Entity(name = "Landlord")
 public class LandlordEntity extends UserEntity
 {
-
     public LandlordEntity()
     {
     }
