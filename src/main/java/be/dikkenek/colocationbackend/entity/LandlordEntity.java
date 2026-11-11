@@ -34,7 +34,7 @@ public class LandlordEntity extends UserEntity
             throw new BackendException(Response.Status.BAD_REQUEST, "Flatshare cannot be null");
         // Forced to do this because the variable flatshare is still null when passing
         // though this condition.
-        if(this.flatshare == null || !this.getFlatshare().equals(flatshare))
+        if(!flatshare.equals(this.getFlatshare()))
         {
             this.flatshare = flatshare;
             flatshare.setLandlord(this);

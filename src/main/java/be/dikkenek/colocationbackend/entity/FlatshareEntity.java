@@ -75,10 +75,17 @@ public class FlatshareEntity {
         return landlord;
     }
 
-    // I had to add this because the setter was not in the class.
-    public void setLandlord(LandlordEntity landlord)
+    public void setLandlord(LandlordEntity landlord) throws BackendException
     {
-        this.landlord = landlord;
+        if(landlord == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "the landlord can't be null.");
+        }
+        if(!landlord.equals(this.landlord))
+        {
+            this.landlord = landlord;
+            landlord.setFlatshare(this);
+        }
     }
 
     public RentEntity getRent() {
