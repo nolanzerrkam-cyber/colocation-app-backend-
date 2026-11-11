@@ -20,7 +20,7 @@ public class FlatshareEntity {
     @Column(name = "id_flatshare")
     private int id_flatshare;
 
-    @OneToOne
+    @ManyToOne
     private LandlordEntity landlord;
 
     @OneToOne
@@ -84,7 +84,7 @@ public class FlatshareEntity {
         if(!landlord.equals(this.landlord))
         {
             this.landlord = landlord;
-            landlord.setFlatshare(this);
+            // ajouter flatshare
         }
     }
 
