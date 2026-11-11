@@ -20,7 +20,9 @@ public class ShoppingItemEntity {
     private String label;
     @Column(name = "quantity")
     private int quantity;
+
     @ManyToOne
+    @JoinColumn(name = "ROOMMATE_EMAIL")
     private RoommateEntity roommate;
 
     @ManyToOne
@@ -31,7 +33,12 @@ public class ShoppingItemEntity {
         return flatshare;
     }
 
-    public void setFlatshare(FlatshareEntity flatshare) {
+    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
+        if(flatshare == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST,"flatshare cannot be null");
+        }
+
         this.flatshare = flatshare;
     }
 
@@ -39,7 +46,12 @@ public class ShoppingItemEntity {
         return id_shopping;
     }
 
-    public void setId_shopping(int id_shopping) {
+    public void setId_shopping(int id_shopping) throws BackendException {
+        if(id_shopping < 0)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST,"id cannot be negative");
+        }
+
         this.id_shopping = id_shopping;
     }
 
@@ -79,6 +91,8 @@ public class ShoppingItemEntity {
             roommate.getFlatshare().addItem(this);
         }
     }
+
+    //Constructeurs
 
     public ShoppingItemEntity() {
     }
