@@ -19,14 +19,6 @@ public class RoommateEntity extends UserEntity {
     @ManyToOne
     private FlatshareEntity flatshare;
 
-    public RoommateEntity() {
-    }
-
-    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity) throws BackendException {
-        super(email, password, firstname, lastname, phonenumber);
-        setFlatshare(flatshareEntity);
-    }
-
     public FlatshareEntity getFlatshare() {
         return flatshare;
     }
@@ -40,6 +32,26 @@ public class RoommateEntity extends UserEntity {
             flatshare.addRoommate(this);
         }
     }
+
+    //
+    //
+    //Constructeurs
+    //
+    //
+
+    public RoommateEntity() {
+    }
+
+    public RoommateEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshareEntity) throws BackendException {
+        super(email, password, firstname, lastname, phonenumber);
+        setFlatshare(flatshareEntity);
+    }
+
+    //
+    //
+    //Méthodes
+    //
+    //
 
     /**
      *
@@ -57,7 +69,10 @@ public class RoommateEntity extends UserEntity {
      */
     public void payRent(int month, int year) throws BackendException {
         if (month < 1 || month > 12)
+        {
             throw new BackendException(Response.Status.BAD_REQUEST, "Month must be between 1 and 12");
+        }
+
         String label = "Rent " + month + "/" + year;
         // RentExpenseEntity constructor automatically adds the expense to the flatshare expenses list
         new RentExpenseEntity(label, getRent(), this, month, year);
@@ -69,43 +84,6 @@ public class RoommateEntity extends UserEntity {
      */
     public float getRent() {
         return flatshare.getRent().getAmount() / flatshare.getRoommates().size();
-    }
-
-    /**
-     *
-     * @return true if the rent of the current month is paid
-     */
-    public boolean isCurrentRentPaid() {
-        Calendar calendar = Calendar.getInstance();
-        int thisYear = calendar.get(Calendar.YEAR);
-        int thisMonth = calendar.get(Calendar.MONTH) + 1;
-        return isRentPaid(thisMonth, thisYear);
-    }
-
-    /**
-     *
-     * @param month targeted month number (1 -> 12)
-     * @param year  targeted year number
-     * @return true if the rent of the targeted month and targeted year is paid
-     */
-    public boolean isRentPaid(int month, int year) {
-        Optional<RentExpenseEntity> rentExpense = flatshare.getExpenses().stream()
-                .filter(e -> e instanceof RentExpenseEntity)
-                .map(e -> (RentExpenseEntity) e)
-                .filter(r -> r.getMonth() == month && r.getYear() == year && r.getRoommate().equals(this)).findFirst();
-        return rentExpense.isPresent();
-    }
-
-    /**
-     * Retrieve a roommate object from the database based on his email
-     *
-     * @param dao
-     * @param email
-     * @return
-     * @throws BackendException
-     */
-    public static RoommateEntity get(UserDao dao, String email) throws BackendException {
-        return (RoommateEntity) dao.get(email).orElse(null);
     }
 
     /**
@@ -124,12 +102,50 @@ public class RoommateEntity extends UserEntity {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieve a roommate object from the database based on his email
+     *
+     * @param dao
+     * @param email
+     * @return
+     * @throws BackendException
+     */
+    public static RoommateEntity get(UserDao dao, String email) throws BackendException {
+        return (RoommateEntity) dao.get(email).orElse(null);
+    }
+
+    /**
+     *
+     * @param month targeted month number (1 -> 12)
+     * @param year  targeted year number
+     * @return true if the rent of the targeted month and targeted year is paid
+     */
+    public boolean isRentPaid(int month, int year) {
+        Optional<RentExpenseEntity> rentExpense = flatshare.getExpenses().stream()
+                .filter(e -> e instanceof RentExpenseEntity)
+                .map(e -> (RentExpenseEntity) e)
+                .filter(r -> r.getMonth() == month && r.getYear() == year && r.getRoommate().equals(this)).findFirst();
+        return rentExpense.isPresent();
+    }
+
+    /**
+     *
+     * @return true if the rent of the current month is paid
+     */
+    public boolean isCurrentRentPaid() {
+        Calendar calendar = Calendar.getInstance();
+        int thisYear = calendar.get(Calendar.YEAR);
+        int thisMonth = calendar.get(Calendar.MONTH) + 1;
+        return isRentPaid(thisMonth, thisYear);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RoommateEntity)) return false;
         RoommateEntity that = (RoommateEntity) o;
         return Objects.equals(flatshare, that.flatshare) && super.equals(that);
     }
+
 
     @Override
     public int hashCode() {
