@@ -10,7 +10,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 
-import java.time.*;
 import java.util.Objects;
 
 @Entity
@@ -21,7 +20,7 @@ public class ExpenseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_expense")
-    private int id;
+    private int id_expense;
 
     @Column(name = "label", nullable = false, length = 100)
     private String label;
@@ -31,6 +30,10 @@ public class ExpenseEntity {
 
     @Column(name = "date_expense", nullable = false)
     private Date date_expense;
+
+    @ManyToOne
+    @JoinColumn(name = "id_flatshare")
+    private FlatshareEntity flatshare;
 
     @ManyToOne
     // gère la relation en BD
@@ -47,12 +50,20 @@ public class ExpenseEntity {
         setRoommate(roommate);
     }
 
-    public int getId() {
-        return id;
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
     }
 
-    private void setId(int id) {
-        this.id = id;
+    public void setFlatshare(FlatshareEntity flatshare) {
+        this.flatshare = flatshare;
+    }
+
+    public int getId_expense() {
+        return id_expense;
+    }
+
+    private void setId_expense(int id_expense) {
+        this.id_expense = id_expense;
     }
 
     public String getLabel() {
@@ -131,7 +142,7 @@ public class ExpenseEntity {
     @Override
     public String toString() {
         return "ExpenseEntity{" +
-                "id=" + id +
+                "id_expense=" + id_expense +
                 ", label='" + label + '\'' +
                 ", price=" + price +
                 ", date=" + getDate() +

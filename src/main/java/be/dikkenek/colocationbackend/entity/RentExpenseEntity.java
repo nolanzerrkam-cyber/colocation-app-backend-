@@ -2,11 +2,13 @@ package be.dikkenek.colocationbackend.entity;
 
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Objects;
 
 @Entity
+@Table(name="rent_expense")
 /**
  * Classe dépense loyer (dérivée de Expense)
  */

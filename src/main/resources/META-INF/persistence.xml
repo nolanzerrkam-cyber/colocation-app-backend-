@@ -26,7 +26,7 @@
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.generate_statistics" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
         </properties>
     </persistence-unit>
 

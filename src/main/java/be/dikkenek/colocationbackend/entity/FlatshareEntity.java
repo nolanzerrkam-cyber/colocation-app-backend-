@@ -17,8 +17,8 @@ import java.util.Objects;
 public class FlatshareEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id_flatshare")
+    private int id_flatshare;
 
     @OneToOne
     private LandlordEntity landlord;
@@ -26,17 +26,17 @@ public class FlatshareEntity {
     @OneToOne
     private RentEntity rent;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<RoommateEntity> roommates;
 
     // FetchType.EAGER will load tasks list as soon as RoommateEntity is created
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flatshare",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
 
     /**
@@ -51,12 +51,12 @@ public class FlatshareEntity {
         setShoppingItems(new ArrayList<>());
     }
 
-    public int getId() {
-        return id;
+    public int getId_flatshare() {
+        return id_flatshare;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId_flatshare(int id_flatshare) {
+        this.id_flatshare = id_flatshare;
     }
 
     public void addRoommate(RoommateEntity roommateEntity) throws BackendException {
@@ -85,7 +85,6 @@ public class FlatshareEntity {
 
         if (this.getRent() != rent) {
             this.rent = rent;
-            rent.setFlatshare(this);
         }
     }
 
@@ -192,18 +191,18 @@ public class FlatshareEntity {
     public boolean equals(Object o) {
         if (!(o instanceof FlatshareEntity)) return false;
         FlatshareEntity that = (FlatshareEntity) o;
-        return id == that.id && Objects.equals(roommates, that.roommates) && Objects.equals(landlord, that.landlord) && Objects.equals(rent, that.rent);
+        return id_flatshare == that.id_flatshare && Objects.equals(roommates, that.roommates) && Objects.equals(landlord, that.landlord) && Objects.equals(rent, that.rent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roommates, landlord, rent);
+        return Objects.hash(id_flatshare, roommates, landlord, rent);
     }
 
     @Override
     public String toString() {
         return "FlatshareEntity{" +
-                "id=" + id +
+                "id_flatshare=" + id_flatshare +
                 ", roommates=" + roommates +
                 ", landlord=" + landlord +
                 ", rent=" + rent +

@@ -15,8 +15,8 @@ public class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id_task")
+    private int id_task;
 
     @Column(name = "name")
     private String name;
@@ -34,6 +34,10 @@ public class TaskEntity {
     @JoinColumn(name = "email", nullable = false)
     private RoommateEntity roommate;
 
+    @ManyToOne
+    @JoinColumn(name = "id_flatshare")
+    private FlatshareEntity flatshare;
+
     public TaskEntity() {
     }
 
@@ -43,6 +47,14 @@ public class TaskEntity {
         setIsDone(isDone);
         setDeadline(deadline);
         setRoommate(roommate);
+    }
+
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
+    }
+
+    public void setFlatshare(FlatshareEntity flatshare) {
+        this.flatshare = flatshare;
     }
 
     public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
@@ -61,12 +73,12 @@ public class TaskEntity {
         return taskDao.update(this);
     }
 
-    public int getId() {
-        return id;
+    public int getId_task() {
+        return id_task;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId_task(int id_task) {
+        this.id_task = id_task;
     }
 
     public String getName() {
@@ -133,13 +145,13 @@ public class TaskEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, isDone, deadline);
+        return Objects.hash(id_task, name, description, isDone, deadline);
     }
 
     @Override
     public String toString() {
         return "TaskEntity{" +
-                "id=" + id +
+                "id_task=" + id_task +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", isDone=" + isDone +

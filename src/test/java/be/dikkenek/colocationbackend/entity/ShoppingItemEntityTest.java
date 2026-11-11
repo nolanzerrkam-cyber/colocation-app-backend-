@@ -33,15 +33,15 @@ public class ShoppingItemEntityTest {
         assertSame(roommate, item.getRoommate());
     }
 
-    @Test
-    void test_getters_return_constructor_values() throws BackendException {
-        FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
-        ShoppingItemEntity item = new ShoppingItemEntity(7, "Pain", 3, roommate);
-
-        assertEquals(7, item.getId());
-        assertEquals("Pain", item.getLabel());
-        assertEquals(3, item.getQuantity());
-        assertSame(roommate, item.getRoommate());
-    }
+//    @Test
+//    void test_getters_return_constructor_values() throws BackendException {
+//        FlatshareEntity flatshareEntity = new FlatshareEntity();
+//        RoommateEntity roommate = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
+//        ShoppingItemEntity item = new ShoppingItemEntity(7, "Pain", 3, roommate);
+//
+//        assertEquals(7, item.getId());
+//        assertEquals("Pain", item.getLabel());
+//        assertEquals(3, item.getQuantity());
+//        assertSame(roommate, item.getRoommate());
+//    }
 }

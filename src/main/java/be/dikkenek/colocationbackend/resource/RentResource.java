@@ -3,6 +3,7 @@ package be.dikkenek.colocationbackend.resource;
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
+import be.dikkenek.colocationbackend.dto.RentRoommateDto;
 import be.dikkenek.colocationbackend.dto.RentUpdateDto;
 import be.dikkenek.colocationbackend.entity.*;
 import be.dikkenek.colocationbackend.exception.BackendException;
@@ -32,7 +33,25 @@ public class RentResource {
         if (rent == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Rent not found").build();
 
-        return Response.ok(new RentResponseDto(rent.getId(), rent.getAmount(), rent.getDeadlineDay())).build();
+        return Response.ok(new RentResponseDto(rent.getId_rent(), rent.getAmount(), rent.getDeadlineDay())).build();
+    }
+
+    @GET
+    @Path("/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRentRoommate(@PathParam("email") String email ) throws BackendException {
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+        RoommateEntity roommate = flatshareEntity.getRoommates().stream()
+                .filter(r -> r.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+        if(roommate == null){
+            return Response.status(405).entity("roommate not found").build();
+        }
+
+        return Response.ok(new RentRoommateDto(roommate.getRent(), roommate.isCurrentRentPaid())).build();
     }
 
     @PUT
