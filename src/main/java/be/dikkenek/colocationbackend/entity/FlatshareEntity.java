@@ -75,6 +75,7 @@ public class FlatshareEntity {
         return landlord;
     }
 
+    // I had to add this because the setter was not in the class.
     public void setLandlord(LandlordEntity landlord)
     {
         this.landlord = landlord;

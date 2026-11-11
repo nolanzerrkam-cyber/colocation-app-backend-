@@ -1,5 +1,9 @@
 package be.dikkenek.colocationbackend.dto;
 
+// This is the DTO for the password reset, but for the roommate.
+// We are asking for the old password for security reasons, and if the old password is correct and the new password is defined correctly, we
+// can use this DTO for updating our password.
+
 public class PasswordResetDTO
 {
     private String email;

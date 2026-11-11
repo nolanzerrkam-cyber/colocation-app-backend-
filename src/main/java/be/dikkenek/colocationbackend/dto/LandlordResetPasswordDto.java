@@ -1,5 +1,7 @@
 package be.dikkenek.colocationbackend.dto;
 
+// This DTO is used when the landlord needs to reset the password of a certain roommate.
+// We don't take the old password from the roommate because we imagined that this problem will only occur when the roommate lost forever his old password.
 public class LandlordResetPasswordDto
 {
     private String landlordEmail;
