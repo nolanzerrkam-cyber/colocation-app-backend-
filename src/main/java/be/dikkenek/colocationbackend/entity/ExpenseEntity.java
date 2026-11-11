@@ -6,7 +6,6 @@ import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +35,6 @@ public class ExpenseEntity {
     private FlatshareEntity flatshare;
 
     @ManyToOne
-    // gère la relation en BD
     @JoinColumn(name = "Email", nullable = false)
     private RoommateEntity roommate;
 
@@ -59,11 +57,13 @@ public class ExpenseEntity {
         this.flatshare = flatshare;
     }
 
-    public int getId_expense() {
+    public int getId_expense()
+    {
         return id_expense;
     }
 
-    private void setId_expense(int id_expense) {
+    private void setId_expense(int id_expense)
+    {
         this.id_expense = id_expense;
     }
 
@@ -72,8 +72,8 @@ public class ExpenseEntity {
     }
 
     private void setLabel(String label) throws BackendException {
-        if (label == null || label.isEmpty()) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
+        if(label == null || label.isEmpty()) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "Label can't be null or empty");
         }
 
         if (label.length() > 100)
@@ -88,7 +88,7 @@ public class ExpenseEntity {
 
     private void setPrice(float price) throws BackendException {
         if (price <= 0) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "price cannot be negative");
+            throw new BackendException(Response.Status.BAD_REQUEST, "The price cannot be below or equal to zero.");
         }
         this.price = price;
     }
@@ -105,19 +105,16 @@ public class ExpenseEntity {
         return roommate;
     }
 
-    public void setRoommate(RoommateEntity roommate) throws BackendException {
+    public void setRoommate(RoommateEntity roommate) throws BackendException
+    {
         if (roommate == null)
-            throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
+            throw new BackendException(Response.Status.BAD_REQUEST, "The roommate has to exist.");
 
         if (!roommate.equals(this.roommate)) {
             if (this.roommate != null) this.roommate.getFlatshare().removeExpense(this);
             this.roommate = roommate;
             roommate.getFlatshare().addExpense(this);
         }
-    }
-
-    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException {
-        return expenseDao.getAll();
     }
 
     public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException {
