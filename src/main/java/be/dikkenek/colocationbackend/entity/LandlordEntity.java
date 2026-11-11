@@ -29,11 +29,12 @@ public class LandlordEntity extends UserEntity
         return flatshare;
     }
 
-    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
+public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
         if (flatshare == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Flatshare cannot be null");
-        this.flatshare = flatshare;
-        // Linking the landlord to the flatshare and the flatshare to the landlord.
-        flatshare.setLandlord(this);
+        if(!this.getFlatshare().equals(flatshare)) {
+            this.flatshare = flatshare;
+            flatshare.setLandlord(this);
+        }
     }
 }
