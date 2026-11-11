@@ -137,20 +137,26 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response resetPasswordByLandlord(LandlordResetPasswordDto dto) throws BackendException
     {
+        // We are getting the landlord with the email from the dto
         UserEntity landlord = UserEntity.get(userDao, dto.getLandlordEmail());
 
+        // if the landlord is not from LandlordEntity OR the landlordPassword in the dto is null or if the landlord password in the dto is not equals to the current password, 401
         if(!(landlord instanceof LandlordEntity) || dto.getLandlordPassword() == null || !landlord.verifyPassword(dto.getLandlordPassword()))
             return Response.status(Response.Status.UNAUTHORIZED).entity("The credentials are invalid.").build();
 
+        // Getting the exact roommate with the email
         UserEntity roommate = UserEntity.get(userDao, dto.getRoommateEmail());
 
+        // Some check to be sure of the roommate
         if(roommate == null)
             return Response.status(Response.Status.NOT_FOUND).entity("The roommate you're trying to get has not been found.").build();
 
         if(!(roommate instanceof RoommateEntity))
             return Response.status(Response.Status.BAD_REQUEST).entity("This email is not from a roommate, try again with the correct email.").build();
 
+        // Setting the new password, which will be hashed directly.
         roommate.setPassword(dto.getNewPassword());
+        // We update the object so like that, the password is persisted and saved.
         roommate.update(userDao);
         return Response.status(Response.Status.OK).entity("Password of the roommate correctly changed !").build();
     }
