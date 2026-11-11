@@ -98,7 +98,7 @@ public class RentDao implements Dao<RentEntity, Integer>
             {
                 et.begin();
 
-                if(rent == null || rent.getFlatshare() == null)
+                if(rent == null)
                 {
                     et.rollback();
                     return false;

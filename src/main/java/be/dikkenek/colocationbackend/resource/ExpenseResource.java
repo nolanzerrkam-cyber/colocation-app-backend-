@@ -42,7 +42,7 @@ public class ExpenseResource {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         List<GetExpenseDto> expenseDtos = expenses.stream().map(entity -> new GetExpenseDto(
-                entity.getId(),
+                entity.getId_expense(),
                 entity.getLabel(),
                 entity.getPrice(),
                 entity.getDate() != null ? formatter.format(entity.getDate()) : null,

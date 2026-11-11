@@ -37,7 +37,7 @@ public class TaskResource {
 
         List<TaskResponseDto> taskResponseDtos = flatshareEntity.getTasks().stream()
                 .map(t -> new TaskResponseDto(
-                        t.getId(),
+                        t.getId_task(),
                         t.getName(),
                         t.getDescription(),
                         t.isDone(),

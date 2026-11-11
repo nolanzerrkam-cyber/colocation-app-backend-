@@ -12,10 +12,10 @@ import java.util.Objects;
 @Table(name = "SHOPPING_ITEM")
 public class ShoppingItemEntity {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_shopping", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    // For now, the name will stay libelle,
+    private int id_shopping;
+
     @Column(name = "label")
     private String label;
     @Column(name = "quantity")
@@ -23,12 +23,24 @@ public class ShoppingItemEntity {
     @ManyToOne
     private RoommateEntity roommate;
 
-    public int getId() {
-        return id;
+    @ManyToOne
+    @JoinColumn(name = "id_flatshare")
+    private FlatshareEntity flatshare;
+
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFlatshare(FlatshareEntity flatshare) {
+        this.flatshare = flatshare;
+    }
+
+    public int getId_shopping() {
+        return id_shopping;
+    }
+
+    public void setId_shopping(int id_shopping) {
+        this.id_shopping = id_shopping;
     }
 
     public String getLabel() {
@@ -75,11 +87,12 @@ public class ShoppingItemEntity {
         setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
-    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity(int id_shopping, String label, int quantity, RoommateEntity roommate) throws BackendException {
         this(label,quantity,roommate);
-        setId(id);
+        setId_shopping(id_shopping);
     }
 
     //Méthodes
@@ -97,7 +110,7 @@ public class ShoppingItemEntity {
     public boolean equals(Object o) {
         if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
+        return id_shopping == that.id_shopping && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
     }
 
     public boolean create(ShoppingItemDao dao) throws BackendException
@@ -107,13 +120,13 @@ public class ShoppingItemEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, quantity, roommate);
+        return Objects.hash(id_shopping, label, quantity, roommate);
     }
 
     @Override
     public String toString() {
         return "ShoppingItemEntity{" +
-                "id=" + id +
+                "id_shopping=" + id_shopping +
                 ", label='" + label + '\'' +
                 ", quantity=" + quantity +
                 ", roommate=" + roommate +

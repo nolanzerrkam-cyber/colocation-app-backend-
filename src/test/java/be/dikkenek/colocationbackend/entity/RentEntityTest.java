@@ -8,18 +8,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RentEntityTest {
 
-    @Test
-    public void rent_entity_flatshare() throws BackendException {
-        FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RentEntity rentEntity = new RentEntity();
-
-        assertThrows(BackendException.class, () -> rentEntity.setFlatshare(null));
-
-        rentEntity.setFlatshare(flatshareEntity);
-
-        assertEquals(flatshareEntity, rentEntity.getFlatshare());
-        assertEquals(rentEntity, flatshareEntity.getRent());
-    }
+//    @Test
+//    public void rent_entity_flatshare() throws BackendException {
+//        FlatshareEntity flatshareEntity = new FlatshareEntity();
+//        RentEntity rentEntity = new RentEntity();
+//
+//        assertThrows(BackendException.class, () -> rentEntity.setFlatshare(null));
+//
+//        rentEntity.setFlatshare(flatshareEntity);
+//
+//        assertEquals(flatshareEntity, rentEntity.getFlatshare());
+//        assertEquals(rentEntity, flatshareEntity.getRent());
+//    }
 
     @Test
     public void rent_entity_deadline() throws BackendException {

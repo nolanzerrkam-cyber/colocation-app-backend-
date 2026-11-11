@@ -36,7 +36,7 @@ public class ShoppingItemResource {
 
         List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingItems().stream()
                 .map(entity -> new ShoppingItemGetDto(
-                        entity.getId(),
+                        entity.getId_shopping(),
                         entity.getLabel(),
                         entity.getQuantity(),
                         entity.getRoommate().getEmail()))

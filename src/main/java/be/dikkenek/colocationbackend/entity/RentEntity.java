@@ -6,33 +6,29 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Calendar;
 
-@Entity
+
 /**
  * Classe loyer
  */
+@Entity
+@Table(name = "RENT")
+
 public class RentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id_rent")
+    private int id_rent;
+
+    @Column(name = "deadlineDay")
     private int deadlineDay;
+
     @Column(name = "amount", nullable = false, columnDefinition = "NUMBER(10,2)")
     private float amount;
-    @OneToOne
-    private FlatshareEntity flatshare;
+
 
     public RentEntity() {
     }
 
-    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
-        if (flatshare == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Flatshare is null");
-
-        if(this.getFlatshare() != flatshare) {
-            this.flatshare = flatshare;
-            flatshare.setRent(this);
-        }
-    }
 
     /**
      *
@@ -61,11 +57,7 @@ public class RentEntity {
         return amount;
     }
 
-    public FlatshareEntity getFlatshare() {
-        return flatshare;
-    }
-
-    public int getId() {
-        return id;
+    public int getId_rent() {
+        return id_rent;
     }
 }
