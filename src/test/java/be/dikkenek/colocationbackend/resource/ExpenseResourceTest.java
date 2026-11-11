@@ -26,11 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ExpenseResourceTest {
 
     @Mock
-    // creating a false dao
     private ExpenseDao expenseDAO;
 
     @Mock
-    // NEW : Since now we are finding the roommate from his email via this dao, I have to implent it. This is going to change a lot in the unit test.
     private UserDao userDao;
     @Mock
     private FlatshareDao flatshareDao;
@@ -47,10 +45,6 @@ public class ExpenseResourceTest {
         dto.setDateExpense(new Date());
         return dto;
     }
-
-    // NEW : just to check if the false dao if the roommate exists does return a fake user.
-    // This is really important since im going to check on every test if the roommate exist, to
-    // reproduce the fact that ExpenseRessource has to check if the user really exist or not.
 
     /* Why this unit test is in private ?
         The role of roomate_exists is simple : its a code that we are going to use on multiple unit test.
@@ -105,7 +99,7 @@ public class ExpenseResourceTest {
     @Test
     void testPostExpense_NegativePrice() throws BackendException
     {
-        roommate_exists(); // // The roommate must exist here otherwise, the 400 status would come from the roommate check instead of the negative price.
+        roommate_exists(); // The roommate must exist here otherwise, the 400 status would come from the roommate check instead of the negative price.
         ExpenseInsertDto dto = validDto();
         dto.setPrice(-5f);
 
