@@ -46,7 +46,7 @@ public class RoommateEntity extends UserEntity {
      * @return the total amount of the roommate's expenses
      */
     public float getTotalExpenses() {
-        return flatshare.getExpenses().stream().map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
+        return flatshare.getExpenses().stream().filter(e -> e.getRoommate().equals(this)).map(ExpenseEntity::getPrice).reduce(0.0f, Float::sum);
     }
 
     /**
