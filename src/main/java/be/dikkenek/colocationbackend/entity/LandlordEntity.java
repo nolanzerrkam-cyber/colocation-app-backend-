@@ -8,9 +8,21 @@ import jakarta.ws.rs.core.Response;
 @Entity(name = "Landlord")
 public class LandlordEntity extends UserEntity
 {
-
+    // I had to modify this entity. There was nothing in it !
+    // No flatshare means that the landlord is not linked to the flatshare...
+    // For now, this is a prototype, but we have to look at this...
     @OneToOne
     private FlatshareEntity flatshare;
+
+    public LandlordEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshare) throws BackendException {
+        super(email, password, firstname, lastname, phonenumber);
+        setFlatshare(flatshare);
+    }
+
+    public LandlordEntity()
+    {
+
+    }
 
     public FlatshareEntity getFlatshare()
     {
@@ -19,10 +31,7 @@ public class LandlordEntity extends UserEntity
 
     public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
         if (flatshare == null)
-        {
             throw new BackendException(Response.Status.BAD_REQUEST, "Flatshare cannot be null");
-        }
-
         // Forced to do this because the variable flatshare is still null when passing
         // though this condition.
         if(!flatshare.equals(this.getFlatshare()))
@@ -31,19 +40,4 @@ public class LandlordEntity extends UserEntity
             flatshare.setLandlord(this);
         }
     }
-
-
-    //
-    //
-    //Constructeurs
-    //
-    //
-
-    public LandlordEntity() {}
-
-    public LandlordEntity(String email, String password, String firstname, String lastname, String phonenumber, FlatshareEntity flatshare) throws BackendException {
-        super(email, password, firstname, lastname, phonenumber);
-        setFlatshare(flatshare);
-    }
-
 }
