@@ -47,9 +47,9 @@ public abstract class UserEntity {
     // Much easier like this to have a hashed password
     public void setPassword(String password) throws BackendException
     {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if(password == null || password.length() < 8)
             throw new BackendException(Response.Status.BAD_REQUEST, "Password must contain at least 8 characters");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         this.password = encoder.encode(password);
     }
 
@@ -115,9 +115,12 @@ public abstract class UserEntity {
         return userDao.update(this);
     }
 
-    public boolean verifyPassword(String rawPassword)
+    public boolean verifyPassword(String rawPassword) throws BackendException
     {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(password == null)
+            return false;
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
         return encoder.matches(rawPassword, this.getPassword());
     }
