@@ -87,6 +87,7 @@ public class ShoppingItemEntity {
         setLabel(label);
         setQuantity(quantity);
         setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
     public ShoppingItemEntity(int id_shopping, String label, int quantity, RoommateEntity roommate) throws BackendException {

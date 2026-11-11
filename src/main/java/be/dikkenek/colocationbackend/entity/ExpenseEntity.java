@@ -48,6 +48,7 @@ public class ExpenseEntity {
         setPrice(price);
         setDate();
         setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
     public FlatshareEntity getFlatshare() {

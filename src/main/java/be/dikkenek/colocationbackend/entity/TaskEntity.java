@@ -47,6 +47,7 @@ public class TaskEntity {
         setIsDone(isDone);
         setDeadline(deadline);
         setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
     public FlatshareEntity getFlatshare() {
