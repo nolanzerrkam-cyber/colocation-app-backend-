@@ -44,10 +44,13 @@ public abstract class UserEntity {
         return password;
     }
 
-    public void setPassword(String password) throws BackendException {
-        if(password.length() < 8)
+    // Much easier like this to have a hashed password
+    public void setPassword(String password) throws BackendException
+    {
+        if(password == null || password.length() < 8)
             throw new BackendException(Response.Status.BAD_REQUEST, "Password must contain at least 8 characters");
-        this.password = password;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        this.password = encoder.encode(password);
     }
 
     public String getFirstname() {
@@ -114,7 +117,10 @@ public abstract class UserEntity {
 
     public boolean verifyPassword(String rawPassword)
     {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(password == null)
+            return false;
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
         return encoder.matches(rawPassword, this.getPassword());
     }
@@ -135,11 +141,11 @@ public abstract class UserEntity {
         return Objects.hash(email, password, firstname, lastname, phonenumber);
     }
 
+    /* I have deleted the password from the toString because it was showing the hash */
     @Override
     public String toString() {
         return "UserEntity{" +
                 "email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", phonenumber='" + phonenumber + '\'' +

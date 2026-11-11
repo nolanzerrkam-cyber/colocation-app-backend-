@@ -75,6 +75,19 @@ public class FlatshareEntity {
         return landlord;
     }
 
+    public void setLandlord(LandlordEntity landlord) throws BackendException
+    {
+        if(landlord == null)
+        {
+            throw new BackendException(Response.Status.BAD_REQUEST, "the landlord can't be null.");
+        }
+        if(!landlord.equals(this.landlord))
+        {
+            this.landlord = landlord;
+            landlord.setFlatshare(this);
+        }
+    }
+
     public RentEntity getRent() {
         return rent;
     }

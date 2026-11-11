@@ -9,11 +9,10 @@ import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.Response;
 
-/*
-classe roomate (colocataire) qui permet de créer un colocataire :
-attribut : - email, password, firstname, lastname, phonenumber (heriter de la classe user)
-           - expenses (liste de depense)
-*/
+/**
+ * Represents a roommate. Inherits email, password, firstname, lastname
+ * and phonenumber from User, and holds a list of expenses.
+ */
 @Entity(name = "Roommate")
 public class RoommateEntity extends UserEntity {
 

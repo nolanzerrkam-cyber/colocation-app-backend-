@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 /**
- * Classe dépense loyer (dérivée de Expense)
+ * Rent Expense class (from Expense)
  */
 public class RentExpenseEntity extends ExpenseEntity {
     private int month;
