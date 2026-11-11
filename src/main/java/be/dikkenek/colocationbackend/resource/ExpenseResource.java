@@ -31,13 +31,21 @@ public class ExpenseResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExpenses() throws BackendException {
+    public Response getAllExpenses(@QueryParam("email") String email) throws BackendException {
         FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         List<ExpenseEntity> expenses = flatshareEntity.getExpenses();
+
+        if (email != null) {
+            UserEntity userEntity = UserEntity.get(userDao, email);
+            if (userEntity instanceof RoommateEntity) {
+                RoommateEntity roommateEntity = (RoommateEntity) userEntity;
+                expenses = flatshareEntity.getExpenses().stream().filter(e -> e.getRoommate().equals(roommateEntity)).collect(Collectors.toList());
+            }
+        }
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -54,18 +62,6 @@ public class ExpenseResource {
         ListExpenseResponseDto responseDto = new ListExpenseResponseDto(flatshareEntity.getTotalExpenses(), expenseDtos);
 
         return Response.status(200).entity(responseDto).build();
-    }
-
-    @GET
-    @Path("/total")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getPricePerRoommate(@QueryParam("email") String email) throws BackendException {
-        RoommateEntity roommate = RoommateEntity.get(userDao, email);
-
-        if(roommate == null)
-            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
-
-        return Response.status(200).entity(roommate.getTotalExpenses()).build();
     }
 
     @DELETE
