@@ -118,11 +118,7 @@ class UserEntityTest
     @Test
     void user_verify_password() throws BackendException {
         UserEntity roommateEntity = new RoommateEntity();
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         String rawPassword = "motdepasse";
-        //String hashPassword = encoder.encode(rawPassword);
-
         roommateEntity.setPassword(rawPassword);
 
         assertTrue(roommateEntity.verifyPassword(rawPassword));

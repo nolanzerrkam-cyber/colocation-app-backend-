@@ -115,7 +115,7 @@ public abstract class UserEntity {
         return userDao.update(this);
     }
 
-    public boolean verifyPassword(String rawPassword) throws BackendException
+    public boolean verifyPassword(String rawPassword)
     {
         if(password == null)
             return false;
