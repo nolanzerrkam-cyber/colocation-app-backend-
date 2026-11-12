@@ -62,7 +62,7 @@ public class FlatshareEntity {
         if(!landlord.equals(this.landlord))
         {
             this.landlord = landlord;
-            // ajouter flatshare
+            landlord.setFlatshare(this);
         }
     }
 
