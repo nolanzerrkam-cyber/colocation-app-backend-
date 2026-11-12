@@ -2,12 +2,14 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
+import be.dikkenek.colocationbackend.dao.ShoppingQuantityDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
+import be.dikkenek.colocationbackend.entity.ShoppingQuantityEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -22,7 +24,7 @@ public class ShoppingItemResource {
     @Inject
     private FlatshareDao flatshareDao;
     @Inject
-    private ShoppingItemDao itemDao;
+    private ShoppingQuantityDao itemDao;
     @Inject
     private UserDao userDao;
 
@@ -34,12 +36,12 @@ public class ShoppingItemResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingItems().stream()
+        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingQuantityItems().stream()
                 .map(entity -> new ShoppingItemGetDto(
-                        entity.getId_shopping(),
-                        entity.getLabel(),
+                        entity.getId_quantity(),
+                        entity.getItem().getLabel(),
                         entity.getQuantity(),
-                        entity.getRoommate().getEmail()))
+                        entity.getItem().getRoommate().getEmail()))
                 .collect(Collectors.toList());
 
         return Response.status(Response.Status.OK).entity(shoppingItemGetDtos).build();
@@ -49,11 +51,21 @@ public class ShoppingItemResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(ShoppingItemPostDto dto) throws BackendException {
-        RoommateEntity roommate = RoommateEntity.get(userDao,dto.getRoommateId());
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+        RoommateEntity roommate = flatshareEntity.getRoommates().stream()
+                .filter(r -> r.getEmail().equals(dto.getRoommateId()))
+                .findFirst()
+                .orElse(null);
+        if (roommate == null) {
+            return Response.status(405).entity("roommate not found").build();
+        }
         // ShoppingItemEntity constructor automatically adds the shopping item in the flatshare shopping items list
-        new ShoppingItemEntity(dto.getLabel(), dto.getQuantity(), roommate);
+        ShoppingItemEntity shoppingItem = new ShoppingItemEntity(dto.getLabel(), roommate);
+        new ShoppingQuantityEntity(shoppingItem, dto.getQuantity(),flatshareEntity);
 
-        boolean isCreated = roommate.getFlatshare().update(flatshareDao);
+        boolean isCreated = flatshareEntity.update(flatshareDao);
 
         if (!isCreated)
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -67,13 +79,13 @@ public class ShoppingItemResource {
     @DELETE
     @Path("/{id_shopItem}")
     public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException {
-        ShoppingItemEntity shoppingItem = ShoppingItemEntity.get(itemDao, id);
+        ShoppingQuantityEntity shoppingItem = ShoppingQuantityEntity.get(itemDao, id);
 
         if(shoppingItem == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("We couldn't found your shopping item.").build();
         }
 
-        FlatshareEntity flatshareEntity = shoppingItem.getRoommate().getFlatshare();
+        FlatshareEntity flatshareEntity = shoppingItem.getItem().getRoommate().getFlatshare();
         flatshareEntity.removeItem(shoppingItem);
 
         if(flatshareEntity.update(flatshareDao))
