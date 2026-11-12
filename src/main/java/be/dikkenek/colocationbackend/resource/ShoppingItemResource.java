@@ -43,7 +43,7 @@ public class ShoppingItemResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
         RoommateEntity roommate = flatshareEntity.getRoommate(dto.getRoommateId());
         if (roommate == null) {
-            return Response.status(405).entity("Roommate not found").build();
+            return Response.status(404).entity("Roommate not found").build();
         }
         // ShoppingItemEntity constructor automatically adds the shopping item in the flatshare shopping items list
         ShoppingItemEntity shoppingItem = new ShoppingItemEntity(dto.getLabel(), roommate);

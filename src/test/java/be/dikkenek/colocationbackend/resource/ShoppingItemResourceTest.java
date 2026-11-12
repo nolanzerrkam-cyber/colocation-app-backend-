@@ -3,11 +3,8 @@ package be.dikkenek.colocationbackend.resource;
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
-import be.dikkenek.colocationbackend.entity.FlatshareEntity;
+import be.dikkenek.colocationbackend.entity.*;
 import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
-import be.dikkenek.colocationbackend.entity.RoommateEntity;
-import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -24,169 +21,158 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class ShoppingItemResourceTest {
 
-//    @Mock
-//    private FlatshareDao flatshareDao;
-//    @Mock
-//    private UserDao userDao;
-//    @InjectMocks
-//    private ShoppingItemResource shoppingItemResource;
-//
-//    private ShoppingItemEntity mockItem(int id, String label, int quantity, RoommateEntity roommate) {
-//        ShoppingItemEntity item = Mockito.mock(ShoppingItemEntity.class);
-//        Mockito.when(item.getId_shopping()).thenReturn(id);
-//        Mockito.when(item.getLabel()).thenReturn(label);
-//        Mockito.when(item.getQuantity()).thenReturn(quantity);
-//        Mockito.when(item.getRoommate()).thenReturn(roommate);
-//        return item;
-//    }
-//
-//    @Test
-//    void testGetAll_Success() throws BackendException {
-//        // Given
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
-//        ShoppingItemEntity item = mockItem(1, "Lait", 2, roommateEntity);
-//        flatshareEntity.addRoommate(roommateEntity);
-//        flatshareEntity.addItem(item);
-//        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
-//
-//        // When
-//        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
-//
-//        // Then
-//        Assertions.assertEquals(1, result.size());
-//        Assertions.assertEquals(1, result.get(0).getId());
-//        Assertions.assertEquals("Lait", result.get(0).getLabel());
-//        Assertions.assertEquals(2, result.get(0).getQuantity());
-//        Assertions.assertEquals("email@email.com", result.get(0).getRoommateId());
-//    }
-//
-//    @Test
-//    void testGetAll_multiple_items() throws BackendException {
-//        // Given
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        RoommateEntity roommate1 = new RoommateEntity("email1@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
-//        RoommateEntity roommate2 = new RoommateEntity("email2@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
-//        flatshareEntity.addRoommate(roommate1);
-//        flatshareEntity.addRoommate(roommate2);
-//        ShoppingItemEntity item1 = mockItem(1, "Lait", 2, roommate1);
-//        ShoppingItemEntity item2 = mockItem(2, "Pain", 1, roommate2);
-//        flatshareEntity.addItem(item1);
-//        flatshareEntity.addItem(item2);
-//        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
-//
-//        // When
-//        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
-//
-//        // Then
-//        Assertions.assertEquals(2, result.size());
-//        Assertions.assertEquals("email1@email.com", result.get(0).getRoommateId());
-//        Assertions.assertEquals("email2@email.com", result.get(1).getRoommateId());
-//    }
-//
-//    @Test
-//    void testGetAll_empty() throws BackendException {
-//        // Given
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
-//
-//        // When
-//        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
-//
-//        // Then
-//        Assertions.assertTrue(result.isEmpty());
-//    }
-//
-//    @Test
-//    void shoppingItem_create_valid() throws BackendException {
-//        // Given
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-//        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
-//        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
-//        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
-//
-//        // When
-//        Response response = shoppingItemResource.create(dto);
-//
-//        // Then
-//        Assertions.assertEquals(201, response.getStatus());
-//        Mockito.verify(flatshareDao).update(flatshareEntity);
-//        Mockito.verifyNoInteractions(itemDao);
-//    }
-//
-//    @Test
-//    void shoppingItem_create_not_valid() throws BackendException {
-//        // Given
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
-//        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
-//        Mockito.when(userDao.get("email@email.com")).thenReturn(Optional.of(roommate));
-//        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
-//
-//        // When
-//        Response response = shoppingItemResource.create(dto);
-//
-//        // Then
-//        Assertions.assertEquals(500, response.getStatus());
-//        Assertions.assertEquals("Failed to create item", response.getEntity());
-//    }
-//
-//    @Test
-//    void shoppingItem_create_roommate_not_found() throws BackendException {
-//        // Given
-//        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "inconnu@email.com");
-//        Mockito.when(userDao.get("inconnu@email.com")).thenReturn(Optional.empty());
-//
-//        // When / Then
-//        Assertions.assertThrows(BackendException.class, () -> shoppingItemResource.create(dto));
-//        Mockito.verify(userDao, Mockito.never()).update(Mockito.any());
-//    }
-//
-//    /* ----------------------- /DELETE ---------------------- */
-//
-//    @Test
-//    void deleteShopItem_nullShoppingItem() throws BackendException {
-//        // Given
-//        Mockito.when(itemDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
-//
-//        // When
-//        Response resp = shoppingItemResource.deleteShoppingItem(10000000);
-//
-//        // Then
-//        Assertions.assertEquals(404, resp.getStatus());
-//    }
-//
-//    @Test
-//    void deleteShopItem_deleteFailed() throws BackendException {
-//        // GIVEN
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678", flatshareEntity);
-//        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
-//        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
-//        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
-//
-//        // WHEN
-//        Response resp = shoppingItemResource.deleteShoppingItem(67);
-//
-//        // THEN
-//        Assertions.assertEquals(500, resp.getStatus());
-//    }
-//
-//    @Test
-//    void deleteShopItem_Success() throws BackendException {
-//        // GIVEN
-//        FlatshareEntity flatshareEntity = new FlatshareEntity();
-//        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678", flatshareEntity);
-//        ShoppingItemEntity e = new ShoppingItemEntity(67, "lazagna", 1, rmte);
-//        Mockito.when(itemDao.get(67)).thenReturn(Optional.of(e));
-//        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
-//
-//        // WHEN
-//        Response resp = shoppingItemResource.deleteShoppingItem(67);
-//
-//        // THEN
-//        Assertions.assertEquals(200, resp.getStatus());
-//    }
+    @Mock
+    private FlatshareDao flatshareDao;
+    @InjectMocks
+    private ShoppingItemResource shoppingItemResource;
 
+    @Test
+    void testGetAll_Success() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        ShoppingItemEntity item = new ShoppingItemEntity(1, "label", roommateEntity);
+        ShoppingQuantityEntity itemQuantity = new ShoppingQuantityEntity(item, 10, flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+
+        // When
+        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
+
+        // Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("label", result.get(0).getLabel());
+        Assertions.assertEquals(10, result.get(0).getQuantity());
+        Assertions.assertEquals("email@email.com", result.get(0).getRoommateId());
+    }
+
+    @Test
+    void testGetAll_multiple_items() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommate1 = new RoommateEntity("email1@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        RoommateEntity roommate2 = new RoommateEntity("email2@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        ShoppingItemEntity item1 = new ShoppingItemEntity(1, "label", roommate1);
+        ShoppingQuantityEntity itemQuantity1 = new ShoppingQuantityEntity(item1, 10, flatshareEntity);
+        ShoppingItemEntity item2 = new ShoppingItemEntity(1, "label", roommate2);
+        ShoppingQuantityEntity itemQuantity2 = new ShoppingQuantityEntity(item2, 10, flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+
+        // When
+        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
+
+        // Then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals("email1@email.com", result.get(0).getRoommateId());
+        Assertions.assertEquals("email2@email.com", result.get(1).getRoommateId());
+    }
+
+    @Test
+    void testGetAll_empty() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+
+        // When
+        List<ShoppingItemGetDto> result = (List<ShoppingItemGetDto>) shoppingItemResource.getAll().getEntity();
+
+        // Then
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shoppingItem_create_valid() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
+
+        // When
+        Response response = shoppingItemResource.create(dto);
+
+        // Then
+        Assertions.assertEquals(201, response.getStatus());
+        Mockito.verify(flatshareDao).update(flatshareEntity);
+    }
+
+    @Test
+    void shoppingItem_create_not_valid() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "email@email.com");
+        UserEntity roommate = new RoommateEntity("email@email.com", "password", "a", "a", "0472727272", flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
+
+        // When
+        Response response = shoppingItemResource.create(dto);
+
+        // Then
+        Assertions.assertEquals(500, response.getStatus());
+        Assertions.assertEquals("Failed to create item", response.getEntity());
+    }
+
+    @Test
+    void shoppingItem_create_roommate_not_found() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        ShoppingItemPostDto dto = new ShoppingItemPostDto("Lait", 2, "inconnu@email.com");
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+
+        // When / Then
+        Assertions.assertEquals(404, shoppingItemResource.create(dto).getStatus());
+    }
+
+    /* ----------------------- /DELETE ---------------------- */
+
+    @Test
+    void deleteShopItem_nullShoppingItem() throws BackendException {
+        // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+
+        // When
+        Response resp = shoppingItemResource.deleteShoppingItem(10000000);
+
+        // Then
+        Assertions.assertEquals(404, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_deleteFailed() throws BackendException {
+        // GIVEN
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        ShoppingItemEntity item = new ShoppingItemEntity(1, "label", roommateEntity);
+        ShoppingQuantityEntity itemQuantity = new ShoppingQuantityEntity(item, 10, flatshareEntity);
+
+        itemQuantity.setId_quantity(67);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any())).thenReturn(false);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Assertions.assertEquals(500, resp.getStatus());
+    }
+
+    @Test
+    void deleteShopItem_Success() throws BackendException {
+        // GIVEN
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        RoommateEntity rmte = new RoommateEntity("test@test.be", "password", "test", "test", "012345678", flatshareEntity);
+        ShoppingItemEntity item = new ShoppingItemEntity(2, "label", rmte);
+        ShoppingQuantityEntity itemQuantity = new ShoppingQuantityEntity(item, 10, flatshareEntity);
+        itemQuantity.setId_quantity(67);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
+
+        // WHEN
+        Response resp = shoppingItemResource.deleteShoppingItem(67);
+
+        // THEN
+        Assertions.assertEquals(200, resp.getStatus());
+    }
 }
