@@ -31,11 +31,15 @@ public class ExpenseResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         List<ExpenseEntity> expenses = flatshareEntity.getExpenses();
+        float totalExpenses = flatshareEntity.getTotalExpenses();
 
         if (email != null) {
             RoommateEntity roommateEntity = flatshareEntity.getRoommate(email);
-            if (roommateEntity != null)
-                expenses = flatshareEntity.getExpenses().stream().filter(e -> e.getRoommate().equals(roommateEntity)).collect(Collectors.toList());
+            if (roommateEntity == null)
+                return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
+
+            expenses = flatshareEntity.getExpenses().stream().filter(e -> e.getRoommate().equals(roommateEntity)).collect(Collectors.toList());
+            totalExpenses = roommateEntity.getTotalExpenses();
         }
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -50,7 +54,7 @@ public class ExpenseResource {
                 entity.getRoommate().getEmail()
         )).collect(Collectors.toList());
 
-        ListExpenseResponseDto responseDto = new ListExpenseResponseDto(flatshareEntity.getTotalExpenses(), expenseDtos);
+        ListExpenseResponseDto responseDto = new ListExpenseResponseDto(totalExpenses, expenseDtos);
 
         return Response.status(200).entity(responseDto).build();
     }

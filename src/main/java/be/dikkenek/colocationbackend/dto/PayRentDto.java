@@ -5,6 +5,9 @@ public class PayRentDto {
     private int month;
     private int year;
 
+    public PayRentDto() {
+    }
+
     public PayRentDto(String email, int month, int year) {
         setEmail(email);
         setMonth(month);
