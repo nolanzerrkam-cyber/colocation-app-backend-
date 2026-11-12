@@ -1,15 +1,12 @@
 package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
-import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
 import be.dikkenek.colocationbackend.dto.GetExpenseDto;
 import be.dikkenek.colocationbackend.dto.ListExpenseResponseDto;
 import be.dikkenek.colocationbackend.entity.ExpenseEntity;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -22,10 +19,6 @@ import java.util.stream.Collectors;
 
 @Path("/expense")
 public class ExpenseResource {
-    @Inject
-    private ExpenseDao expenseDao;
-    @Inject
-    private UserDao userDao;
     @Inject
     private FlatshareDao flatshareDao;
 
@@ -40,11 +33,9 @@ public class ExpenseResource {
         List<ExpenseEntity> expenses = flatshareEntity.getExpenses();
 
         if (email != null) {
-            UserEntity userEntity = UserEntity.get(userDao, email);
-            if (userEntity instanceof RoommateEntity) {
-                RoommateEntity roommateEntity = (RoommateEntity) userEntity;
+            RoommateEntity roommateEntity = flatshareEntity.getRoommate(email);
+            if (roommateEntity != null)
                 expenses = flatshareEntity.getExpenses().stream().filter(e -> e.getRoommate().equals(roommateEntity)).collect(Collectors.toList());
-            }
         }
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -69,7 +60,12 @@ public class ExpenseResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteExpense(@PathParam("id") int id) throws BackendException {
-        ExpenseEntity expense = ExpenseEntity.get(expenseDao, id);
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
+
+        ExpenseEntity expense = flatshareEntity.getExpense(id);
 
         if (expense == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -77,7 +73,6 @@ public class ExpenseResource {
                     .build();
         }
 
-        FlatshareEntity flatshareEntity = expense.getRoommate().getFlatshare();
         flatshareEntity.removeExpense(expense);
 
         boolean isUpdated = flatshareEntity.update(flatshareDao);
@@ -93,13 +88,12 @@ public class ExpenseResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postExpense(ExpenseInsertDto dto) throws BackendException {
-        UserEntity user = UserEntity.get(userDao, dto.getEmail());
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
 
-        if (!(user instanceof RoommateEntity)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Only roommates can add expenses !").build();
-        }
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        RoommateEntity roommateEntity = (RoommateEntity) user;
+        RoommateEntity roommateEntity = flatshareEntity.getRoommate(dto.getEmail());
 
         // ExpenseEntity constructor automatically adds the expense in the roommate's flatshare
         new ExpenseEntity(dto.getLabel(), dto.getPrice(), roommateEntity);
