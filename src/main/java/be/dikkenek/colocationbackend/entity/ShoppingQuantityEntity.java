@@ -16,7 +16,7 @@ public class ShoppingQuantityEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_quantity;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ShoppingItemEntity item;
 
     @Column(name = "quantity")
