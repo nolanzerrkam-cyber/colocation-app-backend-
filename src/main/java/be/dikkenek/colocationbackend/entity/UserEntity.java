@@ -83,6 +83,8 @@ public abstract class UserEntity {
         this.phonenumber = phonenumber;
     }
 
+    //Constructeurs
+
     public UserEntity() {
     }
 
@@ -93,6 +95,9 @@ public abstract class UserEntity {
         setLastname(lastname);
         setPhonenumber(phonenumber);
     }
+
+
+    //Méthodes
 
     public boolean create(UserDao userDao) throws BackendException {
         return userDao.create(this);

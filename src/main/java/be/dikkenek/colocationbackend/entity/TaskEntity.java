@@ -38,40 +38,12 @@ public class TaskEntity {
     @JoinColumn(name = "id_flatshare")
     private FlatshareEntity flatshare;
 
-    public TaskEntity() {
-    }
-
-    public TaskEntity(String name, String description, boolean isDone, Date deadline, RoommateEntity roommate) throws BackendException {
-        setName(name);
-        setDescription(description);
-        setIsDone(isDone);
-        setDeadline(deadline);
-        setRoommate(roommate);
-        setFlatshare(roommate.getFlatshare());
-    }
-
     public FlatshareEntity getFlatshare() {
         return flatshare;
     }
 
     public void setFlatshare(FlatshareEntity flatshare) {
         this.flatshare = flatshare;
-    }
-
-    public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
-        return taskDao.getAll();
-    }
-
-    public static TaskEntity get(TaskDao taskDao, int id) throws BackendException {
-        return taskDao.get(id).orElse(null);
-    }
-
-    public boolean create(TaskDao taskDao) throws BackendException {
-        return taskDao.create(this);
-    }
-
-    public boolean update(TaskDao taskDao) throws BackendException {
-        return taskDao.update(this);
     }
 
     public int getId_task() {
@@ -104,10 +76,6 @@ public class TaskEntity {
         return isDone;
     }
 
-    public void turnIsDone() {
-        isDone = !isDone;
-    }
-
     public void setIsDone(boolean isDone) {
         this.isDone = isDone;
     }
@@ -135,6 +103,35 @@ public class TaskEntity {
             this.roommate = roommate;
             roommate.getFlatshare().addTask(this);
         }
+    }
+
+    //Constructeurs
+
+    public TaskEntity() {
+    }
+
+    public TaskEntity(String name, String description, boolean isDone, Date deadline, RoommateEntity roommate) throws BackendException {
+        setName(name);
+        setDescription(description);
+        setIsDone(isDone);
+        setDeadline(deadline);
+        setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
+    }
+
+    //Méthodes
+
+
+    public static TaskEntity get(TaskDao taskDao, int id) throws BackendException {
+        return taskDao.get(id).orElse(null);
+    }
+
+    public boolean create(TaskDao taskDao) throws BackendException {
+        return taskDao.create(this);
+    }
+
+    public boolean update(TaskDao taskDao) throws BackendException {
+        return taskDao.update(this);
     }
 
     @Override
