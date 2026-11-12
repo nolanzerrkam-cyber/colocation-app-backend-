@@ -10,17 +10,19 @@ public class TaskResponseDto {
     private boolean isDone;
     private String deadline;
     private String roommateFullName;
+    private String roommateEmail;
 
     public TaskResponseDto() {
     }
 
-    public TaskResponseDto(int id, String name, String description, boolean isDone, String deadline, String roommateFullName) {
+    public TaskResponseDto(int id, String name, String description, boolean isDone, String deadline, String roommateFullName, String roommateEmail) {
         setId(id);
         setName(name);
         setDescription(description);
         setIsDone(isDone);
         setDeadline(deadline);
         setRoommateFullName(roommateFullName);
+        setRoommateEmail(roommateEmail);
     }
 
     public int getId() {
@@ -70,5 +72,13 @@ public class TaskResponseDto {
 
     public void setRoommateFullName(String roommateFullName) {
         this.roommateFullName = roommateFullName;
+    }
+
+    public String getRoommateEmail() {
+        return roommateEmail;
+    }
+
+    public void setRoommateEmail(String roommateEmail) {
+        this.roommateEmail = roommateEmail;
     }
 }

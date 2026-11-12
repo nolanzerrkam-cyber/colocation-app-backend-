@@ -35,7 +35,8 @@ public class TaskResource {
                         t.getDescription(),
                         t.isDone(),
                         t.getDeadline().toString(),
-                        t.getRoommate().getFullName()))
+                        t.getRoommate().getFullName(),
+                        t.getRoommate().getEmail()))
                 .collect(Collectors.toList());
 
         return Response.status(200).entity(taskResponseDtos).build();
