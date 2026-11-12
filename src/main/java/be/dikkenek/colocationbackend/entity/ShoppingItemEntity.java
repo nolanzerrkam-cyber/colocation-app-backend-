@@ -1,6 +1,5 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
@@ -12,23 +11,27 @@ import java.util.Objects;
 @Table(name = "SHOPPING_ITEM")
 public class ShoppingItemEntity {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_shopping", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    // For now, the name will stay libelle,
+    private int id_shopping;
+
     @Column(name = "label")
     private String label;
-    @Column(name = "quantity")
-    private int quantity;
+
     @ManyToOne
+    @JoinColumn(name = "ROOMMATE_EMAIL")
     private RoommateEntity roommate;
 
-    public int getId() {
-        return id;
+
+    public int getId_shopping() {
+        return id_shopping;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId_shopping(int id_shopping) throws BackendException {
+        if (id_shopping < 0) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "id cannot be negative");
+        }
+        this.id_shopping = id_shopping;
     }
 
     public String getLabel() {
@@ -42,77 +45,51 @@ public class ShoppingItemEntity {
         this.label = label;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) throws BackendException {
-        if (quantity <= 0) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "Quantity must be positive");
-        }
-        this.quantity = quantity;
-    }
-
     public RoommateEntity getRoommate() {
         return roommate;
     }
 
     public void setRoommate(RoommateEntity roommate) throws BackendException {
-        if (roommate == null) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "roommate is null");
+        if (roommate == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Roommate is null");
+
+        if (!roommate.equals(this.roommate)) {
+            this.roommate = roommate;
         }
-        this.roommate = roommate;
     }
+
+    //Constructeurs
 
     public ShoppingItemEntity() {
     }
 
-    public ShoppingItemEntity( String label, int quantity, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity(String label, RoommateEntity roommate) throws BackendException {
         setLabel(label);
-        setQuantity(quantity);
         setRoommate(roommate);
-        roommate.addItem(this);
     }
 
-    public ShoppingItemEntity(int id, String label, int quantity, RoommateEntity roommate) throws BackendException {
-        this(label,quantity,roommate);
-        setId(id);
-    }
-
-    //Méthodes
-
-    public static List<ShoppingItemEntity> getAll(ShoppingItemDao dao) throws BackendException {
-        return dao.getAll();
-    }
-
-    public static ShoppingItemEntity get(ShoppingItemDao dao, int id) throws BackendException
-    {
-        return dao.get(id).orElse(null);
+    public ShoppingItemEntity(int id_shopping, String label, RoommateEntity roommate) throws BackendException {
+        this(label, roommate);
+        setId_shopping(id_shopping);
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id == that.id && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
-    }
-
-    public boolean create(ShoppingItemDao dao) throws BackendException
-    {
-        return dao.create(this);
+        return id_shopping == that.id_shopping && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, quantity, roommate);
+        return Objects.hash(id_shopping, label, roommate);
     }
 
     @Override
     public String toString() {
         return "ShoppingItemEntity{" +
-                "id=" + id +
+                "id_shopping=" + id_shopping +
                 ", label='" + label + '\'' +
-                ", quantity=" + quantity +
                 ", roommate=" + roommate +
                 '}';
     }

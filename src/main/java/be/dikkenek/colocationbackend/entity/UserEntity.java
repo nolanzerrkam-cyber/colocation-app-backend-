@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Entity
@@ -35,7 +35,7 @@ public abstract class UserEntity {
 
     public void setEmail(String email) throws BackendException {
         final String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        if(!Pattern.compile(emailRegex).matcher(email).matches())
+        if (!Pattern.compile(emailRegex).matcher(email).matches())
             throw new BackendException(Response.Status.BAD_REQUEST, "Email is not valid");
         this.email = email;
     }
@@ -44,10 +44,12 @@ public abstract class UserEntity {
         return password;
     }
 
+    // Much easier like this to have a hashed password
     public void setPassword(String password) throws BackendException {
-        if(password.length() < 8)
+        if (password == null || password.length() < 8)
             throw new BackendException(Response.Status.BAD_REQUEST, "Password must contain at least 8 characters");
-        this.password = password;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        this.password = encoder.encode(password);
     }
 
     public String getFirstname() {
@@ -55,7 +57,7 @@ public abstract class UserEntity {
     }
 
     public void setFirstname(String firstname) throws BackendException {
-        if(firstname.isEmpty())
+        if (firstname.isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "Firstname cannot be empty");
         this.firstname = firstname;
     }
@@ -65,7 +67,7 @@ public abstract class UserEntity {
     }
 
     public void setLastname(String lastname) throws BackendException {
-        if(lastname.isEmpty())
+        if (lastname.isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "Lastname cannot be empty");
         this.lastname = lastname;
     }
@@ -75,10 +77,12 @@ public abstract class UserEntity {
     }
 
     public void setPhonenumber(String phonenumber) throws BackendException {
-        if(phonenumber.isEmpty())
+        if (phonenumber.isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "Phonenumber cannot be empty");
         this.phonenumber = phonenumber;
     }
+
+    //Constructeurs
 
     public UserEntity() {
     }
@@ -91,14 +95,11 @@ public abstract class UserEntity {
         setPhonenumber(phonenumber);
     }
 
-    public boolean create(UserDao userDao) throws BackendException {
-        return userDao.create(this);
-    }
 
-    public static UserEntity get(UserDao userDao, String email) throws BackendException
-    {
-        if(email == null || email.trim().isEmpty())
-        {
+    //Méthodes
+
+    public static UserEntity get(UserDao userDao, String email) throws BackendException {
+        if (email == null || email.trim().isEmpty()) {
             throw new BackendException(Response.Status.BAD_REQUEST, "An email should never be null.");
         }
         return userDao.get(email).orElse(null);
@@ -108,18 +109,39 @@ public abstract class UserEntity {
         return userDao.delete(this);
     }
 
-    public boolean update(UserDao userDao) throws BackendException {
-        return userDao.update(this);
-    }
+    public boolean verifyPassword(String rawPassword) {
+        if (password == null || rawPassword == null)
+            return false;
 
-    public boolean verifyPassword(String rawPassword)
-    {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
         return encoder.matches(rawPassword, this.getPassword());
     }
 
     public String getFullName() {
         return firstname + " " + lastname;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UserEntity)) return false;
+        UserEntity that = (UserEntity) o;
+        return Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(firstname, that.firstname) && Objects.equals(lastname, that.lastname) && Objects.equals(phonenumber, that.phonenumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, password, firstname, lastname, phonenumber);
+    }
+
+    /* I have deleted the password from the toString because it was showing the hash */
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", phonenumber='" + phonenumber + '\'' +
+                '}';
     }
 }

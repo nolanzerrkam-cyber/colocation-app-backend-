@@ -1,12 +1,10 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -15,8 +13,8 @@ public class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id_task")
+    private int id_task;
 
     @Column(name = "name")
     private String name;
@@ -34,40 +32,24 @@ public class TaskEntity {
     @JoinColumn(name = "email", nullable = false)
     private RoommateEntity roommate;
 
-    public TaskEntity() {
+    @ManyToOne
+    @JoinColumn(name = "id_flatshare")
+    private FlatshareEntity flatshare;
+
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
     }
 
-    public TaskEntity(String name, String description, boolean isDone, Date deadline, RoommateEntity roommate) throws BackendException {
-        setName(name);
-        setDescription(description);
-        setIsDone(isDone);
-        setDeadline(deadline);
-        setRoommate(roommate);
-        roommate.addTask(this);
+    public void setFlatshare(FlatshareEntity flatshare) {
+        this.flatshare = flatshare;
     }
 
-    public static List<TaskEntity> getAllTasks(TaskDao taskDao) throws BackendException {
-        return taskDao.getAll();
+    public int getId_task() {
+        return id_task;
     }
 
-    public static TaskEntity get(TaskDao taskDao, int id) throws BackendException {
-        return taskDao.get(id).orElse(null);
-    }
-
-    public boolean create(TaskDao taskDao) throws BackendException {
-        return taskDao.create(this);
-    }
-
-    public boolean update(TaskDao taskDao) throws BackendException{
-        return taskDao.update(this);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setId_task(int id_task) {
+        this.id_task = id_task;
     }
 
     public String getName() {
@@ -75,7 +57,7 @@ public class TaskEntity {
     }
 
     public void setName(String name) throws BackendException {
-        if (name.isEmpty())
+        if (name == null || name.isEmpty())
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: Task name must not be empty.");
         this.name = name;
     }
@@ -90,10 +72,6 @@ public class TaskEntity {
 
     public boolean isDone() {
         return isDone;
-    }
-
-    public void turnIsDone() {
-        isDone = !isDone;
     }
 
     public void setIsDone(boolean isDone) {
@@ -117,29 +95,50 @@ public class TaskEntity {
     public void setRoommate(RoommateEntity roommate) throws BackendException {
         if (roommate == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
-        this.roommate = roommate;
+
+        if (!roommate.equals(this.roommate)) {
+            if (this.roommate != null) this.roommate.getFlatshare().removeTask(this);
+            this.roommate = roommate;
+            roommate.getFlatshare().addTask(this);
+        }
+    }
+
+    //Constructeurs
+
+    public TaskEntity() {
+    }
+
+    public TaskEntity(String name, String description, boolean isDone, Date deadline, RoommateEntity roommate) throws BackendException {
+        setName(name);
+        setDescription(description);
+        setIsDone(isDone);
+        setDeadline(deadline);
+        setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof TaskEntity)
-            return o.toString().equals(toString());
-        return false;
+        if (!(o instanceof TaskEntity)) return false;
+        TaskEntity that = (TaskEntity) o;
+        return id_task == that.id_task && isDone == that.isDone && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(deadline, that.deadline) && Objects.equals(roommate, that.roommate) && Objects.equals(flatshare, that.flatshare);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, isDone, deadline);
+        return Objects.hash(id_task, name, description, isDone, deadline, roommate, flatshare);
     }
 
     @Override
     public String toString() {
         return "TaskEntity{" +
-                "id=" + id +
+                "id_task=" + id_task +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", isDone=" + isDone +
                 ", deadline=" + deadline +
+                ", roommate=" + roommate +
+                ", flatshare=" + flatshare +
                 '}';
     }
 }

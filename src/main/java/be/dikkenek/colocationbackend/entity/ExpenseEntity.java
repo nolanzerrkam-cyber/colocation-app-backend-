@@ -1,30 +1,24 @@
 package be.dikkenek.colocationbackend.entity;
-import be.dikkenek.colocationbackend.dao.Dao;
-import be.dikkenek.colocationbackend.dao.ExpenseDao;
+
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-import java.math.BigDecimal;
-import java.time.*;
 import java.util.Objects;
-import java.util.Optional;
 
 @Entity
-@Table(name ="EXPENSE")
+@Table(name = "EXPENSE")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ExpenseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_expense")
-    private int id;
+    private int id_expense;
 
-    @Column(name = "libele", nullable = false, length = 100)
+    @Column(name = "label", nullable = false, length = 100)
     private String label;
 
     @Column(name = "price", nullable = false, columnDefinition = "NUMBER(10,2)")
@@ -34,39 +28,52 @@ public class ExpenseEntity {
     private Date date_expense;
 
     @ManyToOne
-    // gère la relation en BD
+    @JoinColumn(name = "id_flatshare")
+    private FlatshareEntity flatshare;
+
+    @ManyToOne
     @JoinColumn(name = "Email", nullable = false)
-    private RoommateEntity roomate;
+    private RoommateEntity roommate;
 
     public ExpenseEntity() {
     }
 
-    public ExpenseEntity(String label, float price, RoommateEntity roomate) throws BackendException{
+    public ExpenseEntity(String label, float price, RoommateEntity roommate) throws BackendException {
         setLabel(label);
         setPrice(price);
         setDate();
-        setRoomate(roomate);
-        if (roomate != null && !roomate.getExpenses().contains(this)) {
-            roomate.getExpenses().add(this);
-        }
+        setRoommate(roommate);
+        setFlatshare(roommate.getFlatshare());
     }
 
-    public int getId() {
-        return id;
+    public FlatshareEntity getFlatshare() {
+        return flatshare;
     }
 
-    private void setId(int id) {
-        this.id = id;
+    public void setFlatshare(FlatshareEntity flatshare) {
+        this.flatshare = flatshare;
+    }
+
+    public int getId_expense() {
+        return id_expense;
+    }
+
+    private void setId_expense(int id_expense) {
+        this.id_expense = id_expense;
     }
 
     public String getLabel() {
         return label;
     }
 
-    private void setLabel(String label) throws BackendException{
+    private void setLabel(String label) throws BackendException {
         if (label == null || label.isEmpty()) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "label cannot be null or empty");
+            throw new BackendException(Response.Status.BAD_REQUEST, "Label can't be null or empty");
         }
+
+        if (label.length() > 100)
+            throw new BackendException(Response.Status.BAD_REQUEST, "Label must be lower than 100 characters");
+
         this.label = label;
     }
 
@@ -76,7 +83,7 @@ public class ExpenseEntity {
 
     private void setPrice(float price) throws BackendException {
         if (price <= 0) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "price cannot be negative");
+            throw new BackendException(Response.Status.BAD_REQUEST, "The price cannot be below or equal to zero.");
         }
         this.price = price;
     }
@@ -85,28 +92,23 @@ public class ExpenseEntity {
         return date_expense;
     }
 
-    private void setDate() {this.date_expense = new Date();}
-
-    public RoommateEntity getRoomate() {
-        return roomate;
+    private void setDate() {
+        this.date_expense = new Date();
     }
 
-    public void setRoomate(RoommateEntity roomate) {
-        this.roomate = roomate;
+    public RoommateEntity getRoommate() {
+        return roommate;
     }
 
-    public static List<ExpenseEntity> findAll(ExpenseDao expenseDao) throws BackendException
-    //fonction qui va appeler le DAO pour recuperer toute les depenses
-    {
-        return expenseDao.getAll();
-    }
+    public void setRoommate(RoommateEntity roommate) throws BackendException {
+        if (roommate == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "The roommate has to exist.");
 
-    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException{
-        return dao.get(id).orElse(null);
-    }
-    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException
-    {
-        return dao.create(this);
+        if (!roommate.equals(this.roommate)) {
+            if (this.roommate != null) this.roommate.getFlatshare().removeExpense(this);
+            this.roommate = roommate;
+            roommate.getFlatshare().addExpense(this);
+        }
     }
 
     @Override
@@ -124,11 +126,11 @@ public class ExpenseEntity {
     @Override
     public String toString() {
         return "ExpenseEntity{" +
-                "id=" + id +
+                "id_expense=" + id_expense +
                 ", label='" + label + '\'' +
                 ", price=" + price +
                 ", date=" + getDate() +
-                ", roommateEmail=" + (getRoomate() != null ? getRoomate().getEmail() : "null") +
+                ", roommateEmail=" + (getRoommate() != null ? getRoommate().getEmail() : "null") +
                 '}';
     }
 }
