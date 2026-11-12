@@ -203,6 +203,14 @@ public class FlatshareEntity {
                 .orElse(null);
     }
 
+    public ExpenseEntity getExpense(int id) {
+        return getExpenses().stream().filter(e -> e.getId_expense() == id).findFirst().orElse(null);
+    }
+
+    public TaskEntity getTask(int id) {
+        return getTasks().stream().filter(t -> t.getId_task() == id).findFirst().orElse(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof FlatshareEntity)) return false;
