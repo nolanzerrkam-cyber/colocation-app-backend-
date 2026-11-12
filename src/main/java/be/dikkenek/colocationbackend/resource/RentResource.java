@@ -2,6 +2,7 @@ package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
+import be.dikkenek.colocationbackend.dto.PayRentDto;
 import be.dikkenek.colocationbackend.dto.RentResponseDto;
 import be.dikkenek.colocationbackend.dto.RentRoommateDto;
 import be.dikkenek.colocationbackend.dto.RentUpdateDto;
@@ -39,7 +40,7 @@ public class RentResource {
     @GET
     @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRentRoommate(@PathParam("email") String email ) throws BackendException {
+    public Response getRentRoommate(@PathParam("email") String email) throws BackendException {
         FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
@@ -47,7 +48,7 @@ public class RentResource {
                 .filter(r -> r.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
-        if(roommate == null){
+        if (roommate == null) {
             return Response.status(405).entity("roommate not found").build();
         }
 
@@ -93,20 +94,17 @@ public class RentResource {
         return Response.status(200).entity(isRentPaidDictionary).build();
     }
 
-    @GET
+    @PUT
     @Path("/payRent")
-    public Response payRent(@QueryParam("email") String email, @QueryParam("month") Integer month, @QueryParam("year") Integer year) throws BackendException {
-        if(email == null || month == null || year == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required params : email, month (1 -> 12), year").build();
-
-        UserEntity userEntity = UserEntity.get(userDao, email);
+    public Response payRent(PayRentDto dto) throws BackendException {
+        UserEntity userEntity = UserEntity.get(userDao, dto.getEmail());
         if (!(userEntity instanceof RoommateEntity))
             return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
 
         RoommateEntity roommateEntity = (RoommateEntity) userEntity;
-        roommateEntity.payRent(month, year);
+        roommateEntity.payRent(dto.getMonth(), dto.getYear());
 
-        if(flatshareDao.update(roommateEntity.getFlatshare()))
+        if (flatshareDao.update(roommateEntity.getFlatshare()))
             return Response.status(200).build();
 
         return Response.status(500).entity("Error when paying rent").build();
