@@ -210,6 +210,10 @@ public class FlatshareEntity {
         return getTasks().stream().filter(t -> t.getId_task() == id).findFirst().orElse(null);
     }
 
+    public ShoppingQuantityEntity getItem(int id) {
+        return getShoppingQuantityItems().stream().filter(i -> i.getId_quantity() == id).findFirst().orElse(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof FlatshareEntity)) return false;

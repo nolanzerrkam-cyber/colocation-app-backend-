@@ -1,7 +1,6 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
-import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
@@ -25,8 +24,6 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class ShoppingItemResourceTest {
 
-//    @Mock
-//    private ShoppingItemDao itemDao;
 //    @Mock
 //    private FlatshareDao flatshareDao;
 //    @Mock

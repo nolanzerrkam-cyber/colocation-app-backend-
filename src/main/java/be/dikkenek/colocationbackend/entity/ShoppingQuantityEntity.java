@@ -1,7 +1,5 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
-import be.dikkenek.colocationbackend.dao.ShoppingQuantityDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
@@ -30,7 +28,7 @@ public class ShoppingQuantityEntity {
     public ShoppingQuantityEntity() {
     }
 
-    public ShoppingQuantityEntity(ShoppingItemEntity item, int quantity, FlatshareEntity flatshare) throws BackendException{
+    public ShoppingQuantityEntity(ShoppingItemEntity item, int quantity, FlatshareEntity flatshare) throws BackendException {
         setShoppingItem(item);
         setQuantity(quantity);
         setFlatshare(flatshare);
@@ -42,9 +40,8 @@ public class ShoppingQuantityEntity {
     }
 
     public void setId_quantity(int id_quantity) throws BackendException {
-        if(id_quantity < 0)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST,"id cannot be negative");
+        if (id_quantity < 0) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "id cannot be negative");
         }
         this.id_quantity = id_quantity;
     }
@@ -54,9 +51,8 @@ public class ShoppingQuantityEntity {
     }
 
     public void setShoppingItem(ShoppingItemEntity item) throws BackendException {
-        if(item == null)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST,"shopping item cannot be null");
+        if (item == null) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "shopping item cannot be null");
         }
         this.item = item;
     }
@@ -77,18 +73,11 @@ public class ShoppingQuantityEntity {
     }
 
     public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
-        if(flatshare == null)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST,"flatshare cannot be null");
+        if (flatshare == null) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "flatshare cannot be null");
         }
         this.flatshare = flatshare;
         flatshare.addItem(this);
-    }
-    /*function*/
-
-    public static ShoppingQuantityEntity get(ShoppingQuantityDao dao, int id) throws BackendException
-    {
-        return dao.get(id).orElse(null);
     }
 
     @Override

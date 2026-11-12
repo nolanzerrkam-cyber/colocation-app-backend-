@@ -1,9 +1,6 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
-import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
-import be.dikkenek.colocationbackend.dao.ShoppingQuantityDao;
-import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ShoppingItemGetDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.dto.ShoppingItemPostDto;
@@ -23,10 +20,6 @@ import java.util.stream.Collectors;
 public class ShoppingItemResource {
     @Inject
     private FlatshareDao flatshareDao;
-    @Inject
-    private ShoppingQuantityDao itemDao;
-    @Inject
-    private UserDao userDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -36,13 +29,7 @@ public class ShoppingItemResource {
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingQuantityItems().stream()
-                .map(entity -> new ShoppingItemGetDto(
-                        entity.getId_quantity(),
-                        entity.getItem().getLabel(),
-                        entity.getQuantity(),
-                        entity.getItem().getRoommate().getEmail()))
-                .collect(Collectors.toList());
+        List<ShoppingItemGetDto> shoppingItemGetDtos = flatshareEntity.getShoppingQuantityItems().stream().map(entity -> new ShoppingItemGetDto(entity.getId_quantity(), entity.getItem().getLabel(), entity.getQuantity(), entity.getItem().getRoommate().getEmail())).collect(Collectors.toList());
 
         return Response.status(Response.Status.OK).entity(shoppingItemGetDtos).build();
     }
@@ -54,42 +41,37 @@ public class ShoppingItemResource {
         FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
         if (flatshareEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
-        RoommateEntity roommate = flatshareEntity.getRoommates().stream()
-                .filter(r -> r.getEmail().equals(dto.getRoommateId()))
-                .findFirst()
-                .orElse(null);
+        RoommateEntity roommate = flatshareEntity.getRoommate(dto.getRoommateId());
         if (roommate == null) {
-            return Response.status(405).entity("roommate not found").build();
+            return Response.status(405).entity("Roommate not found").build();
         }
         // ShoppingItemEntity constructor automatically adds the shopping item in the flatshare shopping items list
         ShoppingItemEntity shoppingItem = new ShoppingItemEntity(dto.getLabel(), roommate);
-        new ShoppingQuantityEntity(shoppingItem, dto.getQuantity(),flatshareEntity);
+        new ShoppingQuantityEntity(shoppingItem, dto.getQuantity(), flatshareEntity);
 
         boolean isCreated = flatshareEntity.update(flatshareDao);
 
         if (!isCreated)
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to create item")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to create item").build();
 
-        return Response.status(Response.Status.CREATED)
-                .build();
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE
     @Path("/{id_shopItem}")
     public Response deleteShoppingItem(@PathParam("id_shopItem") int id) throws BackendException {
-        ShoppingQuantityEntity shoppingItem = ShoppingQuantityEntity.get(itemDao, id);
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        if(shoppingItem == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("We couldn't found your shopping item.").build();
+        ShoppingQuantityEntity shoppingItem = flatshareEntity.getItem(id);
+        if (shoppingItem == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("We couldn't find your shopping item.").build();
         }
 
-        FlatshareEntity flatshareEntity = shoppingItem.getItem().getRoommate().getFlatshare();
         flatshareEntity.removeItem(shoppingItem);
 
-        if(flatshareEntity.update(flatshareDao))
-            return Response.status(Response.Status.OK).build();
+        if (flatshareEntity.update(flatshareDao)) return Response.status(Response.Status.OK).build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("We failed to delete your shopping item.").build();
     }
