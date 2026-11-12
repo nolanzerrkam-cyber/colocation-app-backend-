@@ -6,11 +6,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.ws.rs.core.Response;
 
 @Entity(name = "Landlord")
-public class LandlordEntity extends UserEntity
-{
-    // I had to modify this entity. There was nothing in it !
-    // No flatshare means that the landlord is not linked to the flatshare...
-    // For now, this is a prototype, but we have to look at this...
+public class LandlordEntity extends UserEntity {
     @OneToOne
     private FlatshareEntity flatshare;
 
@@ -19,23 +15,18 @@ public class LandlordEntity extends UserEntity
         setFlatshare(flatshare);
     }
 
-    public LandlordEntity()
-    {
-
+    public LandlordEntity() {
     }
 
-    public FlatshareEntity getFlatshare()
-    {
+    public FlatshareEntity getFlatshare() {
         return flatshare;
     }
 
     public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
         if (flatshare == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "Flatshare cannot be null");
-        // Forced to do this because the variable flatshare is still null when passing
-        // though this condition.
-        if(!flatshare.equals(this.getFlatshare()))
-        {
+
+        if (!flatshare.equals(this.getFlatshare())) {
             this.flatshare = flatshare;
             flatshare.setLandlord(this);
         }
