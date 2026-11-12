@@ -36,8 +36,8 @@ public class TaskResourceTest {
         // Given
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
-        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
+        new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
         Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
 
         // When
@@ -52,8 +52,8 @@ public class TaskResourceTest {
         // Given
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
-        RoommateEntity roommateEntity = new RoommateEntity("email@email.com","password","firstname","lastname", "0404040404", flatshareEntity);
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
+        new RoommateEntity("email@email.com", "password", "firstname", "lastname", "0404040404", flatshareEntity);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
         Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
         // When
@@ -66,21 +66,23 @@ public class TaskResourceTest {
     @Test
     void testPostTask_user_not_found() throws BackendException {
         // Given
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
         TaskRequestDto inputTask = new TaskRequestDto("Task name", "Task description", false, new Date(), "email@email.com");
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.empty());
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
         Response response = taskResource.postTask(inputTask);
 
         // Then
-        Assertions.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(404, response.getStatus());
     }
 
     @Test
     void test_deleteTask_not_found() throws BackendException {
         // Given
         int id = 0;
-        Mockito.when(taskDao.get(Mockito.any(Integer.class))).thenReturn(Optional.empty());
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
         Response response = taskResource.deleteTask(id);
@@ -88,18 +90,18 @@ public class TaskResourceTest {
         // Then
         Assertions.assertEquals(404, response.getStatus());
     }
+
     @Test
     void testValidateTask_Success() throws BackendException {
         // Given
         int taskId = 1;
         TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
-        TaskEntity existingTask = new TaskEntity();
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
-
-        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(true);
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234", flatshareEntity);
+        TaskEntity existingTask = new TaskEntity("Updated name", "Updated description", true, new Date(), roommateEntity);
+        existingTask.setId_task(1);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any())).thenReturn(true);
 
         // When
         Response response = taskResource.validateTask(taskId, inputData);
@@ -113,8 +115,8 @@ public class TaskResourceTest {
         // Given
         int taskId = 99;
         TaskRequestDto inputData = new TaskRequestDto("Name", "Description", false, new Date());
-
-        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.empty());
+        FlatshareEntity flatshareEntity = new FlatshareEntity();
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
         Response response = taskResource.validateTask(taskId, inputData);
@@ -128,13 +130,12 @@ public class TaskResourceTest {
         // Given
         int taskId = 1;
         TaskRequestDto inputData = new TaskRequestDto("Updated name", "Updated description", true, new Date(), "email@email.com");
-        TaskEntity existingTask = new TaskEntity();
         FlatshareEntity flatshareEntity = new FlatshareEntity();
-        RoommateEntity roommateEntity = new RoommateEntity("email1@email.com", "password", "a", "a", "0474998234", flatshareEntity);
-
-        Mockito.when(taskDao.get(taskId)).thenReturn(Optional.of(existingTask));
-        Mockito.when(userDao.get(Mockito.any(String.class))).thenReturn(Optional.of(roommateEntity));
-        Mockito.when(taskDao.update(Mockito.any(TaskEntity.class))).thenReturn(false);
+        RoommateEntity roommateEntity = new RoommateEntity("email@email.com", "password", "a", "a", "0474998234", flatshareEntity);
+        TaskEntity existingTask = new TaskEntity("Updated name", "Updated description", true, new Date(), roommateEntity);
+        existingTask.setId_task(1);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
+        Mockito.when(flatshareDao.update(Mockito.any())).thenReturn(false);
 
         // When
         Response response = taskResource.validateTask(taskId, inputData);

@@ -52,10 +52,13 @@ public class TaskResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         RoommateEntity roommateEntity = flatshareEntity.getRoommate(taskDto.getRoommateEmail());
+        if(roommateEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
+
         // TaskEntity constructor automatically adds the taskEntity in the RoommateEntity's tasks list
         new TaskEntity(taskDto.getName(), taskDto.getDescription(), taskDto.isDone(), taskDto.getDeadline(), roommateEntity);
 
-        boolean success = roommateEntity.getFlatshare().update(flatshareDao);
+        boolean success = flatshareEntity.update(flatshareDao);
         if (success)
             return Response.status(201).build();
 
@@ -72,6 +75,8 @@ public class TaskResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         TaskEntity taskEntity = flatshareEntity.getTask(id);
+        if (taskEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("TaskEntity not found").build();
 
         flatshareEntity.removeTask(taskEntity);
 
@@ -93,8 +98,10 @@ public class TaskResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         TaskEntity taskEntity = flatshareEntity.getTask(id);
-        RoommateEntity roommateEntity = flatshareEntity.getRoommate(data.getRoommateEmail());
+        if(taskEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Task not found").build();
 
+        RoommateEntity roommateEntity = flatshareEntity.getRoommate(data.getRoommateEmail());
         if (roommateEntity == null)
             return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
 

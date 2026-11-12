@@ -94,11 +94,13 @@ public class ExpenseResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
         RoommateEntity roommateEntity = flatshareEntity.getRoommate(dto.getEmail());
+        if (roommateEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
 
         // ExpenseEntity constructor automatically adds the expense in the roommate's flatshare
         new ExpenseEntity(dto.getLabel(), dto.getPrice(), roommateEntity);
 
-        if (roommateEntity.getFlatshare().update(flatshareDao)) {
+        if (flatshareEntity.update(flatshareDao)) {
             return Response.status(Response.Status.CREATED).entity("The expense has been created !").build();
         }
 
