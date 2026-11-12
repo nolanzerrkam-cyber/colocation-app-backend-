@@ -108,25 +108,25 @@ public class UserResource {
     @Path("/newPassword")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response resetPassword(PasswordResetDTO dto) throws BackendException {
-        // 1 : I have to get the userEntity, which is going to be the roommate who we change the password
-        UserEntity user = UserEntity.get(userDao, dto.getEmail());
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        // Here, we need to be sure that the oldPassword given in the dto is not null
-        // and actually matches with the actual password of the roommate.
-        if (dto.getOldPassword() == null || !user.verifyPassword(dto.getOldPassword())) {
+        RoommateEntity roommateEntity = flatshareEntity.getRoommate(dto.getEmail());
+        if (roommateEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Roommate not found").build();
+
+        if (!roommateEntity.verifyPassword(dto.getOldPassword())) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Sorry your password is incorrect, please try again or ask the landlord if you forgot your password.")
                     .build();
         }
 
-        // 2 : set the new password by updating the new one
-        // setPassword will now hash the password directly.
-        user.setPassword(dto.getNewPassword());
-        user.update(userDao);
-        return Response.status(Response.Status.OK).entity("The password has been reset !").build();
+        roommateEntity.setPassword(dto.getNewPassword());
+        if (flatshareEntity.update(flatshareDao))
+            return Response.status(Response.Status.OK).entity("The password has been reset !").build();
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("The password could not be reset").build();
     }
 
     // This method will only work if we have a landlord account and his correct password
@@ -135,30 +135,25 @@ public class UserResource {
     @PUT
     @Path("/newPassword/landlord")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response resetPasswordByLandlord(LandlordResetPasswordDto dto) throws BackendException
-    {
-        // We are getting the landlord with the email from the dto
-        UserEntity landlord = UserEntity.get(userDao, dto.getLandlordEmail());
+    public Response resetPasswordByLandlord(LandlordResetPasswordDto dto) throws BackendException {
+        FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
+        if (flatshareEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Flatshare not found").build();
 
-        // if the landlord is not from LandlordEntity OR the landlordPassword in the dto is null or if the landlord password in the dto is not equals to the current password, 401
-        if(!(landlord instanceof LandlordEntity) || dto.getLandlordPassword() == null || !landlord.verifyPassword(dto.getLandlordPassword()))
+        LandlordEntity landlord = flatshareEntity.getLandlord();
+        if (!landlord.verifyPassword(dto.getLandlordPassword()))
             return Response.status(Response.Status.UNAUTHORIZED).entity("The credentials are invalid.").build();
 
-        // Getting the exact roommate with the email
-        UserEntity roommate = UserEntity.get(userDao, dto.getRoommateEmail());
-
-        // Some check to be sure of the roommate
-        if(roommate == null)
+        RoommateEntity roommate = flatshareEntity.getRoommate(dto.getRoommateEmail());
+        if (roommate == null)
             return Response.status(Response.Status.NOT_FOUND).entity("The roommate you're trying to get has not been found.").build();
 
-        if(!(roommate instanceof RoommateEntity))
-            return Response.status(Response.Status.BAD_REQUEST).entity("This email is not from a roommate, try again with the correct email.").build();
-
-        // Setting the new password, which will be hashed directly.
         roommate.setPassword(dto.getNewPassword());
-        // We update the object so like that, the password is persisted and saved.
-        roommate.update(userDao);
-        return Response.status(Response.Status.OK).entity("Password of the roommate correctly changed !").build();
+
+        if (flatshareEntity.update(flatshareDao))
+            return Response.status(Response.Status.OK).entity("Password of the roommate correctly changed !").build();
+
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Password of the roommate could not be changed !").build();
     }
 }
 
