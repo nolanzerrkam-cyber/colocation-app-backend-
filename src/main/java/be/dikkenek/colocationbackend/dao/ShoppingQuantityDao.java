@@ -4,11 +4,13 @@ import be.dikkenek.colocationbackend.config.DatabaseConfig;
 import be.dikkenek.colocationbackend.entity.ShoppingItemEntity;
 import be.dikkenek.colocationbackend.entity.ShoppingQuantityEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Optional;
 
+@ApplicationScoped
 public class ShoppingQuantityDao implements Dao<ShoppingQuantityEntity, Integer>{
     public Optional<ShoppingQuantityEntity> get(Integer id) throws BackendException
     {
