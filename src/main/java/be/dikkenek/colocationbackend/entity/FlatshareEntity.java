@@ -23,7 +23,7 @@ public class FlatshareEntity {
     @ManyToOne
     private LandlordEntity landlord;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private RentEntity rent;
 
     @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
