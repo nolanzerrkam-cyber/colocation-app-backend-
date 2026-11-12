@@ -8,7 +8,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.ws.rs.core.Response;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -21,49 +20,6 @@ public class UserDao implements Dao<UserEntity, String> {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve user");
-        }
-    }
-
-    @Override
-    public boolean create(UserEntity entity) throws BackendException {
-        try (EntityManager man = DatabaseConfig.createEntityManager()) {
-            EntityTransaction tr = man.getTransaction();
-            try {
-                tr.begin();
-                man.persist(entity);
-                tr.commit();
-                return true;
-            } catch (Exception e) {
-                if (tr.isActive())
-                    tr.rollback();
-                e.printStackTrace();
-                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create user");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create user");
-        }
-    }
-
-    @Override
-    public boolean update(UserEntity entity) throws BackendException {
-        try (EntityManager man = DatabaseConfig.createEntityManager()) {
-            EntityTransaction tr = man.getTransaction();
-            try {
-                tr.begin();
-                man.merge(entity);
-                tr.commit();
-                return true;
-            } catch (Exception e) {
-                if (tr.isActive())
-                    tr.rollback();
-                e.printStackTrace();
-                throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to update user");
         }
     }
 
@@ -101,16 +57,6 @@ public class UserDao implements Dao<UserEntity, String> {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to delete user");
-        }
-    }
-
-    @Override
-    public List<UserEntity> getAll() throws BackendException {
-        try (EntityManager man = DatabaseConfig.createEntityManager()) {
-            return man.createQuery("SELECT u FROM UserEntity u", UserEntity.class).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve users list");
         }
     }
 }

@@ -98,10 +98,6 @@ public abstract class UserEntity {
 
     //Méthodes
 
-    public boolean create(UserDao userDao) throws BackendException {
-        return userDao.create(this);
-    }
-
     public static UserEntity get(UserDao userDao, String email) throws BackendException {
         if (email == null || email.trim().isEmpty()) {
             throw new BackendException(Response.Status.BAD_REQUEST, "An email should never be null.");
@@ -111,10 +107,6 @@ public abstract class UserEntity {
 
     public boolean delete(UserDao userDao) throws BackendException {
         return userDao.delete(this);
-    }
-
-    public boolean update(UserDao userDao) throws BackendException {
-        return userDao.update(this);
     }
 
     public boolean verifyPassword(String rawPassword) {

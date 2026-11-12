@@ -1,12 +1,10 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -99,7 +97,7 @@ public class TaskEntity {
             throw new BackendException(Response.Status.BAD_REQUEST, "Error: roommate cannot be null.");
 
         if (!roommate.equals(this.roommate)) {
-            if(this.roommate != null) this.roommate.getFlatshare().removeTask(this);
+            if (this.roommate != null) this.roommate.getFlatshare().removeTask(this);
             this.roommate = roommate;
             roommate.getFlatshare().addTask(this);
         }
@@ -119,31 +117,16 @@ public class TaskEntity {
         setFlatshare(roommate.getFlatshare());
     }
 
-    //Méthodes
-
-
-    public static TaskEntity get(TaskDao taskDao, int id) throws BackendException {
-        return taskDao.get(id).orElse(null);
-    }
-
-    public boolean create(TaskDao taskDao) throws BackendException {
-        return taskDao.create(this);
-    }
-
-    public boolean update(TaskDao taskDao) throws BackendException {
-        return taskDao.update(this);
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o instanceof TaskEntity)
-            return o.toString().equals(toString());
-        return false;
+        if (!(o instanceof TaskEntity)) return false;
+        TaskEntity that = (TaskEntity) o;
+        return id_task == that.id_task && isDone == that.isDone && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(deadline, that.deadline) && Objects.equals(roommate, that.roommate) && Objects.equals(flatshare, that.flatshare);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_task, name, description, isDone, deadline);
+        return Objects.hash(id_task, name, description, isDone, deadline, roommate, flatshare);
     }
 
     @Override
@@ -154,6 +137,8 @@ public class TaskEntity {
                 ", description='" + description + '\'' +
                 ", isDone=" + isDone +
                 ", deadline=" + deadline +
+                ", roommate=" + roommate +
+                ", flatshare=" + flatshare +
                 '}';
     }
 }

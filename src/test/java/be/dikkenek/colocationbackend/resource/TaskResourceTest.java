@@ -1,7 +1,6 @@
 package be.dikkenek.colocationbackend.resource;
 
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
-import be.dikkenek.colocationbackend.dao.TaskDao;
 import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.TaskRequestDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
@@ -22,8 +21,6 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class TaskResourceTest {
-    @Mock
-    private TaskDao taskDao;
     @Mock
     private UserDao userDao;
     @Mock

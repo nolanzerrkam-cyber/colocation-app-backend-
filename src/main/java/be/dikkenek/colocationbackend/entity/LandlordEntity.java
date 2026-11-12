@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Objects;
+
 @Entity(name = "Landlord")
 public class LandlordEntity extends UserEntity {
     @OneToOne
@@ -30,5 +32,25 @@ public class LandlordEntity extends UserEntity {
             this.flatshare = flatshare;
             flatshare.setLandlord(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof LandlordEntity)) return false;
+        if (!super.equals(o)) return false;
+        LandlordEntity that = (LandlordEntity) o;
+        return Objects.equals(flatshare, that.flatshare);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), flatshare);
+    }
+
+    @Override
+    public String toString() {
+        return "LandlordEntity{" +
+                "flatshare=" + flatshare +
+                "} " + super.toString();
     }
 }
