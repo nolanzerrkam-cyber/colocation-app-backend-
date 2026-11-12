@@ -84,6 +84,7 @@ public class RentResource {
 
     @PUT
     @Path("/payRent")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response payRent(PayRentDto dto) throws BackendException {
         FlatshareEntity flatshareEntity = FlatshareEntity.get(flatshareDao);
         if (flatshareEntity == null)
