@@ -33,12 +33,11 @@ public class FlatshareEntity {
     @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
-    @OneToMany(mappedBy = "flatshare",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExpenseEntity> expenses;
 
     @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
-
 
 
     public int getId_flatshare() {
@@ -53,14 +52,11 @@ public class FlatshareEntity {
         return landlord;
     }
 
-    public void setLandlord(LandlordEntity landlord) throws BackendException
-    {
-        if(landlord == null)
-        {
+    public void setLandlord(LandlordEntity landlord) throws BackendException {
+        if (landlord == null) {
             throw new BackendException(Response.Status.BAD_REQUEST, "the landlord can't be null.");
         }
-        if(!landlord.equals(this.landlord))
-        {
+        if (!landlord.equals(this.landlord)) {
             this.landlord = landlord;
             landlord.setFlatshare(this);
         }
@@ -117,6 +113,7 @@ public class FlatshareEntity {
     //Constructeurs
     //
     //
+
     /**
      * VERY IMPORTANT COMMENT
      * We wanted to implement a Singleton design pattern to ensure the FlatshareEntity
@@ -194,6 +191,16 @@ public class FlatshareEntity {
 
     public void removeTask(TaskEntity taskEntity) {
         tasks.remove(taskEntity);
+    }
+
+    public RoommateEntity getRoommate(String email) {
+        if (email == null)
+            return null;
+
+        return getRoommates().stream()
+                .filter(r -> r.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
