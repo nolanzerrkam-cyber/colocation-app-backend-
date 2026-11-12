@@ -1,12 +1,9 @@
 package be.dikkenek.colocationbackend.resource;
 
-import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.dao.FlatshareDao;
-import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.ExpenseInsertDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
@@ -25,11 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 public class ExpenseResourceTest {
 
-    @Mock
-    private ExpenseDao expenseDAO;
-
-    @Mock
-    private UserDao userDao;
     @Mock
     private FlatshareDao flatshareDao;
 
@@ -52,17 +44,14 @@ public class ExpenseResourceTest {
         If behind, postExpense is not called, mockito will throw an error, because the stub needs to have postExpense.
         The error threw is UnnecessaryStubbingException (since, yes, a stub NOT being used is useless.)
      */
-    private void roommate_exists() throws BackendException
-    {
+    private void roommate_exists() throws BackendException {
         FlatshareEntity flatshareEntity = new FlatshareEntity();
         RoommateEntity roommate = new RoommateEntity("test@test.com", "password", "a", "a", "0474998234", flatshareEntity);
-        Optional<UserEntity> user = Optional.of(roommate);
-        Mockito.when(userDao.get("test@test.com")).thenReturn(user);
+        Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
     }
 
     @Test
-    void testPostExpense_Success() throws BackendException
-    {
+    void testPostExpense_Success() throws BackendException {
         roommate_exists();
         // when the DAO is created, it has to return true (to do an illusion of insertion into oracle)
         Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(true);
@@ -77,8 +66,7 @@ public class ExpenseResourceTest {
     }
 
     @Test
-    void testPostExpense_DaoFails() throws BackendException
-    {
+    void testPostExpense_DaoFails() throws BackendException {
         roommate_exists();
         Mockito.when(flatshareDao.update(Mockito.any(FlatshareEntity.class))).thenReturn(false);
 
@@ -97,8 +85,7 @@ public class ExpenseResourceTest {
     }*/
 
     @Test
-    void testPostExpense_NegativePrice() throws BackendException
-    {
+    void testPostExpense_NegativePrice() throws BackendException {
         roommate_exists(); // The roommate must exist here otherwise, the 400 status would come from the roommate check instead of the negative price.
         ExpenseInsertDto dto = validDto();
         dto.setPrice(-5f);
@@ -107,19 +94,13 @@ public class ExpenseResourceTest {
         assertThrows(BackendException.class, () -> {
             expenseResource.postExpense(dto);
         });
-        Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
     }
 
     @Test
-    void testPostExpense_CheckInvalidEmail() throws BackendException
-    {
+    void testPostExpense_CheckInvalidEmail() throws BackendException {
         ExpenseInsertDto dto = validDto();
         dto.setEmail(null);
 
-        assertThrows(BackendException.class, () -> {
-            expenseResource.postExpense(dto);
-        });
-
-        Mockito.verify(expenseDAO, Mockito.never()).create(Mockito.any());
+        assertEquals(404, expenseResource.postExpense(dto).getStatus());
     }
 }

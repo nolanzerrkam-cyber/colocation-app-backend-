@@ -1,13 +1,10 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.Dao;
-import be.dikkenek.colocationbackend.dao.ExpenseDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Date;
-import java.util.List;
 
 import java.util.Objects;
 
@@ -57,13 +54,11 @@ public class ExpenseEntity {
         this.flatshare = flatshare;
     }
 
-    public int getId_expense()
-    {
+    public int getId_expense() {
         return id_expense;
     }
 
-    private void setId_expense(int id_expense)
-    {
+    private void setId_expense(int id_expense) {
         this.id_expense = id_expense;
     }
 
@@ -72,7 +67,7 @@ public class ExpenseEntity {
     }
 
     private void setLabel(String label) throws BackendException {
-        if(label == null || label.isEmpty()) {
+        if (label == null || label.isEmpty()) {
             throw new BackendException(Response.Status.BAD_REQUEST, "Label can't be null or empty");
         }
 
@@ -105,8 +100,7 @@ public class ExpenseEntity {
         return roommate;
     }
 
-    public void setRoommate(RoommateEntity roommate) throws BackendException
-    {
+    public void setRoommate(RoommateEntity roommate) throws BackendException {
         if (roommate == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "The roommate has to exist.");
 
@@ -115,14 +109,6 @@ public class ExpenseEntity {
             this.roommate = roommate;
             roommate.getFlatshare().addExpense(this);
         }
-    }
-
-    public static ExpenseEntity get(ExpenseDao dao, int id) throws BackendException {
-        return dao.get(id).orElse(null);
-    }
-
-    public boolean create(Dao<ExpenseEntity, Integer> dao) throws BackendException {
-        return dao.create(this);
     }
 
     @Override

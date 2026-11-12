@@ -1,6 +1,5 @@
 package be.dikkenek.colocationbackend.entity;
 
-import be.dikkenek.colocationbackend.dao.ShoppingItemDao;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
@@ -24,15 +23,13 @@ public class ShoppingItemEntity {
     private RoommateEntity roommate;
 
 
-
     public int getId_shopping() {
         return id_shopping;
     }
 
     public void setId_shopping(int id_shopping) throws BackendException {
-        if(id_shopping < 0)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST,"id cannot be negative");
+        if (id_shopping < 0) {
+            throw new BackendException(Response.Status.BAD_REQUEST, "id cannot be negative");
         }
         this.id_shopping = id_shopping;
     }
@@ -66,32 +63,21 @@ public class ShoppingItemEntity {
     public ShoppingItemEntity() {
     }
 
-    public ShoppingItemEntity( String label, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity(String label, RoommateEntity roommate) throws BackendException {
         setLabel(label);
         setRoommate(roommate);
     }
 
     public ShoppingItemEntity(int id_shopping, String label, RoommateEntity roommate) throws BackendException {
-        this(label,roommate);
+        this(label, roommate);
         setId_shopping(id_shopping);
-    }
-
-    //Méthodes
-
-    public static List<ShoppingItemEntity> getAll(ShoppingItemDao dao) throws BackendException {
-        return dao.getAll();
-    }
-
-    public boolean create(ShoppingItemDao dao) throws BackendException
-    {
-        return dao.create(this);
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ShoppingItemEntity)) return false;
         ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id_shopping == that.id_shopping  && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
+        return id_shopping == that.id_shopping && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
     }
 
     @Override

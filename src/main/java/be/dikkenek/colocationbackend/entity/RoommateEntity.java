@@ -87,22 +87,6 @@ public class RoommateEntity extends UserEntity {
     }
 
     /**
-     * Retrieve all roommates from the database
-     *
-     * @param dao
-     * @return
-     * @throws BackendException
-     */
-    public static List<RoommateEntity> getAll(UserDao dao) throws BackendException {
-        List<UserEntity> entities = dao.getAll();
-
-        return entities.stream()
-                .filter(RoommateEntity.class::isInstance)
-                .map(RoommateEntity.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Retrieve a roommate object from the database based on his email
      *
      * @param dao

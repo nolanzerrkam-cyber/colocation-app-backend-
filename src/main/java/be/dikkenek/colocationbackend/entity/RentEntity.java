@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 
 /**
@@ -59,5 +60,26 @@ public class RentEntity {
 
     public int getId_rent() {
         return id_rent;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RentEntity)) return false;
+        RentEntity that = (RentEntity) o;
+        return id_rent == that.id_rent && deadlineDay == that.deadlineDay && Float.compare(amount, that.amount) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id_rent, deadlineDay, amount);
+    }
+
+    @Override
+    public String toString() {
+        return "RentEntity{" +
+                "id_rent=" + id_rent +
+                ", deadlineDay=" + deadlineDay +
+                ", amount=" + amount +
+                '}';
     }
 }

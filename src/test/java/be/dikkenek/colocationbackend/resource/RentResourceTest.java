@@ -33,7 +33,7 @@ public class RentResourceTest {
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
-        Response resp = rentResource.getRent();
+        Response resp = rentResource.getRent(null);
 
         // Then
         Assertions.assertEquals(404, resp.getStatus());
@@ -47,7 +47,7 @@ public class RentResourceTest {
         Mockito.when(flatshareDao.getFirst()).thenReturn(Optional.of(flatshareEntity));
 
         // When
-        Response resp = rentResource.getRent();
+        Response resp = rentResource.getRent(null);
 
         // Then
         Assertions.assertEquals(200, resp.getStatus());
