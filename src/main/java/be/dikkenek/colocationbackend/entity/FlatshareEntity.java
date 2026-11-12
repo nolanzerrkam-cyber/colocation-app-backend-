@@ -37,8 +37,7 @@ public class FlatshareEntity {
     private List<ExpenseEntity> expenses;
 
     @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<ShoppingItemEntity> shoppingItems;
-
+    private List<ShoppingQuantityEntity> shoppingQuantityItems;
 
 
     public int getId_flatshare() {
@@ -95,12 +94,12 @@ public class FlatshareEntity {
         this.tasks = tasks == null ? new ArrayList<>() : tasks;
     }
 
-    public List<ShoppingItemEntity> getShoppingItems() {
-        return shoppingItems;
+    public List<ShoppingQuantityEntity> getShoppingQuantityItems() {
+        return shoppingQuantityItems;
     }
 
-    public void setShoppingItems(List<ShoppingItemEntity> shoppingItems) {
-        this.shoppingItems = shoppingItems == null ? new ArrayList<>() : shoppingItems;
+    public void setShoppingQuantityItems(List<ShoppingQuantityEntity> shoppingQuantityItems) {
+        this.shoppingQuantityItems = shoppingQuantityItems == null ? new ArrayList<>() : shoppingQuantityItems;
     }
 
     public List<ExpenseEntity> getExpenses() {
@@ -126,7 +125,7 @@ public class FlatshareEntity {
         setRoommates(new ArrayList<>());
         setTasks(new ArrayList<>());
         setExpenses(new ArrayList<>());
-        setShoppingItems(new ArrayList<>());
+        setShoppingQuantityItems(new ArrayList<>());
     }
 
     //
@@ -151,15 +150,15 @@ public class FlatshareEntity {
         return dao.update(this);
     }
 
-    public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
-        if (shoppingItemEntity == null)
+    public void addItem(ShoppingQuantityEntity shoppingQuantityEntity) throws BackendException {
+        if (shoppingQuantityEntity == null)
             throw new BackendException(Response.Status.BAD_REQUEST, "ShoppingItemEntity cannot be null");
 
-        if (!shoppingItems.contains(shoppingItemEntity)) shoppingItems.add(shoppingItemEntity);
+        if (!shoppingQuantityItems.contains(shoppingQuantityEntity)) shoppingQuantityItems.add(shoppingQuantityEntity);
     }
 
-    public void removeItem(ShoppingItemEntity shoppingItemEntity) {
-        shoppingItems.remove(shoppingItemEntity);
+    public void removeItem(ShoppingQuantityEntity shoppingQuantityEntity) {
+        shoppingQuantityItems.remove(shoppingQuantityEntity);
     }
 
     public void addExpense(ExpenseEntity expense) throws BackendException {
