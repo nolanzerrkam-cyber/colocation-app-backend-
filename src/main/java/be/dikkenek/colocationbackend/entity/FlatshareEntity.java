@@ -39,17 +39,7 @@ public class FlatshareEntity {
     @OneToMany(mappedBy = "flatshare", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ShoppingItemEntity> shoppingItems;
 
-    /**
-     * VERY IMPORTANT COMMENT
-     * We wanted to implement a Singleton design pattern to ensure the FlatshareEntity
-     * exists only once but Hibernate needs a public or protected constructor without any parameters
-     */
-    public FlatshareEntity() {
-        setRoommates(new ArrayList<>());
-        setTasks(new ArrayList<>());
-        setExpenses(new ArrayList<>());
-        setShoppingItems(new ArrayList<>());
-    }
+
 
     public int getId_flatshare() {
         return id_flatshare;
@@ -57,18 +47,6 @@ public class FlatshareEntity {
 
     public void setId_flatshare(int id_flatshare) {
         this.id_flatshare = id_flatshare;
-    }
-
-    public void addRoommate(RoommateEntity roommateEntity) throws BackendException {
-        if (roommateEntity == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "RoommateEntity cannot be null");
-
-        roommateEntity.setFlatshare(this);
-        if (!roommates.contains(roommateEntity)) roommates.add(roommateEntity);
-    }
-
-    public void removeRoommate(RoommateEntity roommateEntity) {
-        roommates.remove(roommateEntity);
     }
 
     public LandlordEntity getLandlord() {
@@ -84,7 +62,7 @@ public class FlatshareEntity {
         if(!landlord.equals(this.landlord))
         {
             this.landlord = landlord;
-            // ajouter flatshare
+            landlord.setFlatshare(this);
         }
     }
 
@@ -107,17 +85,6 @@ public class FlatshareEntity {
 
     public List<RoommateEntity> getRoommates() {
         return roommates;
-    }
-
-    public void addTask(TaskEntity taskEntity) throws BackendException {
-        if (taskEntity == null)
-            throw new BackendException(Response.Status.BAD_REQUEST, "TaskEntity cannot be null");
-
-        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
-    }
-
-    public void removeTask(TaskEntity taskEntity) {
-        tasks.remove(taskEntity);
     }
 
     public List<TaskEntity> getTasks() {
@@ -144,15 +111,44 @@ public class FlatshareEntity {
         this.expenses = expenses == null ? new ArrayList<>() : expenses;
     }
 
-    public void addExpense(ExpenseEntity expense) throws BackendException {
-        if (expense == null)
-            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ExpenseEntity cannot be null");
 
-        if (!expenses.contains(expense)) expenses.add(expense);
+    //
+    //
+    //Constructeurs
+    //
+    //
+    /**
+     * VERY IMPORTANT COMMENT
+     * We wanted to implement a Singleton design pattern to ensure the FlatshareEntity
+     * exists only once but Hibernate needs a public or protected constructor without any parameters
+     */
+    public FlatshareEntity() {
+        setRoommates(new ArrayList<>());
+        setTasks(new ArrayList<>());
+        setExpenses(new ArrayList<>());
+        setShoppingItems(new ArrayList<>());
     }
 
-    public void removeExpense(ExpenseEntity expense) {
-        expenses.remove(expense);
+    //
+    //
+    //Méthodes
+    //
+    //
+
+    /**
+     *
+     * @return the total amount of every expenses of the flatshare
+     */
+    public float getTotalExpenses() {
+        return roommates.stream().map(RoommateEntity::getTotalExpenses).reduce(0.0f, Float::sum);
+    }
+
+    public static FlatshareEntity get(FlatshareDao dao) throws BackendException {
+        return dao.getFirst().orElse(null);
+    }
+
+    public boolean update(FlatshareDao dao) throws BackendException {
+        return dao.update(this);
     }
 
     public void addItem(ShoppingItemEntity shoppingItemEntity) throws BackendException {
@@ -166,38 +162,38 @@ public class FlatshareEntity {
         shoppingItems.remove(shoppingItemEntity);
     }
 
-    /**
-     *
-     * @return the total amount of every expenses of the flatshare
-     */
-    public float getTotalExpenses() {
-        return roommates.stream().map(RoommateEntity::getTotalExpenses).reduce(0.0f, Float::sum);
+    public void addExpense(ExpenseEntity expense) throws BackendException {
+        if (expense == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "ExpenseEntity cannot be null");
+
+        if (!expenses.contains(expense)) expenses.add(expense);
     }
 
-    /**
-     *
-     * @return true if each roommate paid the rent for this month
-     */
-    public boolean isCurrentRentPaid() {
-        return roommates.stream().allMatch(RoommateEntity::isCurrentRentPaid);
+    public void removeExpense(ExpenseEntity expense) {
+        expenses.remove(expense);
     }
 
-    /**
-     *
-     * @param month the target month number (1 -> 12)
-     * @param year  the target year number
-     * @return true if each roommate paid the rent for the specified month and year
-     */
-    public boolean isRentPaid(int month, int year) {
-        return roommates.stream().allMatch(r -> r.isRentPaid(month, year));
+    public void addRoommate(RoommateEntity roommateEntity) throws BackendException {
+        if (roommateEntity == null)
+            throw new BackendException(Response.Status.INTERNAL_SERVER_ERROR, "RoommateEntity cannot be null");
+
+        roommateEntity.setFlatshare(this);
+        if (!roommates.contains(roommateEntity)) roommates.add(roommateEntity);
     }
 
-    public static FlatshareEntity get(FlatshareDao dao) throws BackendException {
-        return dao.getFirst().orElse(null);
+    public void removeRoommate(RoommateEntity roommateEntity) {
+        roommates.remove(roommateEntity);
     }
 
-    public boolean update(FlatshareDao dao) throws BackendException {
-        return dao.update(this);
+    public void addTask(TaskEntity taskEntity) throws BackendException {
+        if (taskEntity == null)
+            throw new BackendException(Response.Status.BAD_REQUEST, "TaskEntity cannot be null");
+
+        if (!tasks.contains(taskEntity)) this.tasks.add(taskEntity);
+    }
+
+    public void removeTask(TaskEntity taskEntity) {
+        tasks.remove(taskEntity);
     }
 
     @Override

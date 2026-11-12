@@ -5,7 +5,6 @@ import be.dikkenek.colocationbackend.dao.UserDao;
 import be.dikkenek.colocationbackend.dto.RoommateResponseDto;
 import be.dikkenek.colocationbackend.entity.FlatshareEntity;
 import be.dikkenek.colocationbackend.entity.RoommateEntity;
-import be.dikkenek.colocationbackend.entity.UserEntity;
 import be.dikkenek.colocationbackend.exception.BackendException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class RoommateResourceTest
