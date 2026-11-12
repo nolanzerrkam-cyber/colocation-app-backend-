@@ -18,6 +18,7 @@
         <class>be.dikkenek.colocationbackend.entity.ShoppingItemEntity</class>
         <class>be.dikkenek.colocationbackend.entity.TaskEntity</class>
         <class>be.dikkenek.colocationbackend.entity.UserEntity</class>
+        <class>be.dikkenek.colocationbackend.entity.ShoppingQuantityEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
