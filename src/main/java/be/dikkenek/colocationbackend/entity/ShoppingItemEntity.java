@@ -18,29 +18,12 @@ public class ShoppingItemEntity {
 
     @Column(name = "label")
     private String label;
-    @Column(name = "quantity")
-    private int quantity;
 
     @ManyToOne
     @JoinColumn(name = "ROOMMATE_EMAIL")
     private RoommateEntity roommate;
 
-    @ManyToOne
-    @JoinColumn(name = "id_flatshare")
-    private FlatshareEntity flatshare;
 
-    public FlatshareEntity getFlatshare() {
-        return flatshare;
-    }
-
-    public void setFlatshare(FlatshareEntity flatshare) throws BackendException {
-        if(flatshare == null)
-        {
-            throw new BackendException(Response.Status.BAD_REQUEST,"flatshare cannot be null");
-        }
-
-        this.flatshare = flatshare;
-    }
 
     public int getId_shopping() {
         return id_shopping;
@@ -51,7 +34,6 @@ public class ShoppingItemEntity {
         {
             throw new BackendException(Response.Status.BAD_REQUEST,"id cannot be negative");
         }
-
         this.id_shopping = id_shopping;
     }
 
@@ -66,17 +48,6 @@ public class ShoppingItemEntity {
         this.label = label;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) throws BackendException {
-        if (quantity <= 0) {
-            throw new BackendException(Response.Status.BAD_REQUEST, "Quantity must be positive");
-        }
-        this.quantity = quantity;
-    }
-
     public RoommateEntity getRoommate() {
         return roommate;
     }
@@ -86,9 +57,7 @@ public class ShoppingItemEntity {
             throw new BackendException(Response.Status.BAD_REQUEST, "Roommate is null");
 
         if (!roommate.equals(this.roommate)) {
-            if (this.roommate != null) this.roommate.getFlatshare().removeItem(this);
             this.roommate = roommate;
-            roommate.getFlatshare().addItem(this);
         }
     }
 
@@ -97,15 +66,13 @@ public class ShoppingItemEntity {
     public ShoppingItemEntity() {
     }
 
-    public ShoppingItemEntity( String label, int quantity, RoommateEntity roommate) throws BackendException {
+    public ShoppingItemEntity( String label, RoommateEntity roommate) throws BackendException {
         setLabel(label);
-        setQuantity(quantity);
         setRoommate(roommate);
-        setFlatshare(roommate.getFlatshare());
     }
 
-    public ShoppingItemEntity(int id_shopping, String label, int quantity, RoommateEntity roommate) throws BackendException {
-        this(label,quantity,roommate);
+    public ShoppingItemEntity(int id_shopping, String label, RoommateEntity roommate) throws BackendException {
+        this(label,roommate);
         setId_shopping(id_shopping);
     }
 
@@ -115,26 +82,21 @@ public class ShoppingItemEntity {
         return dao.getAll();
     }
 
-    public static ShoppingItemEntity get(ShoppingItemDao dao, int id) throws BackendException
-    {
-        return dao.get(id).orElse(null);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ShoppingItemEntity)) return false;
-        ShoppingItemEntity that = (ShoppingItemEntity) o;
-        return id_shopping == that.id_shopping && quantity == that.quantity && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
-    }
-
     public boolean create(ShoppingItemDao dao) throws BackendException
     {
         return dao.create(this);
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ShoppingItemEntity)) return false;
+        ShoppingItemEntity that = (ShoppingItemEntity) o;
+        return id_shopping == that.id_shopping  && Objects.equals(label, that.label) && Objects.equals(roommate, that.roommate);
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(id_shopping, label, quantity, roommate);
+        return Objects.hash(id_shopping, label, roommate);
     }
 
     @Override
@@ -142,7 +104,6 @@ public class ShoppingItemEntity {
         return "ShoppingItemEntity{" +
                 "id_shopping=" + id_shopping +
                 ", label='" + label + '\'' +
-                ", quantity=" + quantity +
                 ", roommate=" + roommate +
                 '}';
     }
